@@ -1,0 +1,12 @@
+[package]
+name = "openstack-client"
+version = "0.1.0"
+authors = ["thomas9911 <thomastimmer11@hotmail.com>"]
+
+[dependencies]
+# openstack = { git = "https://github.com/dtantsur/rust-openstack" }
+openstack = { path = "G:\\Dropbox\\school+\\Code\\Git\\rust-openstack" }
+serde = "*"
+serde_json = "*"
+argparse = "*"
+waiter = "*"
