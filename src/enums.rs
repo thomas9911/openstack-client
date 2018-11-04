@@ -44,9 +44,9 @@ impl std::str::FromStr for OSResource{
     fn from_str(s: &str) -> Result<OSResource, ()> {
         match convert_to_singular(s).as_str() {
             "flavor" | "size" => Ok(OSResource::Flavors),
-            "floating_ip" | "fips" => Ok(OSResource::FloatingIps),
+            "floating_ip" | "fip" => Ok(OSResource::FloatingIps),
             "image" | "operating_system" => Ok(OSResource::Images),            
-            "keypair" | "keys" => Ok(OSResource::Keypairs),
+            "keypair" | "key" => Ok(OSResource::Keypairs),
             "network" => Ok(OSResource::Networks),
             "server" => Ok(OSResource::Servers),
             "subnet" => Ok(OSResource::Subnets),
