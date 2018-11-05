@@ -1,14 +1,14 @@
-use serde_json::Value;
+use openstack;
+
 use std::collections::HashMap;
+use serde_json::{Value, to_string_pretty};
+
+use std::fs::File;
+use waiter::Waiter;
 
 use fmt_methods::*;
 
-use std::fs::File;
-
-use waiter::Waiter;
-
 use enums::OSResource;
-
 
 #[derive(Debug)]
 pub struct OpenstackConnection{
@@ -35,7 +35,7 @@ impl OpenstackConnection{
 
     pub fn print_get(&self, resource: OSResource, name: String){
         if name == ""{
-            println!("{}", serde_json::to_string_pretty(
+            println!("{}", to_string_pretty(
                     &fmt_error("'name or id' is a required argument")
                 ).unwrap());
             return
@@ -52,7 +52,7 @@ impl OpenstackConnection{
                      Err(x) => fmt_error(x)
                  }
             },
-                
+
             // OSResource::Networks => print_network_data(self.client.list_networks()),
             OSResource::Servers => {
                  match self.client.get_server(name){
@@ -65,12 +65,12 @@ impl OpenstackConnection{
             // OSResource::None => json!([{"error": "resource cannot be showed"}]),
             _ => fmt_error("resource cannot be showed"),
         };
-        println!("{}", serde_json::to_string_pretty(&result).unwrap());
+        println!("{}", to_string_pretty(&result).unwrap());
     }
 
     pub fn print_delete(&self, resource: OSResource, name: String){
         if name == ""{
-            println!("{}", serde_json::to_string_pretty(
+            println!("{}", to_string_pretty(
                     &fmt_error("'name or id' is a required argument")
                 ).unwrap());
             return
@@ -89,7 +89,7 @@ impl OpenstackConnection{
                      Err(x) => fmt_error(x)
                  }
             },
-                
+
             // OSResource::Networks => print_network_data(self.client.list_networks()),
             // OSResource::Servers => print_server_summary_data(self.client.list_servers()),
             // OSResource::Subnets => print_subnet_data(self.client.list_subnets()),
@@ -97,7 +97,7 @@ impl OpenstackConnection{
             // OSResource::None => json!([{"error": "resource cannot be showed"}]),
             _ => fmt_error("resource cannot be deleted"),
         };
-        println!("{}", serde_json::to_string_pretty(&result).unwrap());    
+        println!("{}", to_string_pretty(&result).unwrap());
     }
 
     pub fn create_keypair(&self, options: HashMap<String, String>) -> Result<Value, String>{
@@ -115,7 +115,7 @@ impl OpenstackConnection{
             Ok(x) => x,
             _ => return Err(format!("'{}' file is not available", public_key))
         };
-        
+
         let return_value = match self.client.new_keypair(name)
                     .from_reader(&mut file).expect("file reading goes wrong")
                     .create(){

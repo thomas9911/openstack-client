@@ -1,6 +1,6 @@
 
 use utils::convert_to_singular;
-
+use std;
 
 #[derive(Debug, Clone)]
 pub enum OSOperation{
@@ -27,7 +27,7 @@ impl std::str::FromStr for OSOperation{
 
 #[derive(Debug, Copy, Clone)]
 pub enum OSResource{
-    Flavors, 
+    Flavors,
     FloatingIps,
     Images,
     Keypairs,
@@ -45,7 +45,7 @@ impl std::str::FromStr for OSResource{
         match convert_to_singular(s).as_str() {
             "flavor" | "size" => Ok(OSResource::Flavors),
             "floating_ip" | "fip" => Ok(OSResource::FloatingIps),
-            "image" | "operating_system" => Ok(OSResource::Images),            
+            "image" | "operating_system" => Ok(OSResource::Images),
             "keypair" | "key" => Ok(OSResource::Keypairs),
             "network" => Ok(OSResource::Networks),
             "server" => Ok(OSResource::Servers),
