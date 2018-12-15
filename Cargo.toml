@@ -4,8 +4,11 @@ version = "0.1.0"
 authors = ["thomas9911 <thomastimmer11@hotmail.com>"]
 
 [dependencies]
-openstack = { git = "https://github.com/dtantsur/rust-openstack" }
 serde = "*"
+serde_derive = "*"
 serde_json = "*"
+serde_yaml = "*"
 argparse = "*"
-waiter = "*"
+reqwest = "*"
+secstr = {version = "*", features = ['serde']}
+rpassword = "2.1.0"
