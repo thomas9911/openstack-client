@@ -20,14 +20,18 @@ use std::io::{stdout, stderr, Error, ErrorKind};
 use argparse::{ArgumentParser, StoreTrue, Store, List};
 
 use enums::{OSOperation, OSResource};
-use openstack_connection::{OpenstackConnection};
+use openstack_connection::{OpenstackConnection, OpenstackInfoMap};
 use utils::add_if_exists;
 
 
 fn main() {
-    let mut os_cloud: String = "fuga".to_string();
+    let mut os_cloud: String = "".to_string();
     let mut command: OSOperation = OSOperation::None;
     let mut args: Vec<String> = vec!();
+    if env::var("OS_CLOUD").is_ok(){
+        os_cloud = env::var("OS_CLOUD").unwrap()
+    }
+
     {
         let mut ap = ArgumentParser::new();
         ap.set_description("Openstack cli in Rust maddafaka");
@@ -45,33 +49,29 @@ fn main() {
         ap.parse_args_or_exit();
     }
 
-    env::set_var("OS_CLOUD", os_cloud);
-    // let os = match openstack::Cloud::from_env(){
-    //     Ok(x) => x,
-    //     Err(e) =>  {
-    //         println!("Error: {}", e);
-    //         std::process::exit(0);
-    //         },
-    // };
-
-    let new_os = OpenstackConnection::new();
-    args.insert(0, format!("{} {:?}", "openstack", command));
-
-    match command{
-        OSOperation::List => list_command(new_os, args),
-        OSOperation::Show => show_command(new_os, args),
-        OSOperation::New => new_command(new_os, args),
-        OSOperation::Delete => delete_command(new_os, args),
-        OSOperation::None => (),
-    }
-
-    let mut os = match OpenstackInfoMap::from_clouds_yaml("".to_string()){
+    let os_config_env = OpenstackInfoMap::from_env(os_cloud.clone());
+    let mut os_config = match OpenstackInfoMap::from_clouds_yaml(os_cloud.clone()){
         Ok(x) => x,
         // Err(e) => {println!("{}", e); return ()}
         Err(_e) => OpenstackInfoMap::default()
     };
-    os.add_password_if_not_existing().unwrap();
-    println!("{}", serde_json::to_string_pretty(&os).unwrap());
+    os_config.apply(&os_config_env)
+      .add_password_if_not_existing().unwrap();
+
+    println!("{}", serde_json::to_string_pretty(&os_config).unwrap());
+
+    let mut new_os = OpenstackConnection::new(os_config);
+    // args.insert(0, format!("{} {:?}", "openstack", command));
+
+    // match command{
+    //     OSOperation::List => list_command(new_os, args),
+    //     OSOperation::Show => show_command(new_os, args),
+    //     OSOperation::New => new_command(new_os, args),
+    //     OSOperation::Delete => delete_command(new_os, args),
+    //     OSOperation::None => (),
+    // }
+    new_os.refresh_token();
+
 }
 
 fn list_command(os: OpenstackConnection, args: Vec<String>){
@@ -185,127 +185,4 @@ fn delete_command(os: OpenstackConnection, args: Vec<String>){
     }
 
     // os.print_delete(resource, name_or_id)
-}
-
-
-#[derive(Debug, Serialize, Deserialize)]
-struct OpenstackInfoMap{
-    pub cloud_name: String,
-    pub auth_url: String,
-    pub username: String,
-    pub password: secstr::SecStr,
-    pub project_id: String,
-    pub project_domain_id: String,
-    pub user_domain_id: String,
-}
-
-impl OpenstackInfoMap{
-    pub fn new(cloud_name: String,
-    auth_url: String,
-    username: String,
-    password: String,
-    project_id: String,
-    project_domain_id: String,
-    user_domain_id: String) -> OpenstackInfoMap{
-        let ps: secstr::SecStr = secstr::SecStr::from(password);
-        OpenstackInfoMap{cloud_name, auth_url, username, password: ps, project_id, project_domain_id, user_domain_id}
-    }
-
-    pub fn from_clouds_yaml(region: String) -> Result<OpenstackInfoMap, Error>{
-        OpenstackInfoMap::from_yaml("clouds.yaml".to_string(), region)
-    }
-
-    pub fn from_yaml(location: String, region: String) -> Result<OpenstackInfoMap, Error>{
-        let mut region_copy = region.clone();
-        let value = match OpenstackInfoMap::read_yaml(location){
-            Ok(x) => x,
-            Err(e) => return Err(e)
-        };
-        if &region_copy == ""{
-            let lengt = match &value["clouds"]{
-                serde_yaml::Value::Mapping(x) => x.len(),
-                _ => 0
-            };
-            if lengt != 1 {
-                return Err(Error::new(ErrorKind::InvalidData, "please, choose the cloud you want to use"))
-            };
-            region_copy = match &value["clouds"]{
-                serde_yaml::Value::Mapping(x) => match x.iter().next().unwrap().0.as_str(){
-                    Some(x) => x.to_string(),
-                    None =>  "".to_string()
-                },
-                _ => "".to_string()
-            };
-            if &region_copy == ""{
-                return Err(Error::new(ErrorKind::InvalidData, "invalid clouds.yaml"))
-            };
-        };
-        let auth_map: &serde_yaml::Value = &value["clouds"][&region_copy]["auth"];
-        let serde_yaml_string = serde_yaml::Value::String("".to_string());
-        let cloud_name: String = region_copy;
-        let auth_url: String = auth_map.get("auth_url").unwrap_or(&serde_yaml_string).as_str().unwrap().to_string();
-        let username: String = auth_map.get("username").unwrap_or(&serde_yaml_string).as_str().unwrap().to_string();
-        let password: String = auth_map.get("password").unwrap_or(&serde_yaml_string).as_str().unwrap().to_string();
-        let project_id: String = auth_map.get("project_id").unwrap_or(&serde_yaml_string).as_str().unwrap().to_string();
-        let project_domain_id: String = auth_map.get("project_domain_id").unwrap_or(&serde_yaml_string).as_str().unwrap().to_string();
-        let user_domain_id: String = auth_map.get("user_domain_id").unwrap_or(&serde_yaml_string).as_str().unwrap().to_string();
-
-        Ok(OpenstackInfoMap::new(cloud_name, auth_url, username, password, project_id, project_domain_id, user_domain_id))
-    }
-
-    pub fn from_env(region: String) -> OpenstackInfoMap{
-        let mut cloud_name = region.clone();
-        if region == ""{
-            cloud_name = std::env::var("OS_CLOUD").unwrap_or("".to_string());
-        }
-        let auth_url: String = std::env::var("OS_AUTH_URL").unwrap_or("".to_string());
-        let username: String = std::env::var("OS_USERNAME").unwrap_or("".to_string());
-        let password: String = std::env::var("OS_PASSWORD").unwrap_or("".to_string());
-        let project_id: String = std::env::var("OS_PROJECT_ID").unwrap_or("".to_string());
-        let project_domain_id: String = std::env::var("OS_PROJECT_DOMAIN_ID").unwrap_or("".to_string());
-        let user_domain_id: String = std::env::var("OS_USER_DOMAIN_ID").unwrap_or("".to_string());
-
-        OpenstackInfoMap::new(cloud_name, auth_url, username, password, project_id, project_domain_id, user_domain_id)
-    }
-
-    pub fn add_password(&mut self) -> Result<&mut Self, Error>{
-        let ps = match rpassword::prompt_password_stdout("Openstack password: "){
-            Ok(x) => x,
-            Err(e) => return Err(e)
-        };
-        self.password = ps.into();
-        Ok(self)
-    }
-
-    pub fn add_password_if_not_existing(&mut self) -> Result<&mut Self, Error>{
-        if self.password == "".to_string().into(){
-            return self.add_password()
-        }
-        Ok(self)
-    }
-
-    fn read_yaml(location: String) -> Result<serde_yaml::Value, Error>{
-        let file = match std::fs::File::open(&location){
-            Ok(x) => x,
-            Err(e) => return Err(e)
-        };
-        let value: serde_yaml::Value = match serde_yaml::from_reader(file){
-            Ok(x) => x,
-            Err(e) => {return Err(Error::new(ErrorKind::NotFound, e.to_string()))}
-        };
-        Ok(value)
-    }
-}
-
-impl Default for OpenstackInfoMap {
-    fn default() -> OpenstackInfoMap{
-        OpenstackInfoMap{
-            cloud_name: String::from(""),
-            auth_url: String::from(""),
-            username: String::from(""),
-            password: String::from("").into(),
-            project_id: String::from(""),
-            project_domain_id: String::from(""),
-            user_domain_id: String::from("")}
-    }
 }
