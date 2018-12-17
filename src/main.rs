@@ -58,7 +58,7 @@ fn main() {
     os_config.apply(&os_config_env)
       .add_password_if_not_existing().unwrap();
 
-    println!("{}", serde_json::to_string_pretty(&os_config).unwrap());
+    // println!("{}", serde_json::to_string_pretty(&os_config).unwrap());
 
     let mut new_os = OpenstackConnection::new(os_config);
     // args.insert(0, format!("{} {:?}", "openstack", command));
@@ -70,7 +70,12 @@ fn main() {
     //     OSOperation::Delete => delete_command(new_os, args),
     //     OSOperation::None => (),
     // }
-    new_os.refresh_token();
+    match new_os.refresh_token(){
+        Ok(_x) => (),
+        Err(e) => println!("{}", e)
+    };
+
+    println!("{}", serde_json::to_string_pretty(&new_os).unwrap());
 
 }
 

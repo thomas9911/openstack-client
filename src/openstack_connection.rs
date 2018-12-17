@@ -8,9 +8,10 @@ use std::collections::HashMap;
 
 use enums::OSResource;
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct OpenstackConnection{
     pub config: OpenstackInfoMap,
+    #[serde(skip, default = "reqwest::Client::new")]
     pub client: reqwest::Client,
     pub token: Option<String>,
     pub token_expiry: Option<String>,
@@ -23,8 +24,11 @@ impl OpenstackConnection{
         OpenstackConnection{config, client, token: None, token_expiry: None, endpoints: None}
     }
 
-    pub fn refresh_token(&mut self){
-        let password = String::from_utf8(self.config.password.unsecure().to_vec()).expect("binary must be in utf-8");
+    pub fn refresh_token(&mut self) -> Result<(), Error>{
+        let password = match String::from_utf8(self.config.password.unsecure().to_vec()){
+            Ok(x) => x,
+            Err(_e) => return Err(Error::new(ErrorKind::InvalidData, "binary must be in utf-8"))
+        };
         let body = json!({
             "auth": {
                 "identity": {
@@ -49,15 +53,84 @@ impl OpenstackConnection{
                     }
                 }
             });
-        let auth_url = reqwest::Url::parse(&format!("{}/", self.config.auth_url)).expect("Not a valid auth_url").join("auth/tokens").unwrap();
-        let mut response = self.client.post(auth_url).json(&body).send().unwrap();
-        // println!("{:?}", response.json::<serde_json::Value>().unwrap());
+        let auth_url = match reqwest::Url::parse(&format!("{}/", self.config.auth_url)){
+            Ok(x) => x.join("auth/tokens").unwrap(),
+            Err(_e) => return Err(Error::new(ErrorKind::InvalidData, "Not a valid auth_url"))
+        };
+        let mut response = match self.client.post(auth_url).json(&body).send(){
+            Ok(x) => x,
+            Err(e) => return Err(Error::new(ErrorKind::Other, e.to_string()))
+        };
 
-        println!("{}", serde_json::to_string_pretty(&response.json::<serde_json::Value>().unwrap()).unwrap());
-        let os_token = response.headers().get("x-subject-token").expect("Expected an auth token").to_str().unwrap();
-        println!("{}", os_token);
+        let response_json = match response.json::<serde_json::Value>(){
+            Ok(x) => x,
+            Err(_e) => return Err(Error::new(ErrorKind::InvalidData, "Response is not valid json"))
+        };
 
+        if !response.status().is_success(){
+            return Err(Error::new(ErrorKind::Other, serde_json::to_string(&response_json).unwrap()))
+        }
+        self.parse_token_reponse(&response);
+        self.parse_identity_reponse(&response_json);
+        self.parse_token_expiry_reponse(&response_json);
+        Ok(())
     }
+
+    fn parse_identity_reponse(&mut self, data: &serde_json::Value){
+        let mut endpoints: HashMap<String, String> = HashMap::new();
+
+        match data["token"]["catalog"].as_array(){
+            Some(catalog) => {
+                'outer: for service in catalog.iter(){
+                    let the_type: String = match service["type"].as_str(){
+                        Some(x) => x.into(),
+                        None => continue
+                    };
+                    match service["endpoints"].as_array(){
+                        Some(data_endpoints) => {
+                            'inner: for endpoint in data_endpoints{
+                                let inferface_end: String = endpoint["inferface"].as_str().unwrap_or("public").into();
+                                let region_name_end: String = match endpoint["region_id"].as_str(){
+                                    Some(x) => x.into(),
+                                    None => continue 'inner
+                                };
+                                let url_end: String = match endpoint["url"].as_str(){
+                                    Some(x) => x.into(),
+                                    None => continue 'inner
+                                };
+                                if self.config.only_use_public_endpoints{
+                                    match reqwest::Url::parse(&url_end).unwrap().port(){
+                                            Some(_x) => continue 'inner,
+                                            _ => ()
+                                    };
+                                }
+                                if (self.config.region_name == region_name_end) & (self.config.interface == inferface_end){
+                                    endpoints.insert(the_type.clone(), url_end.clone());
+                                }
+                            }
+                        },
+                        None => ()
+                    }
+                }
+            },
+            None => ()
+        }
+        self.endpoints = Some(endpoints);
+    }
+
+    fn parse_token_reponse(&mut self, data: &reqwest::Response){
+        let os_token = data.headers().get("x-subject-token").expect("Expected an auth token").to_str().unwrap();
+        self.token = Some(os_token.into());
+    }
+
+    fn parse_token_expiry_reponse(&mut self, data: &serde_json::Value){
+        let expiry: String = match data["token"]["expires_at"].as_str(){
+            Some(x) => x.into(),
+            _ => return ()
+        };
+        self.token_expiry = Some(expiry);
+    }
+
 }
 
 pub struct Openstack{
@@ -292,7 +365,8 @@ pub struct OpenstackInfoMap{
     pub project_domain_id: String,
     pub user_domain_id: String,
     pub region_name: String,
-    pub interface: String
+    pub interface: String,
+    pub only_use_public_endpoints: bool,
 }
 
 impl OpenstackInfoMap{
@@ -306,7 +380,7 @@ impl OpenstackInfoMap{
     region_name: String,
     interface: String) -> OpenstackInfoMap{
         let ps: secstr::SecStr = secstr::SecStr::from(password);
-        OpenstackInfoMap{cloud_name, auth_url, username, password: ps, project_id, project_domain_id, user_domain_id, region_name, interface}
+        OpenstackInfoMap{cloud_name, auth_url, username, password: ps, project_id, project_domain_id, user_domain_id, region_name, interface, only_use_public_endpoints: true}
     }
 
     pub fn from_clouds_yaml(region: String) -> Result<OpenstackInfoMap, Error>{
@@ -444,6 +518,9 @@ impl Default for OpenstackInfoMap {
             project_domain_id: String::from(""),
             user_domain_id: String::from(""),
             region_name: String::from(""),
-            interface: String::from("public")}
+            interface: String::from("public"),
+            only_use_public_endpoints: true}
     }
 }
+
+
