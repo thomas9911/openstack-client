@@ -7,6 +7,7 @@ extern crate serde_derive;
 extern crate argparse;
 extern crate secstr;
 extern crate rpassword;
+extern crate chrono;
 
 mod enums;
 mod utils;
@@ -20,7 +21,7 @@ use std::io::{stdout, stderr, Error, ErrorKind};
 use argparse::{ArgumentParser, StoreTrue, Store, List};
 
 use enums::{OSOperation, OSResource};
-use openstack_connection::{OpenstackConnection, OpenstackInfoMap};
+use openstack_connection::{OpenstackConnection, OpenstackInfoMap, Openstack};
 use utils::add_if_exists;
 
 
@@ -61,6 +62,31 @@ fn main() {
     // println!("{}", serde_json::to_string_pretty(&os_config).unwrap());
 
     let mut new_os = OpenstackConnection::new(os_config);
+    match new_os.refresh_token(){
+        Ok(x) => x,
+        Err(e) => {println!("{}", e); return}
+    };
+
+    // println!("{:?}", new_os.token);
+    // println!("{:?}", new_os.endpoints);
+
+    println!("{}", serde_json::to_string_pretty(&new_os).unwrap());
+    // let mut new_os = match Openstack::new(os_config){
+    //     Ok(x) => x,
+    //     Err(e) => {println!("{}", e); return}
+    // };
+
+    // println!("{}", serde_json::to_string_pretty(&new_os).unwrap());
+    // println!("{:?}", new_os.get("https://compute.api.ams.fuga.cloud:443/v2.1/5af86bc2f74c49178f32f6f479e878cc/servers").send().unwrap().json::<serde_json::Value>().unwrap());
+
+    // new_os.connection.request(reqwest::Method::GET, "https://google.com");
+    // let cool: OSResource = "image".parse().unwrap();
+    // let outcome = match new_os.list(cool){
+    //     Ok(x) => x,
+    //     Err(e) => {println!("{}", e); return}
+    // };
+
+    // println!("{}", outcome);
     // args.insert(0, format!("{} {:?}", "openstack", command));
 
     // match command{
@@ -70,13 +96,6 @@ fn main() {
     //     OSOperation::Delete => delete_command(new_os, args),
     //     OSOperation::None => (),
     // }
-    match new_os.refresh_token(){
-        Ok(_x) => (),
-        Err(e) => println!("{}", e)
-    };
-
-    println!("{}", serde_json::to_string_pretty(&new_os).unwrap());
-
 }
 
 fn list_command(os: OpenstackConnection, args: Vec<String>){

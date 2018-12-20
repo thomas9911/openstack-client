@@ -24,3 +24,12 @@ pub fn add_if_exists<S>(hashmap: &mut HashMap<String, String>, name: S, item: St
         hashmap.insert(name.to_string(), item);
     };
 }
+
+pub fn to_boolean(a_str: String) -> Option<bool>{
+    // [True, ‘True’, ‘TRUE’, ‘true’, ‘1’, ‘ON’, ‘On’, ‘on’, ‘YES’, ‘Yes’, ‘yes’, ‘y’, ‘t’, False, ‘False’, ‘FALSE’, ‘false’, ‘0’, ‘OFF’, ‘Off’, ‘off’, ‘NO’, ‘No’, ‘no’, ‘n’, ‘f’]
+    match a_str.to_lowercase().as_str(){
+        "yes" | "y" | "1" | "on" | "t" => Some(true),
+        "no" | "n" | "0" | "off" | "f" => Some(false),
+        _ => None
+    }
+}

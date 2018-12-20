@@ -12,3 +12,4 @@ argparse = "*"
 reqwest = "*"
 secstr = {version = "*", features = ['serde']}
 rpassword = "2.1.0"
+chrono = { version = "*", features = ["serde"] }

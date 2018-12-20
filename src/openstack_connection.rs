@@ -6,7 +6,12 @@
 use std::io::{stdout, stderr, Error, ErrorKind};
 use std::collections::HashMap;
 
+use chrono::prelude::*;
+use chrono::Duration;
+// use chrono::{Utc, DateTime, NaiveDateTime, Duration};
+
 use enums::OSResource;
+
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct OpenstackConnection{
@@ -23,6 +28,32 @@ impl OpenstackConnection{
         let client = reqwest::Client::new();
         OpenstackConnection{config, client, token: None, token_expiry: None, endpoints: None}
     }
+
+    pub fn get<T: reqwest::IntoUrl>(&mut self, url: T) -> reqwest::RequestBuilder{
+        self.request(reqwest::Method::GET, url)
+    }
+
+    pub fn post<T: reqwest::IntoUrl>(&mut self, url: T) -> reqwest::RequestBuilder{
+        self.request(reqwest::Method::POST, url)
+    }
+
+    pub fn request<T: reqwest::IntoUrl>(&mut self, method: reqwest::Method, url: T) -> reqwest::RequestBuilder{
+        let mut headers = reqwest::header::HeaderMap::new();
+
+        let expire_time: DateTime<Utc> = match &self.token_expiry{
+            Some(x) => DateTime::parse_from_rfc3339(&x).unwrap().with_timezone(&Utc),
+            _ => DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(0, 0), Utc)
+        };
+
+        if expire_time - Duration::minutes(5) <= Utc::now(){
+            &self.refresh_token().expect("error while refreshing token");
+        }
+
+        let token = self.token.clone();
+        headers.insert("X-Auth-Token", token.expect("a valid token").parse().unwrap());
+        self.client.request(method, url).headers(headers)
+    }
+
 
     pub fn refresh_token(&mut self) -> Result<(), Error>{
         let password = match String::from_utf8(self.config.password.unsecure().to_vec()){
@@ -89,6 +120,7 @@ impl OpenstackConnection{
                     match service["endpoints"].as_array(){
                         Some(data_endpoints) => {
                             'inner: for endpoint in data_endpoints{
+
                                 let inferface_end: String = endpoint["inferface"].as_str().unwrap_or("public").into();
                                 let region_name_end: String = match endpoint["region_id"].as_str(){
                                     Some(x) => x.into(),
@@ -133,15 +165,46 @@ impl OpenstackConnection{
 
 }
 
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Openstack{
-    connection: OpenstackConnection
+    pub connection: OpenstackConnection
 }
 
 impl Openstack{
-    pub fn delete(self, res: OSResource) {
-
+    pub fn new(config: OpenstackInfoMap) -> Result<Self, Error>{
+        let mut connection = OpenstackConnection::new(config);
+        match connection.refresh_token(){
+            Ok(x) => x,
+            Err(e) => return Err(e)
+        };
+        Ok(Openstack{connection})
     }
-    pub fn list(self, res: OSResource) {
+
+    pub fn refresh_token(&mut self) -> Result<&mut Openstack, Error>{
+        match self.connection.refresh_token(){
+            Ok(x) => x,
+            Err(e) => return Err(e)
+        };
+        Ok(self)
+    }
+
+    pub fn list(&mut self, res: OSResource) -> Result<serde_json::Value, Error>{
+        if self.connection.endpoints.is_none(){
+            self.refresh_token().expect("error while refreshing token");
+        }
+        let endpoints = &self.connection.endpoints.clone().unwrap();
+        println!("{:?}", endpoints);
+        let prepared_url = match res{
+            OSResource::Images => self.connection.get(&format!("{}v2/images", endpoints.get("image").unwrap_or(&String::from("/")))),
+            _ => return Err(Error::new(ErrorKind::Other, format!("'{:?}' is not implemented", res)))
+        };
+        let mut response = match prepared_url.send(){
+            Ok(x) => x,
+            Err(e) => return Err(Error::new(ErrorKind::Other, format!("{}", e)))
+        };
+        Openstack::handle_response(&mut response)
+    }
+    pub fn delete(self, res: OSResource, id: String) {
 
     }
     pub fn get(self, res: OSResource, id: String) {
@@ -149,6 +212,21 @@ impl Openstack{
     }
     pub fn update(self, res: OSResource, id: String) {
 
+    }
+
+    fn handle_response(response: &mut reqwest::Response) -> Result<serde_json::Value, Error>{
+        if !response.status().is_success(){
+            return Err(Error::new(ErrorKind::Other, format!("'{}'", response.status())))
+        }
+        match response.json::<serde_json::Value>(){
+            Ok(x) => return Ok(x),
+            Err(_e) => ()
+            // Err(_e) => return Err(Error::new(ErrorKind::InvalidData, "Response is not valid json"))
+        };
+        match response.text(){
+            Ok(x) => Ok(x.into()),
+            Err(_e) => Err(Error::new(ErrorKind::InvalidData, "Response cannot be parsed"))
+        }
     }
 }
 
