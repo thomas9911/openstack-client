@@ -1,6 +1,7 @@
 
 use utils::convert_to_singular;
 use std;
+use std::fmt;
 
 #[derive(Debug, Clone)]
 pub enum OSOperation{
@@ -13,19 +14,49 @@ pub enum OSOperation{
     None,
 }
 
+impl<'a> From<&'a str> for OSOperation{
+    fn from(s: &str) -> OSOperation {
+        match s.to_lowercase().as_str() {
+            "show" | "get" => OSOperation::Show,
+            "list" | "ls" => OSOperation::List,
+            "new" | "create" => OSOperation::New,
+            "delete" | "remove" | "rm" => OSOperation::Delete,
+            "patch" | "update" => OSOperation::Update,
+            "add" | "put" | "append" => OSOperation::Add,
+            _ => OSOperation::None,
+        }
+    }
+}
+
 impl std::str::FromStr for OSOperation{
     type Err = ();
 
-    fn from_str(s: &str) -> Result<OSOperation, ()> {
-        match s.to_lowercase().as_str() {
-            "show" | "get" => Ok(OSOperation::Show),
-            "list" | "ls" => Ok(OSOperation::List),
-            "new" | "create" => Ok(OSOperation::New),
-            "delete" | "remove" | "rm" => Ok(OSOperation::Delete),
-            "patch" | "update" => Ok(OSOperation::Update),
-            "add" | "put" | "append" => Ok(OSOperation::Add),
-            _ => Err(()),
+    fn from_str(s: &str) -> Result<OSOperation, ()>{
+        match OSOperation::from(s){
+            OSOperation::None => Err(()),
+            _ => Ok(OSOperation::from(s))
         }
+    }
+}
+
+impl From<OSOperation> for String{
+    fn from(s: OSOperation) -> String {
+        match s {
+            OSOperation::List => "list".into(),
+            OSOperation::Show => "show".into(),
+            OSOperation::New => "new".into(),
+            OSOperation::Delete => "delete".into(),
+            OSOperation::Update => "update".into(),
+            OSOperation::Add => "add".into(),
+            OSOperation::None => "".into(),
+        }
+    }
+}
+
+impl fmt::Display for OSOperation {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let r: String = self.clone().into();
+        write!(f, "{}", r)
     }
 }
 
@@ -39,20 +70,40 @@ pub enum OSResourceType{
     None,
 }
 
-impl std::str::FromStr for OSResourceType{
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<OSResourceType, ()> {
+impl<'a> From<&'a str> for OSResourceType{
+    fn from(s: &str) -> OSResourceType {
         match s.to_lowercase().as_str() {
-            "compute" => Ok(OSResourceType::Compute),
-            "volume" => Ok(OSResourceType::Volume),
-            "volumev2" => Ok(OSResourceType::Volume),
-            "volumev3" => Ok(OSResourceType::Volume),
-            "identity" => Ok(OSResourceType::Identity),
-            "network" => Ok(OSResourceType::Networking),
-            "image" => Ok(OSResourceType::Images),
-            _ => Err(()),
+            "compute" => OSResourceType::Compute,
+            "volume" => OSResourceType::Volume,
+            "volumev2" => OSResourceType::Volume,
+            "volumev3" => OSResourceType::Volume,
+            "identity" => OSResourceType::Identity,
+            "network" => OSResourceType::Networking,
+            "image" => OSResourceType::Images,
+            _ => OSResourceType::None,
         }
+    }
+}
+
+impl From<OSResourceType> for String{
+    fn from(s: OSResourceType) -> String {
+        match s {
+            OSResourceType::Compute => "compute".into(),
+            // OSResourceType::Volume => "volume".into(),
+            // OSResourceType::Volume => "volumev2".into(),
+            OSResourceType::Volume => "volumev3".into(),
+            OSResourceType::Identity => "identity".into(),
+            OSResourceType::Networking => "network".into(),
+            OSResourceType::Images => "image".into(),
+            OSResourceType::None => "".into(),
+        }
+    }
+}
+
+impl fmt::Display for OSResourceType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let r: String = (*self).into();
+        write!(f, "{}", r)
     }
 }
 
@@ -119,15 +170,76 @@ impl std::str::FromStr for OSResource{
     }
 }
 
-// impl std::fmt::Display for OSResource {
-//     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-//         let printable = match *self {
-//             OSResource::Flavors => 'x',
-//             OSResource::FloatingIps => ' ',
-//         };
-//         write!(f, "{}", printable)
-//     }
-// }
+impl<'a> From<&'a str> for OSResource{
+    fn from(s: &str) -> OSResource {
+        match convert_to_singular(s).as_str() {
+            "flavor" | "size" => OSResource::Flavors,
+            "floating_ip" | "fip" => OSResource::FloatingIps,
+            "image" | "operating_system" => OSResource::Images,
+            "keypair" | "key" => OSResource::Keypairs,
+            "network" => OSResource::Networks,
+            "server" => OSResource::Servers,
+            "server_group" => OSResource::ServerGroups,
+            "subnet" => OSResource::Subnets,
+            "port" => OSResource::Ports,
+            "limit" => OSResource::Limits,
+            "project" => OSResource::Projects,
+            "domain" => OSResource::Domains,
+            "group" => OSResource::Groups,
+            "credential" => OSResource::Credentials,
+            "user" => OSResource::Users,
+            "address_scope" => OSResource::AddressScopes,
+            "router" => OSResource::Routers,
+            "security_group" => OSResource::SecurityGroups,
+            "security_group_rule" => OSResource::SecurityGroupsRules,
+            "availability_zone" => OSResource::AvailabilityZones,
+            "volume" => OSResource::Volumes,
+            "snapshot" => OSResource::Snapshots,
+            "attachments" => OSResource::Attachments,
+            "backups" => OSResource::Backups,
+            _ => OSResource::None,
+        }
+    }
+}
+
+impl From<OSResource> for String{
+    fn from(s: OSResource) -> String {
+        match s {
+            OSResource::Flavors => "flavors".into(),
+            OSResource::FloatingIps => "floating_ip".into(),
+            OSResource::Images => "images".into(),
+            OSResource::Keypairs => "keypairs".into(),
+            OSResource::Networks => "networks".into(),
+            OSResource::Servers => "servers".into(),
+            OSResource::ServerGroups => "server_groups".into(),
+            OSResource::Subnets => "subnets".into(),
+            OSResource::Ports => "ports".into(),
+            OSResource::Limits => "limits".into(),
+            OSResource::Projects => "projects".into(),
+            OSResource::Domains => "domains".into(),
+            OSResource::Groups => "groups".into(),
+            OSResource::Credentials => "credentials".into(),
+            OSResource::Users => "users".into(),
+            OSResource::AddressScopes => "address_scopes".into(),
+            OSResource::Routers => "routers".into(),
+            OSResource::SecurityGroups => "security_groups".into(),
+            OSResource::SecurityGroupsRules => "security_groups_rules".into(),
+            OSResource::AvailabilityZones => "availability_zones".into(),
+            OSResource::Volumes => "volumes".into(),
+            OSResource::Snapshots => "snapshots".into(),
+            OSResource::Attachments => "attachments".into(),
+            OSResource::Backups => "backups".into(),
+            OSResource::None => "".into(),
+        }
+    }
+}
+
+impl fmt::Display for OSResource {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let r: String = (*self).into();
+        write!(f, "{}", r)
+    }
+}
 
 impl OSResource{
     pub fn match_type(&self) -> OSResourceType{
@@ -163,7 +275,7 @@ impl OSResource{
         match *self{
             OSResource::Flavors => "flavors".to_string(),
             OSResource::FloatingIps => "v2.0/floatingips".to_string(),
-            OSResource::Images => "images".to_string(),
+            OSResource::Images => "v2/images".to_string(),
             OSResource::Keypairs => "os-keypairs".to_string(),
             OSResource::Networks => "v2.0/networks".to_string(),
             OSResource::Servers => "servers".to_string(),

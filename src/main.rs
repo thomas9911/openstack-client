@@ -61,44 +61,46 @@ fn main() {
 
     // println!("{}", serde_json::to_string_pretty(&os_config).unwrap());
 
-    let mut new_os = OpenstackConnection::new(os_config);
-    match new_os.refresh_token(){
-        Ok(x) => x,
-        Err(e) => {println!("{}", e); return}
-    };
+    // let mut new_os = OpenstackConnection::new(os_config);
+    // match new_os.refresh_token(){
+    //     Ok(x) => x,
+    //     Err(e) => {println!("{}", e); return}
+    // };
 
     // println!("{:?}", new_os.token);
     // println!("{:?}", new_os.endpoints);
 
-    println!("{}", serde_json::to_string_pretty(&new_os).unwrap());
-    // let mut new_os = match Openstack::new(os_config){
-    //     Ok(x) => x,
-    //     Err(e) => {println!("{}", e); return}
-    // };
+    // println!("{}", serde_json::to_string_pretty(&new_os).unwrap());
+    let mut new_os = match Openstack::new(os_config){
+        Ok(x) => x,
+        Err(e) => {println!("{}", e); return}
+    };
 
     // println!("{}", serde_json::to_string_pretty(&new_os).unwrap());
     // println!("{:?}", new_os.get("https://compute.api.ams.fuga.cloud:443/v2.1/5af86bc2f74c49178f32f6f479e878cc/servers").send().unwrap().json::<serde_json::Value>().unwrap());
 
     // new_os.connection.request(reqwest::Method::GET, "https://google.com");
-    // let cool: OSResource = "image".parse().unwrap();
+    // let cool: OSResource = "keypairs".into();
+    // println!("{}", cool);
     // let outcome = match new_os.list(cool){
     //     Ok(x) => x,
     //     Err(e) => {println!("{}", e); return}
     // };
 
-    // println!("{}", outcome);
-    // args.insert(0, format!("{} {:?}", "openstack", command));
+    // println!("{}", serde_json::to_string_pretty(&outcome).unwrap());
+    args.insert(0, format!("{} {:?}", "openstack", command));
 
-    // match command{
-    //     OSOperation::List => list_command(new_os, args),
-    //     OSOperation::Show => show_command(new_os, args),
-    //     OSOperation::New => new_command(new_os, args),
-    //     OSOperation::Delete => delete_command(new_os, args),
-    //     OSOperation::None => (),
-    // }
+    match command{
+        OSOperation::List => list_command(&mut new_os, args),
+        OSOperation::Show => show_command(new_os, args),
+        OSOperation::New => new_command(new_os, args),
+        OSOperation::Delete => delete_command(new_os, args),
+        OSOperation::None => (),
+        _ => (),
+    }
 }
 
-fn list_command(os: OpenstackConnection, args: Vec<String>){
+fn list_command(os: &mut Openstack, args: Vec<String>){
     let mut resource: OSResource = OSResource::None;
     {
         let mut ap = ArgumentParser::new();
@@ -112,9 +114,14 @@ fn list_command(os: OpenstackConnection, args: Vec<String>){
         }
     }
     // os.print_list(resource);
+    let outcome = match os.list(resource){
+        Ok(x) => x,
+        Err(e) => {println!("{}", e); return}
+    };
+    println!("{}", serde_json::to_string_pretty(&outcome).unwrap());
 }
 
-fn show_command(os: OpenstackConnection, args: Vec<String>){
+fn show_command(os: Openstack, args: Vec<String>){
     let mut resource: OSResource = OSResource::None;
     let mut name_or_id = "".to_string();
     {
@@ -134,7 +141,7 @@ fn show_command(os: OpenstackConnection, args: Vec<String>){
     // os.print_get(resource, name_or_id)
 }
 
-fn new_command(os: OpenstackConnection, args: Vec<String>){
+fn new_command(os: Openstack, args: Vec<String>){
     let mut resource: OSResource = OSResource::None;
     let mut name = "".to_string();
     let mut pk = "".to_string();
@@ -189,7 +196,7 @@ fn new_command(os: OpenstackConnection, args: Vec<String>){
     // };
 }
 
-fn delete_command(os: OpenstackConnection, args: Vec<String>){
+fn delete_command(os: Openstack, args: Vec<String>){
     let mut resource: OSResource = OSResource::None;
     let mut name_or_id = "".to_string();
 

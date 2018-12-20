@@ -10,7 +10,8 @@ use chrono::prelude::*;
 use chrono::Duration;
 // use chrono::{Utc, DateTime, NaiveDateTime, Duration};
 
-use enums::OSResource;
+use enums::{OSResource, OSOperation};
+use utils::add_slash;
 
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -137,7 +138,7 @@ impl OpenstackConnection{
                                     };
                                 }
                                 if (self.config.region_name == region_name_end) & (self.config.interface == inferface_end){
-                                    endpoints.insert(the_type.clone(), url_end.clone());
+                                    endpoints.insert(the_type.clone(), add_slash(&url_end.clone()));
                                 }
                             }
                         },
@@ -189,20 +190,7 @@ impl Openstack{
     }
 
     pub fn list(&mut self, res: OSResource) -> Result<serde_json::Value, Error>{
-        if self.connection.endpoints.is_none(){
-            self.refresh_token().expect("error while refreshing token");
-        }
-        let endpoints = &self.connection.endpoints.clone().unwrap();
-        println!("{:?}", endpoints);
-        let prepared_url = match res{
-            OSResource::Images => self.connection.get(&format!("{}v2/images", endpoints.get("image").unwrap_or(&String::from("/")))),
-            _ => return Err(Error::new(ErrorKind::Other, format!("'{:?}' is not implemented", res)))
-        };
-        let mut response = match prepared_url.send(){
-            Ok(x) => x,
-            Err(e) => return Err(Error::new(ErrorKind::Other, format!("{}", e)))
-        };
-        Openstack::handle_response(&mut response)
+        self.act(res.clone(), OSOperation::List, HashMap::new())
     }
     pub fn delete(self, res: OSResource, id: String) {
 
@@ -212,6 +200,24 @@ impl Openstack{
     }
     pub fn update(self, res: OSResource, id: String) {
 
+    }
+
+    pub fn act(&mut self, res: OSResource, op: OSOperation, arguments: HashMap<String, String>) -> Result<serde_json::Value, Error>{
+        if self.connection.endpoints.is_none(){
+            self.refresh_token().expect("error while refreshing token");
+        }
+        let endpoints = &self.connection.endpoints.clone().expect("oke sad");
+
+        let path = res.match_endpoint();
+        let cool: String = res.match_type().into();
+        let endpoint = endpoints.get(&cool).expect(&format!("suw sad {} {} ", cool, path));
+        let prepared_url = self.connection.get(&format!("{}{}", endpoint, path));
+  ;
+        let mut response = match prepared_url.send(){
+            Ok(x) => x,
+            Err(e) => return Err(Error::new(ErrorKind::Other, format!("{}", e)))
+        };
+        Openstack::handle_response(&mut response)
     }
 
     fn handle_response(response: &mut reqwest::Response) -> Result<serde_json::Value, Error>{
