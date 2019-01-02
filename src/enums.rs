@@ -1,9 +1,18 @@
 
-use utils::convert_to_singular;
+use utils::{convert_to_singular, convert_to_multiple};
 use std;
 use std::fmt;
+use strum::IntoEnumIterator;
+use reqwest::{Method};
 
-#[derive(Debug, Clone)]
+use strum::AsStaticRef;
+use structopt::StructOpt;
+
+use std::string::ToString;
+use std::io::{stdout, stderr, Error, ErrorKind};
+
+
+#[derive(Debug, Clone, EnumIter, StructOpt)]
 pub enum OSOperation{
     List,
     Show,
@@ -60,7 +69,21 @@ impl fmt::Display for OSOperation {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
+impl OSOperation{
+    pub fn match_http_method(&self) -> Method{
+        match *self{
+            OSOperation::List => Method::GET,
+            OSOperation::Show => Method::GET,
+            OSOperation::New => Method::POST,
+            OSOperation::Delete => Method::DELETE,
+            OSOperation::Update => Method::PATCH,
+            OSOperation::Add => Method::PUT,
+            OSOperation::None => Method::GET,
+        }
+    }
+}
+
+#[derive(EnumIter, Debug, Copy, Clone)]
 pub enum OSResourceType{
     Compute,
     Identity,
@@ -107,7 +130,37 @@ impl fmt::Display for OSResourceType {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
+// #[derive(Debug, Copy, Clone, EnumIter)]
+// pub enum OSResource{
+//     Flavors,
+//     FloatingIps,
+//     Images,
+//     Keypairs,
+//     Networks,
+//     Servers,
+//     ServerGroups,
+//     Subnets,
+//     Ports,
+//     Limits,
+//     Projects,
+//     Domains,
+//     Groups,
+//     Credentials,
+//     Users,
+//     AddressScopes,
+//     Routers,
+//     SecurityGroups,
+//     SecurityGroupsRules,
+//     AvailabilityZones,
+//     Volumes,
+//     Snapshots,
+//     Attachments,
+//     Backups,
+//     None,
+// }
+
+#[derive(Debug, Copy, Clone, EnumIter, Serialize, Deserialize, PartialEq, Eq, StructOpt)]
+#[serde(rename_all = "snake_case")]
 pub enum OSResource{
     Flavors,
     FloatingIps,
@@ -133,106 +186,120 @@ pub enum OSResource{
     Snapshots,
     Attachments,
     Backups,
+    #[serde(rename="")]
     None,
 }
 
-impl std::str::FromStr for OSResource{
-    type Err = ();
+// -
+// // impl std::str::FromStr for OSResource{
+// //     type Err = ();
 
-    fn from_str(s: &str) -> Result<OSResource, ()> {
-        match convert_to_singular(s).as_str() {
-            "flavor" | "size" => Ok(OSResource::Flavors),
-            "floating_ip" | "fip" => Ok(OSResource::FloatingIps),
-            "image" | "operating_system" => Ok(OSResource::Images),
-            "keypair" | "key" => Ok(OSResource::Keypairs),
-            "network" => Ok(OSResource::Networks),
-            "server" => Ok(OSResource::Servers),
-            "server_group" => Ok(OSResource::ServerGroups),
-            "subnet" => Ok(OSResource::Subnets),
-            "port" => Ok(OSResource::Ports),
-            "limit" => Ok(OSResource::Limits),
-            "project" => Ok(OSResource::Projects),
-            "domain" => Ok(OSResource::Domains),
-            "group" => Ok(OSResource::Groups),
-            "credential" => Ok(OSResource::Credentials),
-            "user" => Ok(OSResource::Users),
-            "address_scope" => Ok(OSResource::AddressScopes),
-            "router" => Ok(OSResource::Routers),
-            "security_group" => Ok(OSResource::SecurityGroups),
-            "security_group_rule" => Ok(OSResource::SecurityGroupsRules),
-            "availability_zone" => Ok(OSResource::AvailabilityZones),
-            "volume" => Ok(OSResource::Volumes),
-            "snapshot" => Ok(OSResource::Snapshots),
-            "attachments" => Ok(OSResource::Attachments),
-            "backups" => Ok(OSResource::Backups),
-            _ => Err(()),
-        }
-    }
-}
+// //     fn from_str(s: &str) -> Result<OSResource, ()> {
+// //         match convert_to_singular(s).as_str() {
+// //             "flavor" | "size" => Ok(OSResource::Flavors),
+// //             "floating_ip" | "fip" => Ok(OSResource::FloatingIps),
+// //             "image" | "operating_system" => Ok(OSResource::Images),
+// //             "keypair" | "key" => Ok(OSResource::Keypairs),
+// //             "network" => Ok(OSResource::Networks),
+// //             "server" => Ok(OSResource::Servers),
+// //             "server_group" => Ok(OSResource::ServerGroups),
+// //             "subnet" => Ok(OSResource::Subnets),
+// //             "port" => Ok(OSResource::Ports),
+// //             "limit" => Ok(OSResource::Limits),
+// //             "project" => Ok(OSResource::Projects),
+// //             "domain" => Ok(OSResource::Domains),
+// //             "group" => Ok(OSResource::Groups),
+// //             "credential" => Ok(OSResource::Credentials),
+// //             "user" => Ok(OSResource::Users),
+// //             "address_scope" => Ok(OSResource::AddressScopes),
+// //             "router" => Ok(OSResource::Routers),
+// //             "security_group" => Ok(OSResource::SecurityGroups),
+// //             "security_group_rule" => Ok(OSResource::SecurityGroupsRules),
+// //             "availability_zone" => Ok(OSResource::AvailabilityZones),
+// //             "volume" => Ok(OSResource::Volumes),
+// //             "snapshot" => Ok(OSResource::Snapshots),
+// //             "attachments" => Ok(OSResource::Attachments),
+// //             "backups" => Ok(OSResource::Backups),
+// //             _ => Err(()),
+// //         }
+// //     }
+// // }
 
-impl<'a> From<&'a str> for OSResource{
-    fn from(s: &str) -> OSResource {
-        match convert_to_singular(s).as_str() {
-            "flavor" | "size" => OSResource::Flavors,
-            "floating_ip" | "fip" => OSResource::FloatingIps,
-            "image" | "operating_system" => OSResource::Images,
-            "keypair" | "key" => OSResource::Keypairs,
-            "network" => OSResource::Networks,
-            "server" => OSResource::Servers,
-            "server_group" => OSResource::ServerGroups,
-            "subnet" => OSResource::Subnets,
-            "port" => OSResource::Ports,
-            "limit" => OSResource::Limits,
-            "project" => OSResource::Projects,
-            "domain" => OSResource::Domains,
-            "group" => OSResource::Groups,
-            "credential" => OSResource::Credentials,
-            "user" => OSResource::Users,
-            "address_scope" => OSResource::AddressScopes,
-            "router" => OSResource::Routers,
-            "security_group" => OSResource::SecurityGroups,
-            "security_group_rule" => OSResource::SecurityGroupsRules,
-            "availability_zone" => OSResource::AvailabilityZones,
-            "volume" => OSResource::Volumes,
-            "snapshot" => OSResource::Snapshots,
-            "attachments" => OSResource::Attachments,
-            "backups" => OSResource::Backups,
-            _ => OSResource::None,
-        }
-    }
-}
+// impl std::str::FromStr for OSResource{
+//     type Err = ();
 
-impl From<OSResource> for String{
-    fn from(s: OSResource) -> String {
-        match s {
-            OSResource::Flavors => "flavors".into(),
-            OSResource::FloatingIps => "floating_ip".into(),
-            OSResource::Images => "images".into(),
-            OSResource::Keypairs => "keypairs".into(),
-            OSResource::Networks => "networks".into(),
-            OSResource::Servers => "servers".into(),
-            OSResource::ServerGroups => "server_groups".into(),
-            OSResource::Subnets => "subnets".into(),
-            OSResource::Ports => "ports".into(),
-            OSResource::Limits => "limits".into(),
-            OSResource::Projects => "projects".into(),
-            OSResource::Domains => "domains".into(),
-            OSResource::Groups => "groups".into(),
-            OSResource::Credentials => "credentials".into(),
-            OSResource::Users => "users".into(),
-            OSResource::AddressScopes => "address_scopes".into(),
-            OSResource::Routers => "routers".into(),
-            OSResource::SecurityGroups => "security_groups".into(),
-            OSResource::SecurityGroupsRules => "security_groups_rules".into(),
-            OSResource::AvailabilityZones => "availability_zones".into(),
-            OSResource::Volumes => "volumes".into(),
-            OSResource::Snapshots => "snapshots".into(),
-            OSResource::Attachments => "attachments".into(),
-            OSResource::Backups => "backups".into(),
-            OSResource::None => "".into(),
-        }
-    }
-}
+//     fn from_str(s: &str) -> Result<OSResource, ()> {
+//         let rs = OSResource::from(s);
+//         match rs {
+//             OSResource::None => Err(()),
+//             _ => Ok(rs)
+//         }
+//     }
+// }
+
+// impl<'a> From<&'a str> for OSResource{
+//     fn from(s: &str) -> OSResource {
+//         match convert_to_singular(s).as_str() {
+//             "flavor" | "size" => OSResource::Flavors,
+//             "floating_ip" | "fip" => OSResource::FloatingIps,
+//             "image" | "operating_system" => OSResource::Images,
+//             "keypair" | "key" => OSResource::Keypairs,
+//             "network" => OSResource::Networks,
+//             "server" => OSResource::Servers,
+//             "server_group" => OSResource::ServerGroups,
+//             "subnet" => OSResource::Subnets,
+//             "port" => OSResource::Ports,
+//             "limit" => OSResource::Limits,
+//             "project" => OSResource::Projects,
+//             "domain" => OSResource::Domains,
+//             "group" => OSResource::Groups,
+//             "credential" => OSResource::Credentials,
+//             "user" => OSResource::Users,
+//             "address_scope" => OSResource::AddressScopes,
+//             "router" => OSResource::Routers,
+//             "security_group" => OSResource::SecurityGroups,
+//             "security_group_rule" => OSResource::SecurityGroupsRules,
+//             "availability_zone" => OSResource::AvailabilityZones,
+//             "volume" => OSResource::Volumes,
+//             "snapshot" => OSResource::Snapshots,
+//             "attachments" => OSResource::Attachments,
+//             "backups" => OSResource::Backups,
+//             _ => OSResource::None,
+//         }
+//     }
+// }
+
+// impl From<OSResource> for String{
+//     fn from(s: OSResource) -> String {
+//         match s {
+//             OSResource::Flavors => "flavors".into(),
+//             OSResource::FloatingIps => "floating_ip".into(),
+//             OSResource::Images => "images".into(),
+//             OSResource::Keypairs => "keypairs".into(),
+//             OSResource::Networks => "networks".into(),
+//             OSResource::Servers => "servers".into(),
+//             OSResource::ServerGroups => "server_groups".into(),
+//             OSResource::Subnets => "subnets".into(),
+//             OSResource::Ports => "ports".into(),
+//             OSResource::Limits => "limits".into(),
+//             OSResource::Projects => "projects".into(),
+//             OSResource::Domains => "domains".into(),
+//             OSResource::Groups => "groups".into(),
+//             OSResource::Credentials => "credentials".into(),
+//             OSResource::Users => "users".into(),
+//             OSResource::AddressScopes => "address_scopes".into(),
+//             OSResource::Routers => "routers".into(),
+//             OSResource::SecurityGroups => "security_groups".into(),
+//             OSResource::SecurityGroupsRules => "security_groups_rules".into(),
+//             OSResource::AvailabilityZones => "availability_zones".into(),
+//             OSResource::Volumes => "volumes".into(),
+//             OSResource::Snapshots => "snapshots".into(),
+//             OSResource::Attachments => "attachments".into(),
+//             OSResource::Backups => "backups".into(),
+//             OSResource::None => "".into(),
+//         }
+//     }
+// }
 
 impl fmt::Display for OSResource {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -240,6 +307,42 @@ impl fmt::Display for OSResource {
         write!(f, "{}", r)
     }
 }
+
+impl std::str::FromStr for OSResource{
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<OSResource, Error> {
+        let rs = OSResource::from(s);
+        match rs {
+            OSResource::None => Err(Error::new(ErrorKind::Other, "kaas")),
+            _ => Ok(rs)
+        }
+    }
+}
+
+impl<'a> From<&'a str> for OSResource{
+    fn from(s: &str) -> Self{
+        Self::from(s.to_string())
+    }
+}
+
+impl From<String> for OSResource{
+    fn from(s: String) -> Self{
+        match serde_json::from_str(&format!("{:?}", convert_to_multiple(s))){
+            Ok(x) => x,
+            _ => OSResource::None
+        }
+    }
+}
+
+impl Into<String> for OSResource{
+    fn into(self) -> String{
+        let tmp = serde_json::to_string(&self).unwrap();
+        tmp[1..(tmp.len()-1)].to_string()
+    }
+}
+
+
 
 impl OSResource{
     pub fn match_type(&self) -> OSResourceType{
@@ -299,5 +402,9 @@ impl OSResource{
             OSResource::Backups => "backups".to_string(),
             OSResource::None => "".to_string(),
         }
+    }
+
+    pub fn list() -> Vec<String>{
+        OSResource::iter().filter(|x| x != &OSResource::None).map(|x| x.into()).collect::<Vec<String>>()
     }
 }

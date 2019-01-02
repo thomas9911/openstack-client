@@ -1,0 +1,151 @@
+flavors:
+  endpoint_path: flavors
+  methods:
+  - POST
+  - GET
+  resource_type: compute
+  post_parameters:
+  - name: name
+    type: string
+    required: true
+  - name: amount
+    type: u32
+  - name: cheese
+    type: string
+    multiple: true
+keypairs:
+  endpoint_path: os-keypairs
+  methods:
+  - GET
+  - POST
+  resource_type: compute
+  post_parameters:
+  - name: name
+    type: string
+    required: true
+  - name: public_key
+    type: string
+  - name: type
+    type: string
+  - name: user_id
+    type: string
+limits:
+  endpoint_path: limits
+  methods:
+  - GET
+  resource_type: compute
+server_groups:
+  endpoint_path: os-server-groups
+  methods:
+  - GET
+  resource_type: compute
+servers:
+  endpoint_path: servers
+  methods:
+  - GET
+  resource_type: compute
+credentials:
+  endpoint_path: credentials
+  methods:
+  - GET
+  resource_type: identity
+domains:
+  endpoint_path: domains
+  methods:
+  - GET
+  resource_type: identity
+groups:
+  endpoint_path: group
+  methods:
+  - GET
+  resource_type: identity
+projects:
+  endpoint_path: projects
+  methods:
+  - GET
+  resource_type: identity
+users:
+  endpoint_path: users
+  methods:
+  - GET
+  resource_type: identity
+images:
+  endpoint_path: v2/images
+  methods:
+  - GET
+  resource_type: image
+address_scopes:
+  endpoint_path: v2.0/address-scopes
+  methods:
+  - GET
+  resource_type: network
+availability_zones:
+  endpoint_path: v2.0/availability_zones
+  methods:
+  - GET
+  resource_type: network
+floating_ips:
+  endpoint_path: v2.0/floatingips
+  methods:
+  - POST
+  - GET
+  resource_type: network
+  post_parameters:
+  - name: name
+    type: string
+    required: true
+  - name: amount
+    type: u32
+  - name: cheese
+    type: string
+    multiple: true
+networks:
+  endpoint_path: v2.0/networks
+  methods:
+  - GET
+  resource_type: network
+ports:
+  endpoint_path: v2.0/ports
+  methods:
+  - GET
+  resource_type: network
+routers:
+  endpoint_path: v2.0/routers
+  methods:
+  - GET
+  resource_type: network
+security_groups:
+  endpoint_path: v2.0/security-groups
+  methods:
+  - GET
+  resource_type: network
+security_groups_rules:
+  endpoint_path: v2.0/security-groups-rules
+  methods:
+  - GET
+  resource_type: network
+subnets:
+  endpoint_path: v2.0/subnets
+  methods:
+  - GET
+  resource_type: network
+attachments:
+  endpoint_path: attachments
+  methods:
+  - GET
+  resource_type: volumev3
+backups:
+  endpoint_path: backups
+  methods:
+  - GET
+  resource_type: volumev3
+snapshots:
+  endpoint_path: snapshots
+  methods:
+  - GET
+  resource_type: volumev3
+volumes:
+  endpoint_path: volumes
+  methods:
+  - GET
+  resource_type: volumev3

@@ -1,0 +1,32 @@
+show:
+  aliases:
+    - get
+  help: shows the given resource.
+  requires_id: true
+list:
+  aliases:
+    - ls
+  help: lists the given resource.
+  requires_id: false
+new:
+  aliases:
+    - create
+  help: create a new item from the given resource.
+  requires_id: false
+delete:
+  aliases:
+    - remove
+    - rm
+  help: delete an item from the given resource.
+  requires_id: true
+patch:
+  aliases:
+    - update
+  help: update an item from the given resource.
+  requires_id: true
+add:
+  aliases:
+    - put
+    - append
+  help: add a propety from an item from the given resource.
+  requires_id: true

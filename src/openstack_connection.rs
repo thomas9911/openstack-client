@@ -11,7 +11,8 @@ use chrono::Duration;
 // use chrono::{Utc, DateTime, NaiveDateTime, Duration};
 
 use enums::{OSResource, OSOperation};
-use utils::add_slash;
+use structs::{ResourceMap, ResourceTypeEnum, Resource};
+use utils::{add_slash, read_yaml, get_first_value_from_hashmap_with_vec};
 
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -168,7 +169,8 @@ impl OpenstackConnection{
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Openstack{
-    pub connection: OpenstackConnection
+    pub connection: OpenstackConnection,
+    pub resources: ResourceMap
 }
 
 impl Openstack{
@@ -178,7 +180,11 @@ impl Openstack{
             Ok(x) => x,
             Err(e) => return Err(e)
         };
-        Ok(Openstack{connection})
+        let mut rc = ResourceMap::new();
+        if let Some(x) = &connection.endpoints{
+            rc.update_from_identity(x)
+        };
+        Ok(Openstack{connection, resources: rc})
     }
 
     pub fn refresh_token(&mut self) -> Result<&mut Openstack, Error>{
@@ -189,30 +195,41 @@ impl Openstack{
         Ok(self)
     }
 
-    pub fn list(&mut self, res: OSResource) -> Result<serde_json::Value, Error>{
-        self.act(res.clone(), OSOperation::List, HashMap::new())
+    pub fn list(&mut self, res: String) -> Result<serde_json::Value, Error>{
+        self.act(OSOperation::List, res.clone(), &HashMap::new(), &HashMap::new())
     }
-    pub fn delete(self, res: OSResource, id: String) {
+    pub fn delete(self, res: String, id: String) {
 
     }
-    pub fn get(self, res: OSResource, id: String) {
+    pub fn get(self, res: String, id: String) {
 
     }
-    pub fn update(self, res: OSResource, id: String) {
+    pub fn update(self, res: String, id: String) {
 
     }
 
-    pub fn act(&mut self, res: OSResource, op: OSOperation, arguments: HashMap<String, String>) -> Result<serde_json::Value, Error>{
+    pub fn act(&mut self, op: OSOperation, res: String,  op_args: &HashMap<String, Vec<String>>, res_args: &HashMap<String, Vec<String>>) -> Result<serde_json::Value, Error>{
         if self.connection.endpoints.is_none(){
             self.refresh_token().expect("error while refreshing token");
         }
-        let endpoints = &self.connection.endpoints.clone().expect("oke sad");
+        // let endpoints = &self.connection.endpoints.clone().expect("oke sad");
+        let r = match self.resources.get_resource(res){
+            Ok(x) => x,
+            Err(e) => return Err(e)
+        };
+        let path = r.endpoint_path;
+        // let endpoint = endpoints.get(&cool).expect(&format!("suw sad {} ", path));
+        let endpoint: String = match r.resource_type{
+            ResourceTypeEnum::ResourceType(x) => x.endpoint,
+            ResourceTypeEnum::String(x) => x,
+        };
 
-        let path = res.match_endpoint();
-        let cool: String = res.match_type().into();
-        let endpoint = endpoints.get(&cool).expect(&format!("suw sad {} {} ", cool, path));
-        let prepared_url = self.connection.get(&format!("{}{}", endpoint, path));
-  ;
+        let prepared_url = match get_first_value_from_hashmap_with_vec(res_args, "id"){
+            Some(id) => self.connection.request(op.match_http_method(), &format!("{}{}/{}", endpoint, path, id)),
+            None => self.connection.request(op.match_http_method(), &format!("{}{}", endpoint, path))
+        };
+
+        println!("{:?}", prepared_url);
         let mut response = match prepared_url.send(){
             Ok(x) => x,
             Err(e) => return Err(Error::new(ErrorKind::Other, format!("{}", e)))
@@ -232,6 +249,29 @@ impl Openstack{
         match response.text(){
             Ok(x) => Ok(x.into()),
             Err(_e) => Err(Error::new(ErrorKind::InvalidData, "Response cannot be parsed"))
+        }
+    }
+
+    pub fn resource_available(&self, res: String) -> Option<Resource>{
+        let available = self.is_resource_available(res.clone());
+
+        if available{
+            if let Ok(resource) = self.resources.get_resource(res){
+                return Some(resource.clone())
+            };
+        };
+        None
+    }
+
+    pub fn is_resource_available(&self, res: String) -> bool{
+        let res = match self.resources.get_resource(res){
+            Ok(x) => x,
+            Err(_e) => return false
+        };
+
+        match &res.resource_type{
+            ResourceTypeEnum::ResourceType(_x) => true,
+            _ => false
         }
     }
 }
@@ -473,7 +513,7 @@ impl OpenstackInfoMap{
 
     pub fn from_yaml(location: String, region: String) -> Result<OpenstackInfoMap, Error>{
         let mut region_copy = region.clone();
-        let value = match OpenstackInfoMap::read_yaml(location){
+        let value = match read_yaml(location){
             Ok(x) => x,
             Err(e) => return Err(e)
         };
@@ -576,18 +616,6 @@ impl OpenstackInfoMap{
             self.interface = other.interface.clone()
         };
         self
-    }
-
-    fn read_yaml(location: String) -> Result<serde_yaml::Value, Error>{
-        let file = match std::fs::File::open(&location){
-            Ok(x) => x,
-            Err(e) => return Err(e)
-        };
-        let value: serde_yaml::Value = match serde_yaml::from_reader(file){
-            Ok(x) => x,
-            Err(e) => {return Err(Error::new(ErrorKind::NotFound, e.to_string()))}
-        };
-        Ok(value)
     }
 }
 

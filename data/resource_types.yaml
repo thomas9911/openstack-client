@@ -1,0 +1,6 @@
+type:
+  - compute
+  - identity
+  - image
+  - network
+  - volumev3

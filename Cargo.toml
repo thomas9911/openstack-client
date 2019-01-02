@@ -13,3 +13,10 @@ reqwest = "*"
 secstr = {version = "*", features = ['serde']}
 rpassword = "2.1.0"
 chrono = { version = "*", features = ["serde"] }
+strum = "*"
+strum_macros = "*"
+clap = {version = "*", features = ["yaml"]}
+structopt = "0.2"
+heck = "*"
+yaml-rust = "*"
+# structopt-derive = "*"
