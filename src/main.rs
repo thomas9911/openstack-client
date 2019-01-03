@@ -28,12 +28,12 @@ mod openstack_connection;
 mod structs;
 
 use std::collections::HashMap;
-
+use std::str::FromStr;
 use std::env;
 use std::io::{stdout, stderr, Error, ErrorKind};
 
 use argparse::{ArgumentParser, StoreTrue, Store, List};
-use clap::{Arg, App, SubCommand};
+use clap::{Arg, App, SubCommand, Shell};
 use structopt::StructOpt;
 use std::string::ToString;
 
@@ -118,7 +118,12 @@ fn main() {
     //                     .get_matches();
 
     let yml = load_yaml!("../data/cool.yaml");
-    let app = App::from_yaml(&yml);
+    let app = App::from_yaml(&yml).subcommand(SubCommand::with_name("generate-autocomplete")
+                                    .about("generates autocompletion scripts")
+                                    .arg(Arg::with_name("shell")
+                                        .possible_values(&Shell::variants())
+                                        .help("which shell to generate script for")));
+    // let app = build_cli();
     let matches = app.get_matches();
     // println!("{:?}", matches);
     // let matches = Opt::clap().get_matches();
@@ -131,6 +136,19 @@ fn main() {
         (x, Some(y)) => (x, y),
         (_x, None) => return ()
     };
+
+    if let Some(sub_m) = matches.subcommand_matches("generate-autocomplete") {
+        // Use the struct like normal
+        // assert_eq!(sub_m.value_of("shell"), Some("bash"));
+        let a_shell: Shell = match sub_m.value_of("shell"){
+            Some(x) => Shell::from_str(x).unwrap(),
+            None => return
+        };
+        App::from_yaml(&yml).gen_completions_to(crate_name!(), a_shell, &mut std::io::stdout());
+        // println!("{:?}", a_shell);
+        return ();
+    }
+
     let (resource_input, resource_sub) = match command_sub.subcommand(){
         (x, Some(y)) => (x, y),
         (_x, None) => return ()
@@ -398,3 +416,13 @@ fn make_args_from_arg_matches(matches: &clap::ArgMatches) -> HashMap<String, Vec
     };
     options
 }
+
+
+// fn build_cli() -> App<'static, 'static>{
+//     let yaml_file = load_yaml!("../data/cool.yaml");
+//     App::from_yaml(yaml_file).subcommand(SubCommand::with_name("generate-autocomplete")
+//                                     .about("generates autocompletion scripts")
+//                                     .arg(Arg::with_name("shell")
+//                                         .possible_values(&Shell::variants())
+//                                         .help("which shell to generate script for")))
+// }

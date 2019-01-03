@@ -1,0 +1,981 @@
+name: openstack-client
+settings:
+- ArgRequiredElseHelp
+args:
+- os-cloud:
+    long: os-cloud
+    help: use this as the cloud name from the clouds.yaml
+    takes_value: true
+subcommands:
+- show:
+    about: shows the given resource.
+    visible_aliases:
+    - get
+    case_insensitive: true
+    index: 1
+    subcommands:
+    - flavors:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: &id001
+            help: id of object that will be used
+            required: true
+            index: 1
+    - keypairs:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - limits:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - server-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - servers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - domains:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - projects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - users:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - images:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - address-scopes:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - availability-zones:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - floating-ips:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - networks:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - ports:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - routers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - security-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - security-groups-rules:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - subnets:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - attachments:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - backups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - snapshots:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - volumes:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+- list:
+    about: lists the given resource.
+    visible_aliases:
+    - ls
+    case_insensitive: true
+    index: 1
+    subcommands:
+    - flavors:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - keypairs:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - limits:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - server-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - servers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - domains:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - projects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - users:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - images:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - address-scopes:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - availability-zones:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - floating-ips:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - networks:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - ports:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - routers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - security-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - security-groups-rules:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - subnets:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - attachments:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - backups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - snapshots:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - volumes:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+- new:
+    about: create a new item from the given resource.
+    visible_aliases:
+    - create
+    case_insensitive: true
+    index: 1
+    subcommands:
+    - flavors:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - keypairs:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - name:
+            help: A name for the keypair which will be used to reference it later.
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - public_key:
+            help: The public ssh key to import. If you omit this value, a keypair
+              is generated for you.
+            long: public_key
+            takes_value: true
+            multiple: false
+        - type:
+            help: The type of the keypair. Allowed values are ssh or x509.
+            long: type
+            takes_value: true
+            multiple: false
+        - user_id:
+            help: The user_id for a keypair. This allows administrative users to upload
+              keys for other users than themselves.
+            long: user_id
+            takes_value: true
+            multiple: false
+    - limits:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - server-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - servers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - domains:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - projects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - users:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - images:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - address-scopes:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - availability-zones:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - floating-ips:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - name:
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - amount:
+            long: amount
+            takes_value: true
+            multiple: false
+        - cheese:
+            long: cheese
+            takes_value: true
+            multiple: true
+    - networks:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - ports:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - routers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - security-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - security-groups-rules:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - subnets:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - attachments:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - backups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - snapshots:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+    - volumes:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+- delete:
+    about: delete an item from the given resource.
+    visible_aliases:
+    - remove
+    - rm
+    case_insensitive: true
+    index: 1
+    subcommands:
+    - flavors:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - keypairs:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - limits:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - server-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - servers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - domains:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - projects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - users:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - images:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - address-scopes:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - availability-zones:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - floating-ips:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - networks:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - ports:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - routers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - security-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - security-groups-rules:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - subnets:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - attachments:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - backups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - snapshots:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - volumes:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+- patch:
+    about: update an item from the given resource.
+    visible_aliases:
+    - update
+    case_insensitive: true
+    index: 1
+    subcommands:
+    - flavors:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - keypairs:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - name:
+            help: A name for the keypair which will be used to reference it later.
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - public_key:
+            help: The public ssh key to import. If you omit this value, a keypair
+              is generated for you.
+            long: public_key
+            takes_value: true
+            multiple: false
+        - type:
+            help: The type of the keypair. Allowed values are ssh or x509.
+            long: type
+            takes_value: true
+            multiple: false
+        - user_id:
+            help: The user_id for a keypair. This allows administrative users to upload
+              keys for other users than themselves.
+            long: user_id
+            takes_value: true
+            multiple: false
+        - id: *id001
+    - limits:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - server-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - servers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - domains:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - projects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - users:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - images:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - address-scopes:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - availability-zones:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - floating-ips:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - name:
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - amount:
+            long: amount
+            takes_value: true
+            multiple: false
+        - cheese:
+            long: cheese
+            takes_value: true
+            multiple: true
+        - id: *id001
+    - networks:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - ports:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - routers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - security-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - security-groups-rules:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - subnets:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - attachments:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - backups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - snapshots:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - volumes:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+- add:
+    about: add a propety from an item from the given resource.
+    visible_aliases:
+    - put
+    - append
+    case_insensitive: true
+    index: 1
+    subcommands:
+    - flavors:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - keypairs:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - name:
+            help: A name for the keypair which will be used to reference it later.
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - public_key:
+            help: The public ssh key to import. If you omit this value, a keypair
+              is generated for you.
+            long: public_key
+            takes_value: true
+            multiple: false
+        - type:
+            help: The type of the keypair. Allowed values are ssh or x509.
+            long: type
+            takes_value: true
+            multiple: false
+        - user_id:
+            help: The user_id for a keypair. This allows administrative users to upload
+              keys for other users than themselves.
+            long: user_id
+            takes_value: true
+            multiple: false
+        - id: *id001
+    - limits:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - server-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - servers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - domains:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - projects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - users:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - images:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - address-scopes:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - availability-zones:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - floating-ips:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - name:
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - amount:
+            long: amount
+            takes_value: true
+            multiple: false
+        - cheese:
+            long: cheese
+            takes_value: true
+            multiple: true
+        - id: *id001
+    - networks:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - ports:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - routers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - security-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - security-groups-rules:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - subnets:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - attachments:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - backups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - snapshots:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+    - volumes:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+

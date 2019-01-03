@@ -1,6 +1,6 @@
 [package]
 name = "openstack-client"
-version = "0.1.0"
+version = "0.3.0"
 authors = ["thomas9911 <thomastimmer11@hotmail.com>"]
 
 [dependencies]
