@@ -44,8 +44,10 @@ pub struct ResourceMap {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct PostParameter{
     pub name: String,
-    #[serde(rename = "type")]
-    pub the_type: String,
+    // #[serde(rename = "type")]
+    // pub the_type: String,
+    pub path: String,
+    pub help: Option<String>,
     #[serde(default = "false_bool")]
     pub multiple: bool,
     #[serde(default = "false_bool")]

@@ -12,7 +12,7 @@ use chrono::Duration;
 
 use enums::{OSResource, OSOperation};
 use structs::{ResourceMap, ResourceTypeEnum, Resource};
-use utils::{add_slash, read_yaml, get_first_value_from_hashmap_with_vec};
+use utils::{add_slash, read_yaml, get_first_value_from_hashmap_with_vec, make_hashmaps_from_dot_notation};
 
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -217,20 +217,21 @@ impl Openstack{
             Ok(x) => x,
             Err(e) => return Err(e)
         };
-        let path = r.endpoint_path;
+        let path = r.endpoint_path.clone();
         // let endpoint = endpoints.get(&cool).expect(&format!("suw sad {} ", path));
-        let endpoint: String = match r.resource_type{
+        let endpoint: String = match r.resource_type.clone(){
             ResourceTypeEnum::ResourceType(x) => x.endpoint,
             ResourceTypeEnum::String(x) => x,
         };
+
+        let post_body = Openstack::handle_post_parameters(&r, res_args);
 
         let prepared_url = match get_first_value_from_hashmap_with_vec(res_args, "id"){
             Some(id) => self.connection.request(op.match_http_method(), &format!("{}{}/{}", endpoint, path, id)),
             None => self.connection.request(op.match_http_method(), &format!("{}{}", endpoint, path))
         };
 
-        println!("{:?}", prepared_url);
-        let mut response = match prepared_url.send(){
+        let mut response = match prepared_url.json(&post_body).send(){
             Ok(x) => x,
             Err(e) => return Err(Error::new(ErrorKind::Other, format!("{}", e)))
         };
@@ -250,6 +251,24 @@ impl Openstack{
             Ok(x) => Ok(x.into()),
             Err(_e) => Err(Error::new(ErrorKind::InvalidData, "Response cannot be parsed"))
         }
+    }
+
+    fn handle_post_parameters(res: &Resource, res_args: &HashMap<String, Vec<String>>) -> serde_json::Value{
+        if let Some(ref post_param) = res.post_parameters{
+            let mut data: Vec<(String, serde_json::Value)> = vec![];
+            for item in post_param{
+                let path = item.path.clone();
+                if let Some(x) = res_args.get(&item.name){
+                    if item.multiple{
+                        data.push((path, x.clone().into()))
+                    } else{
+                        data.push((path, x[0].clone().into()))
+                    }
+                }
+            }
+            return make_hashmaps_from_dot_notation(data);
+        };
+        serde_json::Value::Null
     }
 
     pub fn resource_available(&self, res: String) -> Option<Resource>{

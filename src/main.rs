@@ -120,7 +120,7 @@ fn main() {
     let yml = load_yaml!("../data/cool.yaml");
     let app = App::from_yaml(&yml);
     let matches = app.get_matches();
-    println!("{:?}", matches);
+    // println!("{:?}", matches);
     // let matches = Opt::clap().get_matches();
     // let resource_input: String = match matches.subcommand_name(){
     //     Some(x) => x.to_string(),
@@ -181,13 +181,13 @@ fn main() {
         os_cloud = x;
     };
 
-    println!("{}", os_cloud);
+    // println!("{}", os_cloud);
 
-    println!("{:?}", command_input);
-    println!("{:?}", resource_input);
-    println!("{:?}", matches_options);
-    println!("{:?}", command_options);
-    println!("{:?}", resource_options);
+    // println!("{:?}", command_input);
+    // println!("{:?}", resource_input);
+    // println!("{:?}", matches_options);
+    // println!("{:?}", command_options);
+    // println!("{:?}", resource_options);
 
 
 
@@ -219,7 +219,7 @@ fn main() {
 
     let os_command = OSOperation::from(command_input);
 
-    println!("{}", os_command);
+    // println!("{}", os_command);
 
     if !new_os.is_resource_available(resource_input.into()){
         println!("error: endpoint for resource '{}' is not available", resource_input);

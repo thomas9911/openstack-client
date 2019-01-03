@@ -68,7 +68,8 @@ for k, v in resources.items():
     ]))])
     for l in v.get("post_parameters", []):
         tmp = od({})
-        tmp['help'] = "hi"
+        if l.get('help'):
+            tmp['help'] = l['help']
         if l.get('required', False):
             tmp['required'] = True
         # if not l.get('required', False):
@@ -98,12 +99,17 @@ for command, data in commands.items():
     ])
     clap_app["subcommands"].append({command: stuff})
 
+    if not data['has_body']:
+        for i, item in enumerate(clap_app["subcommands"]):
+            if item.get(command):
+                for j, item in enumerate(clap_app["subcommands"][i][command]['subcommands']):
+                    for resource in clap_app["subcommands"][i][command]['subcommands'][j]:
+                        clap_app["subcommands"][i][command]['subcommands'][j][resource]['args'] = []
     if data['requires_id']:
         for i, item in enumerate(clap_app["subcommands"]):
             if item.get(command):
                 for j, item in enumerate(clap_app["subcommands"][i][command]['subcommands']):
                     for resource in clap_app["subcommands"][i][command]['subcommands'][j]:
                         clap_app["subcommands"][i][command]['subcommands'][j][resource]['args'].append({"id": id_blub})
-
 print(yaml.dump(clap_app, default_flow_style=False))
 # print(json.dumps(clap_app, indent=2))

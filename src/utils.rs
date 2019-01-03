@@ -103,6 +103,69 @@ pub fn get_first_value_from_hashmap_with_vec(map: &HashMap<String, Vec<String>>,
     }
 }
 
+pub fn make_hashmaps_from_dot_notation(listing: Vec<(String, serde_json::Value)>) -> serde_json::Value{
+/*
+let listing = vec![("some.thing", "15"), ("some.stuff", "foo")];
+let post_body: serde_json::Value = make_hashmaps_from_dot_notation(listing);
+println!("{}", serde_json::to_string_pretty(&post_body).unwrap());
+{
+    "some": {
+        "thing": "15",
+        "stuff": "foo"
+    }
+}
+*/
+    let mut stuffs = vec![];
+    for (k, v) in listing{
+        let mut json_string: String = String::from("");
+        let mut first = true;
+        for item in k.split('.').rev(){
+            if first{
+                json_string = format!("\"{}\": {}", item, v);
+                first = false;
+            }else{
+                json_string = format!("\"{}\": {{{}}}", item, json_string);
+            }
+        }
+        json_string = format!("{{{}}}", json_string);
+        println!("{}", json_string);
+        let j: serde_json::Value = serde_json::from_str(&json_string).unwrap();
+        stuffs.push(j);
+    }
+
+    let mut end_value: serde_json::Value = serde_json::Value::Null;
+    let mut first = true;
+    for item in stuffs{
+        if first{
+            end_value = item;
+            first = false;
+        }
+        else{
+            end_value = merge_values(&end_value, &item);
+        }
+    }
+
+    end_value
+}
+
+fn merge_values(a: &serde_json::Value, b: &serde_json::Value) -> serde_json::Value{
+    let mut c = a.clone();
+    merge(&mut c, b);
+    c
+}
+
+fn merge(a: &mut serde_json::Value, b: &serde_json::Value) {
+    match (a, b) {
+        (&mut serde_json::Value::Object(ref mut a), &serde_json::Value::Object(ref b)) => {
+            for (k, v) in b {
+                merge(a.entry(k.clone()).or_insert(serde_json::Value::Null), v);
+            }
+        }
+        (a, b) => {
+            *a = b.clone();
+        }
+    }
+}
 
 #[test]
 fn test_convert_to_singular(){
@@ -156,4 +219,32 @@ fn test_compare_different_cases(){
     assert_eq!(compare_different_cases("halloTest", "hallo test"), true);
     assert_eq!(compare_different_cases("hallotest", "Hallo Test"), false);
     assert_eq!(compare_different_cases("Hallo", "test"), false);
+}
+
+#[test]
+fn test_hashmaps_from_dot_notation(){
+    let listing = vec![
+        ("some.thing".into(), "15".into()),
+        ("some.stuff".into(), "foo".into())
+        ];
+    let post_body: serde_json::Value = make_hashmaps_from_dot_notation(listing);
+    assert_eq!(serde_json::to_string(&post_body).unwrap(), "{\"some\":{\"stuff\":\"foo\",\"thing\":\"15\"}}");
+
+    let listing = vec![
+        ("some.thing".into(), "15".into()),
+        ("some.stuff".into(), vec!["foo", "bar"].into())
+        ];
+    let post_body: serde_json::Value = make_hashmaps_from_dot_notation(listing);
+    assert_eq!(serde_json::to_string(&post_body).unwrap(), "{\"some\":{\"stuff\":[\"foo\",\"bar\"],\"thing\":\"15\"}}");
+
+    let listing = vec![
+        ("some.thing".into(), "15".into()),
+        ("some.stuff".into(), vec!["foo", "bar"].into()),
+        ("some.other.more".into(), "cool".into()),
+        ("some.other.less".into(), "cool".into()),
+        ("other.body".into(), "posts".into())
+        ];
+    let post_body: serde_json::Value = make_hashmaps_from_dot_notation(listing);
+    assert_eq!(serde_json::to_string(&post_body).unwrap(), "{\"other\":{\"body\":\"posts\"},\"some\":{\"other\":{\"less\":\"cool\",\"more\":\"cool\"},\"stuff\":[\"foo\",\"bar\"],\"thing\":\"15\"}}");
+
 }

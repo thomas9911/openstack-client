@@ -4,15 +4,6 @@ flavors:
   - POST
   - GET
   resource_type: compute
-  post_parameters:
-  - name: name
-    type: string
-    required: true
-  - name: amount
-    type: u32
-  - name: cheese
-    type: string
-    multiple: true
 keypairs:
   endpoint_path: os-keypairs
   methods:
@@ -22,13 +13,21 @@ keypairs:
   post_parameters:
   - name: name
     type: string
+    help: A name for the keypair which will be used to reference it later.
     required: true
+    path: keypair.name
   - name: public_key
+    help: The public ssh key to import. If you omit this value, a keypair is generated for you.
     type: string
+    path: keypair.public_key
   - name: type
+    help: The type of the keypair. Allowed values are ssh or x509.
     type: string
+    path: keypair.type
   - name: user_id
+    help: The user_id for a keypair. This allows administrative users to upload keys for other users than themselves.
     type: string
+    path: keypair.user_id
 limits:
   endpoint_path: limits
   methods:
@@ -92,11 +91,14 @@ floating_ips:
   resource_type: network
   post_parameters:
   - name: name
+    path: name
     type: string
     required: true
   - name: amount
+    path: amount
     type: u32
   - name: cheese
+    path: cheese
     type: string
     multiple: true
 networks:
