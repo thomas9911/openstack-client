@@ -226,6 +226,15 @@ impl Openstack{
 
         let post_body = Openstack::handle_post_parameters(&r, res_args);
 
+        let is_dry_run = match op_args.get("dry-run"){
+            Some(_x) => true,
+            None => false
+        };
+
+        if is_dry_run{
+            return Ok(post_body)
+        }
+
         let prepared_url = match get_first_value_from_hashmap_with_vec(res_args, "id"){
             Some(id) => self.connection.request(op.match_http_method(), &format!("{}{}/{}", endpoint, path, id)),
             None => self.connection.request(op.match_http_method(), &format!("{}{}", endpoint, path))
@@ -240,7 +249,7 @@ impl Openstack{
 
     fn handle_response(response: &mut reqwest::Response) -> Result<serde_json::Value, Error>{
         if !response.status().is_success(){
-            return Err(Error::new(ErrorKind::Other, format!("'{}'", response.status())))
+            return Err(Error::new(ErrorKind::Other, format!("'{}' \n{{\"response\": {}}}", response.status(), response.text().unwrap())))
         }
         match response.json::<serde_json::Value>(){
             Ok(x) => return Ok(x),
@@ -258,11 +267,14 @@ impl Openstack{
             let mut data: Vec<(String, serde_json::Value)> = vec![];
             for item in post_param{
                 let path = item.path.clone();
+                if item.hidden{
+                    data.push((path.clone(), Vec::<serde_json::Value>::new().into()))
+                }
                 if let Some(x) = res_args.get(&item.name){
                     if item.multiple{
-                        data.push((path, x.clone().into()))
+                        data.push((path.clone(), x.clone().into()))
                     } else{
-                        data.push((path, x[0].clone().into()))
+                        data.push((path.clone(), x[0].clone().into()))
                     }
                 }
             }

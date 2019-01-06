@@ -13,6 +13,10 @@ subcommands:
     - get
     case_insensitive: true
     index: 1
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
     subcommands:
     - flavors:
         index: 1
@@ -167,6 +171,10 @@ subcommands:
     - ls
     case_insensitive: true
     index: 1
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
     subcommands:
     - flavors:
         index: 1
@@ -294,6 +302,10 @@ subcommands:
     - create
     case_insensitive: true
     index: 1
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
     subcommands:
     - flavors:
         index: 1
@@ -313,18 +325,18 @@ subcommands:
             multiple: false
         - public_key:
             help: The public ssh key to import. If you omit this value, a keypair
-              is generated for you.
+              is generated for you. (Optional)
             long: public_key
             takes_value: true
             multiple: false
         - type:
-            help: The type of the keypair. Allowed values are ssh or x509.
+            help: The type of the keypair. Allowed values are ssh or x509. (Optional)
             long: type
             takes_value: true
             multiple: false
         - user_id:
             help: The user_id for a keypair. This allows administrative users to upload
-              keys for other users than themselves.
+              keys for other users than themselves. (Optional)
             long: user_id
             takes_value: true
             multiple: false
@@ -342,7 +354,39 @@ subcommands:
         index: 1
         case_insensitive: true
         about: resource A
-        args: []
+        args:
+        - name:
+            help: The server name.
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - flavor:
+            help: The flavor reference, as an ID (including a UUID) or full URL, for
+              the flavor for your server instance.
+            required: true
+            long: flavor
+            takes_value: true
+            multiple: false
+        - image:
+            help: The UUID of the image to use for your server instance. This is not
+              required in case of boot from volume. In all other cases it is required
+              and must be a valid UUID otherwise API will return 400. (Optional)
+            long: image
+            takes_value: true
+            multiple: false
+        - access-ipv4:
+            help: IPv4 address that should be used to access this server. (Optional)
+            long: access-ipv4
+            takes_value: true
+            multiple: false
+        - network-id:
+            help: To provision the server instance with a NIC for a network, specify
+              the UUID of the network in the uuid attribute in a networks object.
+              Required if you omit the port attribute. (Optional)
+            long: network-id
+            takes_value: true
+            multiple: false
     - credentials:
         index: 1
         case_insensitive: true
@@ -458,6 +502,10 @@ subcommands:
     - rm
     case_insensitive: true
     index: 1
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
     subcommands:
     - flavors:
         index: 1
@@ -609,6 +657,10 @@ subcommands:
     - update
     case_insensitive: true
     index: 1
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
     subcommands:
     - flavors:
         index: 1
@@ -629,18 +681,18 @@ subcommands:
             multiple: false
         - public_key:
             help: The public ssh key to import. If you omit this value, a keypair
-              is generated for you.
+              is generated for you. (Optional)
             long: public_key
             takes_value: true
             multiple: false
         - type:
-            help: The type of the keypair. Allowed values are ssh or x509.
+            help: The type of the keypair. Allowed values are ssh or x509. (Optional)
             long: type
             takes_value: true
             multiple: false
         - user_id:
             help: The user_id for a keypair. This allows administrative users to upload
-              keys for other users than themselves.
+              keys for other users than themselves. (Optional)
             long: user_id
             takes_value: true
             multiple: false
@@ -662,6 +714,38 @@ subcommands:
         case_insensitive: true
         about: resource A
         args:
+        - name:
+            help: The server name.
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - flavor:
+            help: The flavor reference, as an ID (including a UUID) or full URL, for
+              the flavor for your server instance.
+            required: true
+            long: flavor
+            takes_value: true
+            multiple: false
+        - image:
+            help: The UUID of the image to use for your server instance. This is not
+              required in case of boot from volume. In all other cases it is required
+              and must be a valid UUID otherwise API will return 400. (Optional)
+            long: image
+            takes_value: true
+            multiple: false
+        - access-ipv4:
+            help: IPv4 address that should be used to access this server. (Optional)
+            long: access-ipv4
+            takes_value: true
+            multiple: false
+        - network-id:
+            help: To provision the server instance with a NIC for a network, specify
+              the UUID of the network in the uuid attribute in a networks object.
+              Required if you omit the port attribute. (Optional)
+            long: network-id
+            takes_value: true
+            multiple: false
         - id: *id001
     - credentials:
         index: 1
@@ -797,6 +881,10 @@ subcommands:
     - append
     case_insensitive: true
     index: 1
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
     subcommands:
     - flavors:
         index: 1
@@ -817,18 +905,18 @@ subcommands:
             multiple: false
         - public_key:
             help: The public ssh key to import. If you omit this value, a keypair
-              is generated for you.
+              is generated for you. (Optional)
             long: public_key
             takes_value: true
             multiple: false
         - type:
-            help: The type of the keypair. Allowed values are ssh or x509.
+            help: The type of the keypair. Allowed values are ssh or x509. (Optional)
             long: type
             takes_value: true
             multiple: false
         - user_id:
             help: The user_id for a keypair. This allows administrative users to upload
-              keys for other users than themselves.
+              keys for other users than themselves. (Optional)
             long: user_id
             takes_value: true
             multiple: false
@@ -850,6 +938,38 @@ subcommands:
         case_insensitive: true
         about: resource A
         args:
+        - name:
+            help: The server name.
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - flavor:
+            help: The flavor reference, as an ID (including a UUID) or full URL, for
+              the flavor for your server instance.
+            required: true
+            long: flavor
+            takes_value: true
+            multiple: false
+        - image:
+            help: The UUID of the image to use for your server instance. This is not
+              required in case of boot from volume. In all other cases it is required
+              and must be a valid UUID otherwise API will return 400. (Optional)
+            long: image
+            takes_value: true
+            multiple: false
+        - access-ipv4:
+            help: IPv4 address that should be used to access this server. (Optional)
+            long: access-ipv4
+            takes_value: true
+            multiple: false
+        - network-id:
+            help: To provision the server instance with a NIC for a network, specify
+              the UUID of the network in the uuid attribute in a networks object.
+              Required if you omit the port attribute. (Optional)
+            long: network-id
+            takes_value: true
+            multiple: false
         - id: *id001
     - credentials:
         index: 1

@@ -67,18 +67,19 @@ for k, v in resources.items():
         ("args", [])
     ]))])
     for l in v.get("post_parameters", []):
-        tmp = od({})
-        if l.get('help'):
-            tmp['help'] = l['help']
-        if l.get('required', False):
-            tmp['required'] = True
-        # if not l.get('required', False):
-        tmp['long'] = l['name']
+        if not l.get('hidden', False):
+            tmp = od({})
+            if l.get('help'):
+                tmp['help'] = l['help']
+            if l.get('required', False):
+                tmp['required'] = True
+            # if not l.get('required', False):
+            tmp['long'] = l['name']
 
-        tmp['takes_value'] = True
-        tmp['multiple'] = l.get('multiple', False)
+            tmp['takes_value'] = True
+            tmp['multiple'] = l.get('multiple', False)
 
-        val[new_k]["args"].append({l['name']: tmp.copy()})
+            val[new_k]["args"].append({l['name']: tmp.copy()})
 
     sub_args.append(val)
 
@@ -95,6 +96,10 @@ for command, data in commands.items():
         ("case_insensitive", True),
         ("index", 1),
         # ("args", [{"resource": resources_blub}]),
+        ("args", [{"dry-run": {
+            "long": "dry-run",
+            "help": "prints the post body of the request, does not send the request"
+        }}]),
         ("subcommands", deepcopy(sub_args))
     ])
     clap_app["subcommands"].append({command: stuff})
@@ -111,5 +116,6 @@ for command, data in commands.items():
                 for j, item in enumerate(clap_app["subcommands"][i][command]['subcommands']):
                     for resource in clap_app["subcommands"][i][command]['subcommands'][j]:
                         clap_app["subcommands"][i][command]['subcommands'][j][resource]['args'].append({"id": id_blub})
+
 print(yaml.dump(clap_app, default_flow_style=False))
 # print(json.dumps(clap_app, indent=2))

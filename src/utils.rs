@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::io::{stdout, stderr, Error, ErrorKind};
 use yaml_rust::{YamlLoader, yaml};
 
@@ -128,7 +128,6 @@ println!("{}", serde_json::to_string_pretty(&post_body).unwrap());
             }
         }
         json_string = format!("{{{}}}", json_string);
-        println!("{}", json_string);
         let j: serde_json::Value = serde_json::from_str(&json_string).unwrap();
         stuffs.push(j);
     }
@@ -144,7 +143,6 @@ println!("{}", serde_json::to_string_pretty(&post_body).unwrap());
             end_value = merge_values(&end_value, &item);
         }
     }
-
     end_value
 }
 
@@ -154,18 +152,129 @@ fn merge_values(a: &serde_json::Value, b: &serde_json::Value) -> serde_json::Val
     c
 }
 
+fn merge_values_special(a: &serde_json::Value, b: &serde_json::Value) -> serde_json::Value{
+    let mut c = a.clone();
+    let mut object_hashset = HashSet::new();
+    if let serde_json::Value::Object(ref x) = a{
+        if let serde_json::Value::Object(ref y) = b{
+            for (k, v) in x.iter(){
+                if let serde_json::Value::Object(ref _t) = v{
+                    object_hashset.insert(k.clone());
+                }
+            }
+            let mut tmp = HashSet::new();
+            for (k, v) in y.iter(){
+                if let serde_json::Value::Object(ref _t) = v{
+                    tmp.insert(k.clone());
+                }
+            }
+            object_hashset = object_hashset.intersection(&tmp).cloned().collect();
+        }
+    }
+    merge(&mut c, b);
+    for item in object_hashset{
+        c[&item] = vec![a[&item].clone(), b[&item].clone()].into();
+    }
+    c
+}
+
 fn merge(a: &mut serde_json::Value, b: &serde_json::Value) {
     match (a, b) {
-        (&mut serde_json::Value::Object(ref mut a), &serde_json::Value::Object(ref b)) => {
+        (&mut serde_json::Value::Object(ref mut a), serde_json::Value::Object(ref b)) => {
             for (k, v) in b {
                 merge(a.entry(k.clone()).or_insert(serde_json::Value::Null), v);
             }
         }
+        (&mut serde_json::Value::Array(ref mut a), serde_json::Value::Array(ref b)) => {
+            let mut tmp = b.clone();
+            a.append(&mut tmp);
+        }
+        (&mut serde_json::Value::Array(ref mut a), b) => {
+            a.push(b.clone());
+        }
+        // (&mut a, &serde_json::Value::Array(ref b)) => {
+        //     // a.push(b.clone());
+        //     let mut tmp = b.clone();
+        //     tmp.insert(0, a.clone());
+        //     a = serde_json::Value::Array(tmp);
+        // }
         (a, b) => {
-            *a = b.clone();
+            if let serde_json::Value::Array(x) = b {
+                let mut tmp = x.clone();
+                if let serde_json::Value::Null = a{
+                    *a = b.clone();
+                } else{
+                    tmp.insert(0, a.clone());
+                    *a = serde_json::Value::Array(tmp);
+                }
+            } else{
+                *a = b.clone();
+            }
         }
     }
 }
+
+// fn merge_values(a: &serde_json::Value, b: &serde_json::Value) -> serde_json::Value{
+//     let mut new_value = serde_json::Value::Null;
+//     println!("{} {}", a, b);
+//     match (a, b) {
+//         (&serde_json::Value::Object(ref a), &serde_json::Value::Object(ref b)) => {
+//             for (k, v) in b {
+//                 match a.get(k){
+//                     Some(x) => {
+//                         let mut tmp = serde_json::Map::new();
+//                         tmp.insert(k.to_string(), merge_values(x, v));
+//                         new_value = tmp.into();
+//                     },
+//                     None => {
+//                         let mut tmp = serde_json::Map::new();
+//                         tmp.insert(k.to_string(), v.clone());
+//                         new_value = tmp.into();
+//                     }
+//                 }
+//             }
+//         }
+//         (a, b) => {
+//             let mut tmp = serde_json::Map::new();
+//             tmp.insert(a.to_string(), b.clone());
+//             new_value = tmp.into();
+//         }
+//     }
+//     new_value
+// }
+
+// fn merge_values(a: &serde_json::Value, b: &serde_json::Value) -> serde_json::Value{
+//     // let mut new_value = serde_json::Value::Null;
+//     let mut new_value = a.clone();
+//     match (a, b) {
+//         (&serde_json::Value::Object(ref a), &serde_json::Value::Object(ref b)) => {
+//             let mut tmp = serde_json::Map::new();
+//             for (k, v) in b{
+//                 if let Some(x) = a.get(k){
+//                     println!(">>>{}", x);
+//                     // tmp.insert(k.to_string(), merge_values(x, v));
+//                     // tmp.insert(k, x);
+//                     tmp.insert(k.to_string(), x.clone());
+//                 } else{
+//                     println!("|||{}", v);
+//                     // tmp.insert(k.to_string(), merge_values(&serde_json::Value::Null, v));
+//                     tmp.insert(k.to_string(), v.clone());
+//                 }
+//                 // new_value = merge_values(&new_value, &tmp.into());
+//                 // new_value = tmp.into();
+//             }
+//             // new_value = merge_values(&new_value, &tmp.into());
+//             new_value = tmp.into();
+//             println!("{:?}", new_value);
+//         }
+//         (a, b) => {
+//             // println!("{:?} {:?}", a, b);
+//             new_value = b.clone()
+//         }
+//     }
+//     // println!("{:?}", new_value);
+//     new_value
+// }
 
 #[test]
 fn test_convert_to_singular(){
@@ -222,20 +331,105 @@ fn test_compare_different_cases(){
 }
 
 #[test]
+fn test_merge_values(){
+    let a = json!({
+        "hallo": 15,
+        "oke": "geld"
+    });
+    let b = json!({
+        "oke": "paard"
+    });
+    let c = json!({
+        "hallo": 15,
+        "oke": "paard"
+    });
+    assert_eq!(merge_values(&a, &b), c);
+}
+
+#[test]
+fn test_merge_values_2(){
+    let a = json!({
+        "hallo": 15,
+        "oke": {
+            "wop": 15
+        }
+    });
+    let b = json!({
+        "oke": {
+            "paard": "wauw"
+        }
+    });
+    let c = json!({
+        "hallo": 15,
+        "oke": {
+            "paard": "wauw",
+            "wop": 15
+        }
+    });
+    assert_eq!(merge_values(&a, &b), c);
+}
+
+#[test]
+fn test_merge_values_3(){
+    let a = json!({
+        "a": ["b"],
+        "c": [{
+            "d": ["e", "g"],
+            "e": "f"
+        }],
+        "d": "f"
+    });
+    let b = json!({
+        "a": ["c"],
+        "c": [{
+            "d": ["e", "f"],
+            "e": "f"
+        }],
+        "d": "e"
+    });
+    let c = json!({
+        "a": ["b", "c"],
+        "c": [{
+            "d": ["e", "g"],
+            "e": "f"
+        }, {
+            "d": ["e", "f"],
+            "e": "f"
+        }],
+        "d": "e"
+    });
+    assert_eq!(merge_values(&a, &b), c);
+}
+
+#[test]
 fn test_hashmaps_from_dot_notation(){
     let listing = vec![
         ("some.thing".into(), "15".into()),
         ("some.stuff".into(), "foo".into())
         ];
+
+    let outcome = json!({
+        "some": {
+            "thing": "15",
+            "stuff": "foo"
+            }
+        });
     let post_body: serde_json::Value = make_hashmaps_from_dot_notation(listing);
-    assert_eq!(serde_json::to_string(&post_body).unwrap(), "{\"some\":{\"stuff\":\"foo\",\"thing\":\"15\"}}");
+    assert_eq!(post_body, outcome);
 
     let listing = vec![
         ("some.thing".into(), "15".into()),
         ("some.stuff".into(), vec!["foo", "bar"].into())
         ];
+
+    let outcome = json!({
+        "some": {
+            "thing": "15",
+            "stuff": ["foo", "bar"]
+            }
+        });
     let post_body: serde_json::Value = make_hashmaps_from_dot_notation(listing);
-    assert_eq!(serde_json::to_string(&post_body).unwrap(), "{\"some\":{\"stuff\":[\"foo\",\"bar\"],\"thing\":\"15\"}}");
+    assert_eq!(post_body, outcome);
 
     let listing = vec![
         ("some.thing".into(), "15".into()),
@@ -244,7 +438,109 @@ fn test_hashmaps_from_dot_notation(){
         ("some.other.less".into(), "cool".into()),
         ("other.body".into(), "posts".into())
         ];
+    let outcome = json!({
+        "some": {
+            "thing": "15",
+            "stuff": ["foo", "bar"],
+            "other": {
+                "less": "cool",
+                "more": "cool"
+            }
+        },
+        "other": {
+            "body": "posts"
+        }
+        });
     let post_body: serde_json::Value = make_hashmaps_from_dot_notation(listing);
-    assert_eq!(serde_json::to_string(&post_body).unwrap(), "{\"other\":{\"body\":\"posts\"},\"some\":{\"other\":{\"less\":\"cool\",\"more\":\"cool\"},\"stuff\":[\"foo\",\"bar\"],\"thing\":\"15\"}}");
+    assert_eq!(post_body, outcome);
+
+    let listing = vec![
+        ("some.thing".into(), "15".into()),
+        ("some.stuff".into(), vec!["foo", "bar"].into()),
+        ("some.other.more".into(), "cool".into()),
+        ("some.other.less".into(), "cool".into()),
+        ("other.body".into(), "posts".into())
+        ];
+    let outcome = json!({
+        "some": {
+            "thing": "15",
+            "stuff": ["foo", "bar"],
+            "other": {
+                "less": "cool",
+                "more": "cool"
+            }
+        },
+        "other": {
+            "body": "posts"
+            }
+        });
+    let post_body: serde_json::Value = make_hashmaps_from_dot_notation(listing);
+    assert_eq!(post_body, outcome);
+
+    let listing = vec![
+        ("some.thing".into(), vec!["15"].into()),
+        ("some.thing".into(), vec!["20"].into()),
+        ("some.stuff".into(), vec!["foo", "bar"].into()),
+        ("some.other".into(), Vec::<serde_json::Value>::new().into()),
+        ("some.other.more".into(), "cool".into()),
+        ("some.other.more".into(), "wow".into()),
+        ("some.other.less".into(), "cool".into()),
+        ("other.body".into(), "posts".into())
+        ];
+
+    let outcome = json!({
+        "some": {
+            "thing": ["15", "20"],
+            "stuff": ["foo", "bar"],
+            "other": [{
+                "more": "cool"
+            }, {
+                "more": "wow"
+            }, {
+                "less": "cool"
+            }],
+        },
+        "other": {
+            "body": "posts"
+            }
+        });
+
+    let post_body: serde_json::Value = make_hashmaps_from_dot_notation(listing);
+    assert_eq!(post_body, outcome);
+
+    let listing = vec![
+        ("some.thing".into(), vec!["15"].into()),
+        ("some.thing".into(), vec!["20"].into()),
+        ("some.stuff".into(), vec!["foo", "bar"].into()),
+        ("some.other.more".into(), "cool".into()),
+        ("some.other".into(), Vec::<serde_json::Value>::new().into()),
+        ("some.other.more".into(), "wow".into()),
+        ("some.other.less".into(), "cool".into()),
+        ("other.body".into(), "posts".into())
+        ];
+
+    let outcome = json!({
+        "some": {
+            "thing": ["15", "20"],
+            "stuff": ["foo", "bar"],
+            "other": [{
+                "more": "cool"
+            }, {
+                "more": "wow"
+            }, {
+                "less": "cool"
+            }],
+        },
+        "other": {
+            "body": "posts"
+            }
+        });
+
+    let post_body: serde_json::Value = make_hashmaps_from_dot_notation(listing);
+
+    println!("{}", serde_json::to_string_pretty(&post_body).unwrap());
+    println!("{}", serde_json::to_string_pretty(&outcome).unwrap());
+
+    assert_eq!(post_body, outcome);
 
 }

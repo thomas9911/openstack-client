@@ -1,14 +1,8 @@
 flavors:
   endpoint_path: flavors
-  methods:
-  - POST
-  - GET
   resource_type: compute
 keypairs:
   endpoint_path: os-keypairs
-  methods:
-  - GET
-  - POST
   resource_type: compute
   post_parameters:
   - name: name
@@ -17,77 +11,80 @@ keypairs:
     required: true
     path: keypair.name
   - name: public_key
-    help: The public ssh key to import. If you omit this value, a keypair is generated for you.
+    help: The public ssh key to import. If you omit this value, a keypair is generated for you. (Optional)
     type: string
     path: keypair.public_key
   - name: type
-    help: The type of the keypair. Allowed values are ssh or x509.
+    help: The type of the keypair. Allowed values are ssh or x509. (Optional)
     type: string
     path: keypair.type
   - name: user_id
-    help: The user_id for a keypair. This allows administrative users to upload keys for other users than themselves.
+    help: The user_id for a keypair. This allows administrative users to upload keys for other users than themselves. (Optional)
     type: string
     path: keypair.user_id
 limits:
   endpoint_path: limits
-  methods:
-  - GET
   resource_type: compute
 server_groups:
   endpoint_path: os-server-groups
-  methods:
-  - GET
   resource_type: compute
 servers:
   endpoint_path: servers
-  methods:
-  - GET
   resource_type: compute
+  post_parameters:
+  - name: name
+    type: string
+    help: The server name.
+    required: true
+    path: server.name
+  - name: flavor
+    type: string
+    help: The flavor reference, as an ID (including a UUID) or full URL, for the flavor for your server instance.
+    required: true
+    path: server.flavorRef
+  - name: image
+    type: string
+    help: The UUID of the image to use for your server instance. This is not required in case of boot from volume. In all other cases it is required and must be a valid UUID otherwise API will return 400. (Optional)
+    path: server.imageRef
+  - name: access-ipv4
+    type: string
+    help: IPv4 address that should be used to access this server. (Optional)
+    path: server.accessIPv4
+  - name: networks
+    type: string
+    path: server.networks
+    multiple: true
+    hidden: true
+  - name: network-id
+    type: string
+    help: To provision the server instance with a NIC for a network, specify the UUID of the network in the uuid attribute in a networks object. Required if you omit the port attribute. (Optional)
+    path: server.networks.uuid
 credentials:
   endpoint_path: credentials
-  methods:
-  - GET
   resource_type: identity
 domains:
   endpoint_path: domains
-  methods:
-  - GET
   resource_type: identity
 groups:
   endpoint_path: group
-  methods:
-  - GET
   resource_type: identity
 projects:
   endpoint_path: projects
-  methods:
-  - GET
   resource_type: identity
 users:
   endpoint_path: users
-  methods:
-  - GET
   resource_type: identity
 images:
   endpoint_path: v2/images
-  methods:
-  - GET
   resource_type: image
 address_scopes:
   endpoint_path: v2.0/address-scopes
-  methods:
-  - GET
   resource_type: network
 availability_zones:
   endpoint_path: v2.0/availability_zones
-  methods:
-  - GET
   resource_type: network
 floating_ips:
   endpoint_path: v2.0/floatingips
-  methods:
-  - POST
-  - GET
   resource_type: network
   post_parameters:
   - name: name
@@ -103,51 +100,31 @@ floating_ips:
     multiple: true
 networks:
   endpoint_path: v2.0/networks
-  methods:
-  - GET
   resource_type: network
 ports:
   endpoint_path: v2.0/ports
-  methods:
-  - GET
   resource_type: network
 routers:
   endpoint_path: v2.0/routers
-  methods:
-  - GET
   resource_type: network
 security_groups:
   endpoint_path: v2.0/security-groups
-  methods:
-  - GET
   resource_type: network
 security_groups_rules:
   endpoint_path: v2.0/security-groups-rules
-  methods:
-  - GET
   resource_type: network
 subnets:
   endpoint_path: v2.0/subnets
-  methods:
-  - GET
   resource_type: network
 attachments:
   endpoint_path: attachments
-  methods:
-  - GET
   resource_type: volumev3
 backups:
   endpoint_path: backups
-  methods:
-  - GET
   resource_type: volumev3
 snapshots:
   endpoint_path: snapshots
-  methods:
-  - GET
   resource_type: volumev3
 volumes:
   endpoint_path: volumes
-  methods:
-  - GET
   resource_type: volumev3

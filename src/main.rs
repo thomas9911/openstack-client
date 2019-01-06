@@ -207,8 +207,6 @@ fn main() {
     // println!("{:?}", command_options);
     // println!("{:?}", resource_options);
 
-
-
     let os_config_env = OpenstackInfoMap::from_env(os_cloud.clone());
     let mut os_config = match OpenstackInfoMap::from_clouds_yaml(os_cloud.clone()){
         Ok(x) => x,

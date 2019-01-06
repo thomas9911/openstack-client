@@ -8,7 +8,6 @@ use utils::{convert_to_singular, convert_to_multiple, compare_different_cases};
 pub struct Resource {
     pub name: String,
     pub endpoint_path: String,
-    pub methods: Vec<HTTPMethod>,
     pub resource_type: ResourceTypeEnum,
     pub post_parameters: Option<Vec<PostParameter>>,
     pub description: Option<String>,
@@ -24,15 +23,6 @@ pub enum ResourceTypeEnum {
 pub struct ResourceType {
     pub name: String,
     pub endpoint: String,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub enum HTTPMethod {
-    POST,
-    GET,
-    PUT,
-    PATCH,
-    DELETE,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -51,7 +41,9 @@ pub struct PostParameter{
     #[serde(default = "false_bool")]
     pub multiple: bool,
     #[serde(default = "false_bool")]
-    pub required: bool
+    pub required: bool,
+    #[serde(default = "false_bool")]
+    pub hidden: bool,
 }
 
 // compute = ResourceType{name: "compute", endpoint: "https:/hahaaha.com"}
@@ -102,11 +94,10 @@ impl ResourceMap{
                 // }
                 let resource_type = ResourceTypeEnum::String(resource_type_str.clone());
                 types.insert(resource_type_str.clone(), resource_type.clone());
-                let methods: Vec<HTTPMethod> = serde_yaml::from_value(b["methods"].clone()).unwrap();
                 let post_parameters: Option<Vec<PostParameter>> = serde_yaml::from_value(b["post_parameters"].clone()).unwrap();
                 let endpoint_path: String = serde_yaml::from_value(b["endpoint_path"].clone()).unwrap();
                 let description: Option<String> = serde_yaml::from_value(b["description"].clone()).unwrap();
-                let res = Resource{name: name.clone(), methods, resource_type, post_parameters, endpoint_path, description};
+                let res = Resource{name: name.clone(), resource_type, post_parameters, endpoint_path, description};
 
                 new_map.insert(name, res);
                 }
