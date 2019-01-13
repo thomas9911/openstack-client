@@ -1,16 +1,11 @@
 
-// use std::collections::HashMap;
-// use serde_json::{Value, to_string_pretty};
-
-// use std::fs::File;
-use std::io::{stdout, stderr, Error, ErrorKind};
+use std::io::{Error, ErrorKind};
 use std::collections::HashMap;
 
 use chrono::prelude::*;
 use chrono::Duration;
-// use chrono::{Utc, DateTime, NaiveDateTime, Duration};
 
-use enums::{OSResource, OSOperation};
+use enums::OSOperation;
 use structs::{ResourceMap, ResourceTypeEnum, Resource};
 use utils::{add_slash, read_yaml, get_first_value_from_hashmap_with_vec, make_hashmaps_from_dot_notation};
 
@@ -31,10 +26,12 @@ impl OpenstackConnection{
         OpenstackConnection{config, client, token: None, token_expiry: None, endpoints: None}
     }
 
+    #[allow(dead_code)]
     pub fn get<T: reqwest::IntoUrl>(&mut self, url: T) -> reqwest::RequestBuilder{
         self.request(reqwest::Method::GET, url)
     }
 
+    #[allow(dead_code)]
     pub fn post<T: reqwest::IntoUrl>(&mut self, url: T) -> reqwest::RequestBuilder{
         self.request(reqwest::Method::POST, url)
     }
@@ -195,15 +192,22 @@ impl Openstack{
         Ok(self)
     }
 
+    #[allow(dead_code)]
     pub fn list(&mut self, res: String) -> Result<serde_json::Value, Error>{
         self.act(OSOperation::List, res.clone(), &HashMap::new(), &HashMap::new())
     }
+
+    #[allow(dead_code)]
     pub fn delete(self, res: String, id: String) {
 
     }
+
+    #[allow(dead_code)]
     pub fn get(self, res: String, id: String) {
 
     }
+
+    #[allow(dead_code)]
     pub fn update(self, res: String, id: String) {
 
     }
@@ -212,13 +216,11 @@ impl Openstack{
         if self.connection.endpoints.is_none(){
             self.refresh_token().expect("error while refreshing token");
         }
-        // let endpoints = &self.connection.endpoints.clone().expect("oke sad");
         let r = match self.resources.get_resource(res){
             Ok(x) => x,
             Err(e) => return Err(e)
         };
         let path = r.endpoint_path.clone();
-        // let endpoint = endpoints.get(&cool).expect(&format!("suw sad {} ", path));
         let endpoint: String = match r.resource_type.clone(){
             ResourceTypeEnum::ResourceType(x) => x.endpoint,
             ResourceTypeEnum::String(x) => x,
@@ -283,6 +285,7 @@ impl Openstack{
         serde_json::Value::Null
     }
 
+    #[allow(dead_code)]
     pub fn resource_available(&self, res: String) -> Option<Resource>{
         let available = self.is_resource_available(res.clone());
 
@@ -306,207 +309,6 @@ impl Openstack{
         }
     }
 }
-
-// impl OpenstackConnection{
-//     pub fn new(os_client: openstack::Cloud) -> OpenstackConnection{
-//         OpenstackConnection{client: os_client}
-//     }
-//     pub fn print_list(&self, resource: OSResource){
-//         match resource{
-//             OSResource::Flavors => print_flavor_summary_data(self.client.list_flavors()),
-//             OSResource::FloatingIps => print_floating_ip_data(self.client.list_floating_ips()),
-//             OSResource::Images => print_image_data(self.client.list_images()),
-//             OSResource::Keypairs => print_key_pair_data(self.client.list_keypairs()),
-//             OSResource::Networks => print_network_data(self.client.list_networks()),
-//             OSResource::Servers => print_server_summary_data(self.client.list_servers()),
-//             OSResource::Subnets => print_subnet_data(self.client.list_subnets()),
-//             OSResource::Ports => print_port_data(self.client.list_ports()),
-//             OSResource::None => println!("[{{\"error\": \"resource cannot be listed\"}}]"),
-//         }
-//     }
-
-//     pub fn print_get(&self, resource: OSResource, name: String){
-//         if name == ""{
-//             println!("{}", to_string_pretty(
-//                     &fmt_error("'name or id' is a required argument")
-//                 ).unwrap());
-//             return
-//         }
-//         let result = match resource{
-//             OSResource::Flavors => {
-//                 fmt_flavor(self.client.get_flavor(name))
-//             },
-//             // OSResource::FloatingIps => print_floating_ip_data(self.client.list_floating_ips()),
-//             // OSResource::Images => print_image_data(self.client.list_images()),
-//             OSResource::Keypairs => {
-//                  match self.client.get_keypair(name){
-//                      Ok(x) => fmt_key_pair(x),
-//                      Err(x) => fmt_error(x)
-//                  }
-//             },
-
-//             // OSResource::Networks => print_network_data(self.client.list_networks()),
-//             OSResource::Servers => {
-//                  match self.client.get_server(name){
-//                      Ok(x) => fmt_server(x),
-//                      Err(x) => fmt_error(x)
-//                  }
-//             },
-//             // OSResource::Subnets => print_subnet_data(self.client.list_subnets()),
-//             // OSResource::Ports => print_port_data(self.client.list_ports()),
-//             // OSResource::None => json!([{"error": "resource cannot be showed"}]),
-//             _ => fmt_error("resource cannot be showed"),
-//         };
-//         println!("{}", to_string_pretty(&result).unwrap());
-//     }
-
-//     pub fn print_delete(&self, resource: OSResource, name: String){
-//         if name == ""{
-//             println!("{}", to_string_pretty(
-//                     &fmt_error("'name or id' is a required argument")
-//                 ).unwrap());
-//             return
-//         }
-
-//         let result = match resource{
-//             // OSResource::Flavors => print_flavor_summary_data(self.client.list_flavors()),
-//             // OSResource::FloatingIps => print_floating_ip_data(self.client.list_floating_ips()),
-//             // OSResource::Images => print_image_data(self.client.list_images()),
-//             OSResource::Keypairs => {
-//                  match self.client.get_keypair(name){
-//                      Ok(x) => {match x.delete(){
-//                          Ok(_x) => json!({"info": "keypair deleted"}),
-//                          Err(x) => fmt_error(x)
-//                      }},
-//                      Err(x) => fmt_error(x)
-//                  }
-//             },
-
-//             // OSResource::Networks => print_network_data(self.client.list_networks()),
-//             // OSResource::Servers => print_server_summary_data(self.client.list_servers()),
-//             // OSResource::Subnets => print_subnet_data(self.client.list_subnets()),
-//             // OSResource::Ports => print_port_data(self.client.list_ports()),
-//             // OSResource::None => json!([{"error": "resource cannot be showed"}]),
-//             _ => fmt_error("resource cannot be deleted"),
-//         };
-//         println!("{}", to_string_pretty(&result).unwrap());
-//     }
-
-//     pub fn create_keypair(&self, options: HashMap<String, String>) -> Result<Value, String>{
-//         let name = match options.get("name"){
-//             Some(x) => x.to_owned(),
-//             _ => return Err("name is required".to_string())
-//         };
-
-//         let public_key = match options.get("pk"){
-//             Some(x) => x.to_owned(),
-//             _ => return Err("public-key is required".to_string())
-//         };
-
-//         let mut file = match File::open(public_key.clone()){
-//             Ok(x) => x,
-//             _ => return Err(format!("'{}' file is not available", public_key))
-//         };
-
-//         let return_value = match self.client.new_keypair(name)
-//                     .from_reader(&mut file).expect("file reading goes wrong")
-//                     .create(){
-//                 Ok(x) => fmt_key_pair(x),
-//                 _ => Value::from("Something went wrong while creating a keypair")
-//         };
-//         Ok(return_value)
-//     }
-
-//     pub fn create_server(&self, options: HashMap<String, String>) -> Result<Value, String>{
-//         let name = match options.get("name"){
-//             Some(x) => x.to_owned(),
-//             _ => return Err("name is required".to_string())
-//         };
-
-//         let flavor_name = match options.get("flavor"){
-//             Some(x) => x.to_owned(),
-//             _ => return Err("flavor is required".to_string())
-//         };
-
-//         let image_name = match options.get("image"){
-//             Some(x) => x.to_owned(),
-//             _ => return Err("image is required".to_string())
-//         };
-
-//         let keypair_name = match options.get("keypair"){
-//             Some(x) => x.to_owned(),
-//             _ => return Err("keypair is required".to_string())
-//         };
-
-//         let network_name = match options.get("network"){
-//             Some(x) => x.to_owned(),
-//             _ => return Err("network is required".to_string())
-//         };
-
-
-//         let flavor = match self.client.get_flavor(flavor_name) {
-//             Ok(x) => x,
-//             Err(x) => return Err(x.to_string())
-//         };
-
-//         let image = match find_images(image_name, self.client.list_images()) {
-//             Ok(x) => x,
-//             Err(x) => return Err(x.to_string())
-//         };
-
-//         let keypair = match self.client.get_keypair(keypair_name) {
-//             Ok(x) => x,
-//             Err(x) => return Err(x.to_string())
-//         };
-
-//         let network = match self.client.get_network(network_name){
-//             Ok(x) => x,
-//             Err(x) => return Err(x.to_string())
-//         };
-
-//         let return_value = match self.client.new_server(name, flavor)
-//                     .with_image(image)
-//                     .with_keypair(keypair)
-//                     .with_network(network)
-//                     .create(){
-//                 Ok(mut x) => {match x.poll(){
-//                     Ok(x) => fmt_server(x.unwrap()),
-//                     Err(x) => fmt_error(x.to_string())
-//                 }},
-//                 // Ok(mut x) => {match x.wait(){
-//                 //     Ok(x) => fmt_server(x),
-//                 //     Err(x) => fmt_error(x.to_string())
-//                 // }},
-//                 Err(e) => fmt_error(e.to_string())
-//         };
-//         Ok(return_value)
-//     }
-// }
-
-
-// pub fn fmt_error<S>(error: S) -> Value where S: ToString{
-//     return json!({"error": error.to_string()});
-// }
-
-// fn find_images(name: String, images: openstack::Result<Vec<openstack::image::Image>>)  -> Result<openstack::image::Image, String> {
-//     let legit_images = match images{
-//         Ok(x) => x,
-//         Err(x) => return Err(x.to_string())
-//     };
-
-//     let mut choices = vec![];
-//     for image in legit_images{
-//         if image.name().to_lowercase().starts_with(name.to_lowercase().as_str()){
-//             choices.push(image);
-//         }
-//     };
-
-//     // Ok(choices.first().unwrap())
-//     match choices.first(){
-//         Some(x) => Ok(x.clone()),
-//         _ => Err("No valid image found".to_string())
-//     }
-// }
 
 
 #[derive(Debug, Serialize, Deserialize)]

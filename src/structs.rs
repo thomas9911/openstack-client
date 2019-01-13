@@ -1,8 +1,6 @@
 use std::collections::HashMap;
-
-use std::io::{stdout, stderr, Error, ErrorKind};
-
-use utils::{convert_to_singular, convert_to_multiple, compare_different_cases};
+use std::io::{Error, ErrorKind};
+use utils::{convert_to_multiple, compare_different_cases};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Resource {
@@ -34,8 +32,6 @@ pub struct ResourceMap {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct PostParameter{
     pub name: String,
-    // #[serde(rename = "type")]
-    // pub the_type: String,
     pub path: String,
     pub help: Option<String>,
     #[serde(default = "false_bool")]
@@ -46,27 +42,8 @@ pub struct PostParameter{
     pub hidden: bool,
 }
 
-// compute = ResourceType{name: "compute", endpoint: "https:/hahaaha.com"}
-
-// flavors = Resource{
-//     name: "flavors",
-//     endpoint_path: "blauw/kaas/"
-//     methods: vec![HTTPMethod::POST, HTTPMethod::GET],
-//     resource_type: compute
-//     }
-// let compute: ResourceType = json!(r##"{
-//     "name": "compute", "endpoint": None
-// }"##);
-
 impl ResourceMap{
-    // pub fn make_resource_map(m: &HashMap<String, ResourceTypeEnum>) -> ResourceMap {
     pub fn new() -> ResourceMap {
-        // Flavors,
-        // FloatingIps,
-        // Images,
-        // Keypairs,
-        // Networks,
-        // Servers,
         let mut resource_types: Vec<String> = vec![];
         let raw_string_yaml = include_str!("../data/resource_types.yaml");
         let yaml_resource_type: serde_yaml::Value = serde_yaml::from_str(raw_string_yaml).expect("resource_types.yaml is not valid yaml");
@@ -103,36 +80,8 @@ impl ResourceMap{
                 }
         }
 
-        // println!("{}", serde_json::to_string_pretty(&new_map).unwrap());
-
-
-        // if let Some(x) = m.get("compute") {
-        //     new_map.insert(
-        //         "flavors".into(),
-        //         serde_json::from_value(json!(
-        //             {
-        //             "name": "flavors",
-        //             "endpoint_path": "blauw/kaas/",
-        //             "methods": ["POST", "GET"],
-        //             "resource_type": x.clone()
-        //             }
-        //             )).unwrap(),
-        //     );
-        //     new_map.insert(
-        //         "floating_ips".into(),
-        //         serde_json::from_value(json!(
-        //             {
-        //             "name": "floating_ips",
-        //             "endpoint_path": "blauw/kaas/",
-        //             "methods": ["POST", "GET"],
-        //             "resource_type": x.clone()
-        //             }
-        //             )).unwrap(),
-        //     );
-        // };
         ResourceMap {
             map: new_map,
-            // types: m.clone(),
             types: types
         }
     }
@@ -168,17 +117,15 @@ impl ResourceMap{
         } else{
             Ok(self.map.get(&tmp).expect("comparision went wrong").clone())
         }
-        // match self.map.get(tmp){
-        //     Some(x) => Ok(*x),
-        //     None =>
-        // }
     }
 }
 
+#[allow(dead_code)]
 fn true_bool() -> bool {
     true
 }
 
+#[allow(dead_code)]
 fn false_bool() -> bool {
     false
 }

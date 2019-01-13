@@ -8,7 +8,6 @@ serde = "*"
 serde_derive = "*"
 serde_json = "*"
 serde_yaml = "*"
-argparse = "*"
 reqwest = "*"
 secstr = {version = "*", features = ['serde']}
 rpassword = "2.1.0"

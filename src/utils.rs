@@ -1,7 +1,8 @@
-use std::collections::{HashMap, HashSet};
-use std::io::{stdout, stderr, Error, ErrorKind};
-use yaml_rust::{YamlLoader, yaml};
+use std::collections::HashMap;
+use std::io::{Error, ErrorKind};
+use yaml_rust::yaml;
 
+#[allow(dead_code)]
 pub fn convert_to_singular(tmp: &str) -> &str {
     // not 100% bulletproof but good enough for matching
     // let tmp = blub.to_lowercase();
@@ -58,12 +59,7 @@ pub fn add_slash(tmp: &str) -> String {
     }
 }
 
-pub fn add_if_exists<S>(hashmap: &mut HashMap<String, String>, name: S, item: String)where S: ToString{
-    if item != ""{
-        hashmap.insert(name.to_string(), item);
-    };
-}
-
+#[allow(dead_code)]
 pub fn to_boolean(a_str: String) -> Option<bool>{
     // [True, ‘True’, ‘TRUE’, ‘true’, ‘1’, ‘ON’, ‘On’, ‘on’, ‘YES’, ‘Yes’, ‘yes’, ‘y’, ‘t’, False, ‘False’, ‘FALSE’, ‘false’, ‘0’, ‘OFF’, ‘Off’, ‘off’, ‘NO’, ‘No’, ‘no’, ‘n’, ‘f’]
     match a_str.to_lowercase().as_str(){
@@ -72,6 +68,7 @@ pub fn to_boolean(a_str: String) -> Option<bool>{
         _ => None
     }
 }
+
 
 pub fn read_yaml(location: String) -> Result<serde_yaml::Value, Error>{
     let file = match std::fs::File::open(&location){
@@ -85,10 +82,12 @@ pub fn read_yaml(location: String) -> Result<serde_yaml::Value, Error>{
     Ok(value)
 }
 
+#[allow(dead_code)]
 pub fn read_yaml_rust(location: String) -> yaml::Yaml{
     let s = read_yaml(location).unwrap();
     yaml::Yaml::from_str(&serde_yaml::to_string(&s).unwrap())
 }
+
 
 pub fn compare_different_cases(a: &str, b: &str) -> bool{
     use heck::SnakeCase;
@@ -102,6 +101,7 @@ pub fn get_first_value_from_hashmap_with_vec(map: &HashMap<String, Vec<String>>,
         _ => None
     }
 }
+
 
 pub fn make_hashmaps_from_dot_notation(listing: Vec<(String, serde_json::Value)>) -> serde_json::Value{
 /*
@@ -146,37 +146,13 @@ println!("{}", serde_json::to_string_pretty(&post_body).unwrap());
     end_value
 }
 
+
 fn merge_values(a: &serde_json::Value, b: &serde_json::Value) -> serde_json::Value{
     let mut c = a.clone();
     merge(&mut c, b);
     c
 }
 
-fn merge_values_special(a: &serde_json::Value, b: &serde_json::Value) -> serde_json::Value{
-    let mut c = a.clone();
-    let mut object_hashset = HashSet::new();
-    if let serde_json::Value::Object(ref x) = a{
-        if let serde_json::Value::Object(ref y) = b{
-            for (k, v) in x.iter(){
-                if let serde_json::Value::Object(ref _t) = v{
-                    object_hashset.insert(k.clone());
-                }
-            }
-            let mut tmp = HashSet::new();
-            for (k, v) in y.iter(){
-                if let serde_json::Value::Object(ref _t) = v{
-                    tmp.insert(k.clone());
-                }
-            }
-            object_hashset = object_hashset.intersection(&tmp).cloned().collect();
-        }
-    }
-    merge(&mut c, b);
-    for item in object_hashset{
-        c[&item] = vec![a[&item].clone(), b[&item].clone()].into();
-    }
-    c
-}
 
 fn merge(a: &mut serde_json::Value, b: &serde_json::Value) {
     match (a, b) {
@@ -192,12 +168,6 @@ fn merge(a: &mut serde_json::Value, b: &serde_json::Value) {
         (&mut serde_json::Value::Array(ref mut a), b) => {
             a.push(b.clone());
         }
-        // (&mut a, &serde_json::Value::Array(ref b)) => {
-        //     // a.push(b.clone());
-        //     let mut tmp = b.clone();
-        //     tmp.insert(0, a.clone());
-        //     a = serde_json::Value::Array(tmp);
-        // }
         (a, b) => {
             if let serde_json::Value::Array(x) = b {
                 let mut tmp = x.clone();
@@ -214,67 +184,6 @@ fn merge(a: &mut serde_json::Value, b: &serde_json::Value) {
     }
 }
 
-// fn merge_values(a: &serde_json::Value, b: &serde_json::Value) -> serde_json::Value{
-//     let mut new_value = serde_json::Value::Null;
-//     println!("{} {}", a, b);
-//     match (a, b) {
-//         (&serde_json::Value::Object(ref a), &serde_json::Value::Object(ref b)) => {
-//             for (k, v) in b {
-//                 match a.get(k){
-//                     Some(x) => {
-//                         let mut tmp = serde_json::Map::new();
-//                         tmp.insert(k.to_string(), merge_values(x, v));
-//                         new_value = tmp.into();
-//                     },
-//                     None => {
-//                         let mut tmp = serde_json::Map::new();
-//                         tmp.insert(k.to_string(), v.clone());
-//                         new_value = tmp.into();
-//                     }
-//                 }
-//             }
-//         }
-//         (a, b) => {
-//             let mut tmp = serde_json::Map::new();
-//             tmp.insert(a.to_string(), b.clone());
-//             new_value = tmp.into();
-//         }
-//     }
-//     new_value
-// }
-
-// fn merge_values(a: &serde_json::Value, b: &serde_json::Value) -> serde_json::Value{
-//     // let mut new_value = serde_json::Value::Null;
-//     let mut new_value = a.clone();
-//     match (a, b) {
-//         (&serde_json::Value::Object(ref a), &serde_json::Value::Object(ref b)) => {
-//             let mut tmp = serde_json::Map::new();
-//             for (k, v) in b{
-//                 if let Some(x) = a.get(k){
-//                     println!(">>>{}", x);
-//                     // tmp.insert(k.to_string(), merge_values(x, v));
-//                     // tmp.insert(k, x);
-//                     tmp.insert(k.to_string(), x.clone());
-//                 } else{
-//                     println!("|||{}", v);
-//                     // tmp.insert(k.to_string(), merge_values(&serde_json::Value::Null, v));
-//                     tmp.insert(k.to_string(), v.clone());
-//                 }
-//                 // new_value = merge_values(&new_value, &tmp.into());
-//                 // new_value = tmp.into();
-//             }
-//             // new_value = merge_values(&new_value, &tmp.into());
-//             new_value = tmp.into();
-//             println!("{:?}", new_value);
-//         }
-//         (a, b) => {
-//             // println!("{:?} {:?}", a, b);
-//             new_value = b.clone()
-//         }
-//     }
-//     // println!("{:?}", new_value);
-//     new_value
-// }
 
 #[test]
 fn test_convert_to_singular(){
