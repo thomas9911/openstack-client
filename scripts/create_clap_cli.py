@@ -23,6 +23,14 @@ def snake_to_kebabcase(val):
         return "-".join(t)
     return val
 
+
+def make_singular(text):
+    if text[-1] == 's' or text[-1] == 's':
+        return text[:-1]
+    else:
+        return text
+
+
 clap_app = od([
     ("name", "openstack-client"),
     ("settings", ['ArgRequiredElseHelp']),
@@ -64,7 +72,8 @@ for k, v in resources.items():
         ("index", 1),
         ("case_insensitive", True),
         ("about", "resource A"),
-        ("args", [])
+        ("args", []),
+        ('visible_aliases', [make_singular(new_k)])
     ]))])
     for l in v.get("post_parameters", []):
         if not l.get('hidden', False):
@@ -78,6 +87,9 @@ for k, v in resources.items():
 
             tmp['takes_value'] = True
             tmp['multiple'] = l.get('multiple', False)
+            d = l.get('default')
+            if d is not None:
+                tmp['default_value'] = d
 
             val[new_k]["args"].append({l['name']: tmp.copy()})
 
@@ -102,6 +114,35 @@ for command, data in commands.items():
         }}]),
         ("subcommands", deepcopy(sub_args))
     ])
+    if command == 'call':
+        del stuff['subcommands']
+        stuff['args'].extend([{
+            "method": {
+                "help": "http method to use",
+                "takes_value": True,
+                "possible_values": ["POST", "GET", "PATCH", "DELETE", "PUT", "OPTIONS", "HEAD", "CONNECT", "TRACE"],
+                "required": True
+            }
+        }, {
+            "type": {
+                "help": "the openstack type to use, such as 'compute' or 'image'",
+                "takes_value": True,
+                "required": True
+            }
+        }, {
+            "endpoint": {
+                "help": "endpoint or path to send the call to",
+                 "takes_value": True,
+                 "required": True
+            }
+        }, {
+            "body": {
+                "help": 'a json object as a string, for example "{\\"test\\": \\"test\\"}"',
+                "takes_value": True,
+                "value_name": "BODY",
+            }
+        }])
+
     clap_app["subcommands"].append({command: stuff})
 
     if not data['has_body']:
@@ -113,9 +154,12 @@ for command, data in commands.items():
     if data['requires_id']:
         for i, item in enumerate(clap_app["subcommands"]):
             if item.get(command):
-                for j, item in enumerate(clap_app["subcommands"][i][command]['subcommands']):
-                    for resource in clap_app["subcommands"][i][command]['subcommands'][j]:
-                        clap_app["subcommands"][i][command]['subcommands'][j][resource]['args'].append({"id": id_blub})
+                try:
+                    for j, item in enumerate(clap_app["subcommands"][i][command]['subcommands']):
+                        for resource in clap_app["subcommands"][i][command]['subcommands'][j]:
+                            clap_app["subcommands"][i][command]['subcommands'][j][resource]['args'].append({"id": id_blub})
+                except KeyError:
+                    clap_app["subcommands"][i][command]['args'].append({"id": id_blub})
 
 print(yaml.dump(clap_app, default_flow_style=False))
 # print(json.dumps(clap_app, indent=2))

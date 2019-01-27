@@ -36,3 +36,10 @@ add:
   help: add a propety from an item from the given resource.
   requires_id: true
   has_body: true
+call:
+  aliases:
+    - do
+    - raw
+  help: call an endpoint that is not supported by the commandline interface
+  requires_id: false
+  has_body: true

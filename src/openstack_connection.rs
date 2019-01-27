@@ -8,7 +8,7 @@ use chrono::Duration;
 use enums::OSOperation;
 use structs::{ResourceMap, ResourceTypeEnum, Resource};
 use utils::{add_slash, read_yaml, get_first_value_from_hashmap_with_vec, make_hashmaps_from_dot_notation};
-
+use uuid::Uuid;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct OpenstackConnection{
@@ -220,13 +220,10 @@ impl Openstack{
             Ok(x) => x,
             Err(e) => return Err(e)
         };
-        let path = r.endpoint_path.clone();
-        let endpoint: String = match r.resource_type.clone(){
-            ResourceTypeEnum::ResourceType(x) => x.endpoint,
-            ResourceTypeEnum::String(x) => x,
-        };
 
-        let post_body = Openstack::handle_post_parameters(&r, res_args);
+        let mut post_body = Openstack::handle_post_parameters(&r, res_args);
+
+        self._handle_special_body_parameters(&r, &mut post_body);
 
         let is_dry_run = match op_args.get("dry-run"){
             Some(_x) => true,
@@ -237,21 +234,51 @@ impl Openstack{
             return Ok(post_body)
         }
 
-        let prepared_url = match get_first_value_from_hashmap_with_vec(res_args, "id"){
-            Some(id) => self.connection.request(op.match_http_method(), &format!("{}{}/{}", endpoint, path, id)),
-            None => self.connection.request(op.match_http_method(), &format!("{}{}", endpoint, path))
+        // let endpoint: String = match r.resource_type.clone(){
+        //     ResourceTypeEnum::ResourceType(x) => x.endpoint,
+        //     ResourceTypeEnum::String(x) => x,
+        // };
+
+        let mut path = r.endpoint_path.clone();
+        path = match get_first_value_from_hashmap_with_vec(res_args, "id"){
+            Some(id) => format!("{}/{}", path, id),
+            None => path
+            // Some(id) => self.connection.request(op.match_http_method(), &format!("{}{}/{}", endpoint, path, id)),
+            // None => self.connection.request(op.match_http_method(), &format!("{}{}", endpoint, path))
         };
 
-        let mut response = match prepared_url.json(&post_body).send(){
-            Ok(x) => x,
-            Err(e) => return Err(Error::new(ErrorKind::Other, format!("{}", e)))
+        let prepared_url = self.make_url(op.match_http_method(), r.resource_type.clone(), path);
+
+        let mut response = match &post_body{
+            serde_json::Value::Null => {
+                 match prepared_url.send(){
+                    Ok(x) => x,
+                    Err(e) => return Err(Error::new(ErrorKind::Other, format!("{}", e)))
+                }
+            },
+            _ => {
+                match prepared_url.json(&post_body).send(){
+                    Ok(x) => x,
+                    Err(e) => return Err(Error::new(ErrorKind::Other, format!("{}", e)))
+                }
+            }
         };
+
         Openstack::handle_response(&mut response)
     }
 
-    fn handle_response(response: &mut reqwest::Response) -> Result<serde_json::Value, Error>{
+    pub fn make_url(&mut self, method: reqwest::Method, rt: ResourceTypeEnum, path: String) -> reqwest::RequestBuilder{
+        let endpoint: String = match rt.clone(){
+            ResourceTypeEnum::ResourceType(x) => x.endpoint,
+            ResourceTypeEnum::String(x) => x,
+        };
+        let new_path = format!("{}{}", endpoint, path);
+        self.connection.request(method, &new_path)
+    }
+
+    pub fn handle_response(response: &mut reqwest::Response) -> Result<serde_json::Value, Error>{
         if !response.status().is_success(){
-            return Err(Error::new(ErrorKind::Other, format!("'{}' \n{{\"response\": {}}}", response.status(), response.text().unwrap())))
+            return Err(Error::new(ErrorKind::Other, format!("{{\"response\": \"{}\"}}", response.text().unwrap())))
         }
         match response.json::<serde_json::Value>(){
             Ok(x) => return Ok(x),
@@ -278,11 +305,26 @@ impl Openstack{
                     } else{
                         data.push((path.clone(), x[0].clone().into()))
                     }
+                } else{
+                    if let Some(x) = &item.default{
+                        data.push((path.clone(), x.clone().into()))
+                    }
                 }
             }
             return make_hashmaps_from_dot_notation(data);
         };
         serde_json::Value::Null
+    }
+
+    fn _handle_special_body_parameters(&self, res: &Resource, body: &mut serde_json::Value){
+        if res.name == "credentials"{
+            if let Some(ref mut x) = body.get_mut("credentials"){
+                let blob = json!({"access": Uuid::new_v4(), "secret": Uuid::new_v4()});
+                if let Some(y) = x.get_mut("blob"){
+                    *y = format!("{}", blob).into();
+                }
+            }
+        }
     }
 
     #[allow(dead_code)]

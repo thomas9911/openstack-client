@@ -16,6 +16,7 @@ extern crate strum;
 #[macro_use]
 extern crate strum_macros;
 extern crate yaml_rust;
+extern crate uuid;
 
 mod enums;
 mod utils;
@@ -64,27 +65,13 @@ fn main() {
         return ();
     }
 
-    let (resource_input, resource_sub) = match command_sub.subcommand(){
-        (x, Some(y)) => (x, y),
-        (_x, None) => return ()
-    };
-
-
     let matches_options = make_args_from_arg_matches(&matches);
     let command_options = make_args_from_arg_matches(command_sub);
-    let resource_options = make_args_from_arg_matches(resource_sub);
+    let os_command = OSOperation::from(command_input);
 
     if let Some(x) = get_first_value_from_hashmap_with_vec(&matches_options, "os-cloud"){
         os_cloud = x;
     };
-
-    // println!("{}", os_cloud);
-
-    // println!("{:?}", command_input);
-    // println!("{:?}", resource_input);
-    // println!("{:?}", matches_options);
-    // println!("{:?}", command_options);
-    // println!("{:?}", resource_options);
 
     let os_config_env = OpenstackInfoMap::from_env(os_cloud.clone());
     let mut os_config = match OpenstackInfoMap::from_clouds_yaml(os_cloud.clone()){
@@ -99,7 +86,62 @@ fn main() {
         Err(e) => {println!("{}", e); return}
     };
 
-    let os_command = OSOperation::from(command_input);
+    if os_command == OSOperation::Call {
+        println!("{:?}", command_sub);
+        let method = command_sub.value_of("method").expect("this value is requered");
+        let os_type = command_sub.value_of("type").expect("this value is requered");
+        let endpoint = command_sub.value_of("endpoint").expect("this value is requered");
+        let body = command_sub.values_of("body");
+        println!("{} {} {}", method, os_type, endpoint);
+        let resource_type = match new_os.resources.get_resource_type(os_type.into()){
+            Ok(x) => x,
+            Err(e) => {println!("{{\"error\": \"{}\"}}", e); return ()}
+        };
+        let http_method = match reqwest::Method::from_str(method){
+            Ok(x) => x,
+            Err(e) => {println!("{{\"error\": \"{}\"}}", e); return ()}
+        };
+
+        let mut req = new_os.make_url(http_method, resource_type, endpoint.into());
+
+        req = match body {
+            Some(x) => {
+                let q: String = x.collect::<Vec<&str>>().join(" ");
+                println!("{}", q);
+                let v: serde_json::Value = match serde_json::from_str(&q){
+                    Ok(x) => x,
+                    Err(e) => {println!("{{\"error\": \"{}\"}}", e); return ()}
+                };
+                req.json(&v)
+            },
+            None => req
+        };
+        let mut lbab = req.send().expect("request failed");
+        let outcome = match Openstack::handle_response(&mut lbab){
+            Ok(x) => x,
+            Err(e) => {println!("{}", e); return}
+        };
+
+        println!("{}", serde_json::to_string_pretty(&outcome).unwrap());
+        return ();
+    }
+
+    let (resource_input, resource_sub) = match command_sub.subcommand(){
+        (x, Some(y)) => (x, y),
+        (_x, None) => return ()
+    };
+    let resource_options = make_args_from_arg_matches(resource_sub);
+
+
+    // println!("{}", os_cloud);
+
+    // println!("{:?}", command_input);
+    // println!("{:?}", resource_input);
+    // println!("{:?}", matches_options);
+    // println!("{:?}", command_options);
+    // println!("{:?}", resource_options);
+
+
 
     if !new_os.is_resource_available(resource_input.into()){
         println!("error: endpoint for resource '{}' is not available", resource_input);

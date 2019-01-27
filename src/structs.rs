@@ -40,6 +40,7 @@ pub struct PostParameter{
     pub required: bool,
     #[serde(default = "false_bool")]
     pub hidden: bool,
+    pub default: Option<String>
 }
 
 impl ResourceMap{
@@ -116,6 +117,23 @@ impl ResourceMap{
             return Err(Error::new(ErrorKind::InvalidData, format!("'{}' is not a valid resource", &user_input)))
         } else{
             Ok(self.map.get(&tmp).expect("comparision went wrong").clone())
+        }
+    }
+
+    pub fn get_resource_type(&self, user_input: String) -> Result<ResourceTypeEnum, Error>{
+        let mut tmp = String::from("");
+        let mut found = false;
+        for key in self.types.keys() {
+            if compare_different_cases(&convert_to_multiple(user_input.clone()), &convert_to_multiple(key.to_string())){
+                tmp = key.to_string();
+                found = true;
+                break;
+            }
+        }
+        if !found{
+            return Err(Error::new(ErrorKind::InvalidData, format!("'{}' is not a valid resource type", &user_input)))
+        } else{
+            Ok(self.types.get(&tmp).expect("comparision went wrong").clone())
         }
     }
 }

@@ -4,7 +4,7 @@ use std::fmt;
 use reqwest::Method;
 
 
-#[derive(Debug, Clone, EnumIter)]
+#[derive(Debug, Clone, PartialEq, EnumIter)]
 pub enum OSOperation{
     List,
     Show,
@@ -12,6 +12,7 @@ pub enum OSOperation{
     Delete,
     Update,
     Add,
+    Call,
     None,
 }
 
@@ -24,6 +25,7 @@ impl<'a> From<&'a str> for OSOperation{
             "delete" | "remove" | "rm" => OSOperation::Delete,
             "patch" | "update" => OSOperation::Update,
             "add" | "put" | "append" => OSOperation::Add,
+            "call" | "do" | "raw" => OSOperation::Call,
             _ => OSOperation::None,
         }
     }
@@ -49,6 +51,7 @@ impl From<OSOperation> for String{
             OSOperation::Delete => "delete".into(),
             OSOperation::Update => "update".into(),
             OSOperation::Add => "add".into(),
+            OSOperation::Call => "call".into(),
             OSOperation::None => "".into(),
         }
     }
@@ -70,6 +73,7 @@ impl OSOperation{
             OSOperation::Delete => Method::DELETE,
             OSOperation::Update => Method::PATCH,
             OSOperation::Add => Method::PUT,
+            OSOperation::Call => Method::GET,
             OSOperation::None => Method::GET,
         }
     }

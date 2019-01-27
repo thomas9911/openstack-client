@@ -27,144 +27,192 @@ subcommands:
             help: id of object that will be used
             required: true
             index: 1
+        visible_aliases:
+        - flavor
     - keypairs:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - keypair
     - limits:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - limit
     - server-groups:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - server-group
     - servers:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - server
     - credentials:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - credential
     - domains:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - domain
     - groups:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - group
     - projects:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - project
     - users:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - user
     - images:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - image
     - address-scopes:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - address-scope
     - availability-zones:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - availability-zone
     - floating-ips:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - floating-ip
     - networks:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - network
     - ports:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - port
     - routers:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - router
     - security-groups:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - security-group
     - security-groups-rules:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - security-groups-rule
     - subnets:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - subnet
     - attachments:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - attachment
     - backups:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - backup
     - snapshots:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - snapshot
     - volumes:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - volume
 - list:
     about: lists the given resource.
     visible_aliases:
@@ -181,121 +229,169 @@ subcommands:
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - flavor
     - keypairs:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - keypair
     - limits:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - limit
     - server-groups:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - server-group
     - servers:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - server
     - credentials:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - credential
     - domains:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - domain
     - groups:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - group
     - projects:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - project
     - users:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - user
     - images:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - image
     - address-scopes:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - address-scope
     - availability-zones:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - availability-zone
     - floating-ips:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - floating-ip
     - networks:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - network
     - ports:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - port
     - routers:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - router
     - security-groups:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - security-group
     - security-groups-rules:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - security-groups-rule
     - subnets:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - subnet
     - attachments:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - attachment
     - backups:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - backup
     - snapshots:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - snapshot
     - volumes:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - volume
 - new:
     about: create a new item from the given resource.
     visible_aliases:
@@ -312,6 +408,8 @@ subcommands:
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - flavor
     - keypairs:
         index: 1
         case_insensitive: true
@@ -340,16 +438,22 @@ subcommands:
             long: user_id
             takes_value: true
             multiple: false
+        visible_aliases:
+        - keypair
     - limits:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - limit
     - server-groups:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - server-group
     - servers:
         index: 1
         case_insensitive: true
@@ -387,46 +491,83 @@ subcommands:
             long: network-id
             takes_value: true
             multiple: false
+        visible_aliases:
+        - server
     - credentials:
         index: 1
         case_insensitive: true
         about: resource A
-        args: []
+        args:
+        - project_id:
+            help: The ID for the project.
+            required: true
+            long: project_id
+            takes_value: true
+            multiple: false
+        - user_id:
+            help: The ID of the user who owns the credential.
+            required: true
+            long: user_id
+            takes_value: true
+            multiple: false
+        - type:
+            help: The credential type, such as ec2 or cert. The implementation determines
+              the list of supported types.
+            long: type
+            takes_value: true
+            multiple: false
+            default_value: ec2
+        visible_aliases:
+        - credential
     - domains:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - domain
     - groups:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - group
     - projects:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - project
     - users:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - user
     - images:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - image
     - address-scopes:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - address-scope
     - availability-zones:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - availability-zone
     - floating-ips:
         index: 1
         case_insensitive: true
@@ -445,56 +586,78 @@ subcommands:
             long: cheese
             takes_value: true
             multiple: true
+        visible_aliases:
+        - floating-ip
     - networks:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - network
     - ports:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - port
     - routers:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - router
     - security-groups:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - security-group
     - security-groups-rules:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - security-groups-rule
     - subnets:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - subnet
     - attachments:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - attachment
     - backups:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - backup
     - snapshots:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - snapshot
     - volumes:
         index: 1
         case_insensitive: true
         about: resource A
         args: []
+        visible_aliases:
+        - volume
 - delete:
     about: delete an item from the given resource.
     visible_aliases:
@@ -513,144 +676,192 @@ subcommands:
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - flavor
     - keypairs:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - keypair
     - limits:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - limit
     - server-groups:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - server-group
     - servers:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - server
     - credentials:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - credential
     - domains:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - domain
     - groups:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - group
     - projects:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - project
     - users:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - user
     - images:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - image
     - address-scopes:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - address-scope
     - availability-zones:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - availability-zone
     - floating-ips:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - floating-ip
     - networks:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - network
     - ports:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - port
     - routers:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - router
     - security-groups:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - security-group
     - security-groups-rules:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - security-groups-rule
     - subnets:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - subnet
     - attachments:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - attachment
     - backups:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - backup
     - snapshots:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - snapshot
     - volumes:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - volume
 - patch:
     about: update an item from the given resource.
     visible_aliases:
@@ -668,6 +879,8 @@ subcommands:
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - flavor
     - keypairs:
         index: 1
         case_insensitive: true
@@ -697,18 +910,24 @@ subcommands:
             takes_value: true
             multiple: false
         - id: *id001
+        visible_aliases:
+        - keypair
     - limits:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - limit
     - server-groups:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - server-group
     - servers:
         index: 1
         case_insensitive: true
@@ -747,54 +966,91 @@ subcommands:
             takes_value: true
             multiple: false
         - id: *id001
+        visible_aliases:
+        - server
     - credentials:
         index: 1
         case_insensitive: true
         about: resource A
         args:
+        - project_id:
+            help: The ID for the project.
+            required: true
+            long: project_id
+            takes_value: true
+            multiple: false
+        - user_id:
+            help: The ID of the user who owns the credential.
+            required: true
+            long: user_id
+            takes_value: true
+            multiple: false
+        - type:
+            help: The credential type, such as ec2 or cert. The implementation determines
+              the list of supported types.
+            long: type
+            takes_value: true
+            multiple: false
+            default_value: ec2
         - id: *id001
+        visible_aliases:
+        - credential
     - domains:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - domain
     - groups:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - group
     - projects:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - project
     - users:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - user
     - images:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - image
     - address-scopes:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - address-scope
     - availability-zones:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - availability-zone
     - floating-ips:
         index: 1
         case_insensitive: true
@@ -814,66 +1070,88 @@ subcommands:
             takes_value: true
             multiple: true
         - id: *id001
+        visible_aliases:
+        - floating-ip
     - networks:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - network
     - ports:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - port
     - routers:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - router
     - security-groups:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - security-group
     - security-groups-rules:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - security-groups-rule
     - subnets:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - subnet
     - attachments:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - attachment
     - backups:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - backup
     - snapshots:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - snapshot
     - volumes:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - volume
 - add:
     about: add a propety from an item from the given resource.
     visible_aliases:
@@ -892,6 +1170,8 @@ subcommands:
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - flavor
     - keypairs:
         index: 1
         case_insensitive: true
@@ -921,18 +1201,24 @@ subcommands:
             takes_value: true
             multiple: false
         - id: *id001
+        visible_aliases:
+        - keypair
     - limits:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - limit
     - server-groups:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - server-group
     - servers:
         index: 1
         case_insensitive: true
@@ -971,54 +1257,91 @@ subcommands:
             takes_value: true
             multiple: false
         - id: *id001
+        visible_aliases:
+        - server
     - credentials:
         index: 1
         case_insensitive: true
         about: resource A
         args:
+        - project_id:
+            help: The ID for the project.
+            required: true
+            long: project_id
+            takes_value: true
+            multiple: false
+        - user_id:
+            help: The ID of the user who owns the credential.
+            required: true
+            long: user_id
+            takes_value: true
+            multiple: false
+        - type:
+            help: The credential type, such as ec2 or cert. The implementation determines
+              the list of supported types.
+            long: type
+            takes_value: true
+            multiple: false
+            default_value: ec2
         - id: *id001
+        visible_aliases:
+        - credential
     - domains:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - domain
     - groups:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - group
     - projects:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - project
     - users:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - user
     - images:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - image
     - address-scopes:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - address-scope
     - availability-zones:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - availability-zone
     - floating-ips:
         index: 1
         case_insensitive: true
@@ -1038,64 +1361,123 @@ subcommands:
             takes_value: true
             multiple: true
         - id: *id001
+        visible_aliases:
+        - floating-ip
     - networks:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - network
     - ports:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - port
     - routers:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - router
     - security-groups:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - security-group
     - security-groups-rules:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - security-groups-rule
     - subnets:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - subnet
     - attachments:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - attachment
     - backups:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - backup
     - snapshots:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - snapshot
     - volumes:
         index: 1
         case_insensitive: true
         about: resource A
         args:
         - id: *id001
+        visible_aliases:
+        - volume
+- call:
+    about: call an endpoint that is not supported by the commandline interface
+    visible_aliases:
+    - do
+    - raw
+    case_insensitive: true
+    index: 1
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
+    - method:
+        help: http method to use
+        takes_value: true
+        possible_values:
+        - POST
+        - GET
+        - PATCH
+        - DELETE
+        - PUT
+        - OPTIONS
+        - HEAD
+        - CONNECT
+        - TRACE
+        required: true
+    - type:
+        help: the openstack type to use, such as 'compute' or 'image'
+        takes_value: true
+        required: true
+    - endpoint:
+        help: endpoint or path to send the call to
+        takes_value: true
+        required: true
+    - body:
+        help: 'a json object as a string, for example "{\"test\": \"test\"}"'
+        takes_value: true
+        value_name: BODY
 

@@ -62,6 +62,26 @@ servers:
 credentials:
   endpoint_path: credentials
   resource_type: identity
+  post_parameters:
+    - name: project_id
+      path: credentials.project_id
+      required: true
+      type: string
+      help: The ID for the project.
+    - name: user_id
+      path: credentials.user_id
+      required: true
+      type: string
+      help: The ID of the user who owns the credential.
+    - name: blob
+      path: credentials.blob
+      type: string
+      hidden: true
+    - name: type
+      path: credentials.type
+      type: string
+      help: The credential type, such as ec2 or cert. The implementation determines the list of supported types.
+      default: ec2
 domains:
   endpoint_path: domains
   resource_type: identity
