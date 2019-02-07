@@ -1480,4 +1480,115 @@ subcommands:
         help: 'a json object as a string, for example "{\"test\": \"test\"}"'
         takes_value: true
         value_name: BODY
+- start:
+    about: start the resource
+    visible_aliases: []
+    case_insensitive: true
+    index: 1
+    subcommands:
+    - servers:
+        index: 1
+        case_insensitive: true
+        about: start the server
+        args:
+        - id: *id001
+        visible_aliases:
+        - server
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
+- stop:
+    about: stop the resource
+    visible_aliases: []
+    case_insensitive: true
+    index: 1
+    subcommands:
+    - servers:
+        index: 1
+        case_insensitive: true
+        about: stop the server
+        args:
+        - id: *id001
+        visible_aliases:
+        - server
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
+- suspend:
+    about: suspend the resource
+    visible_aliases: []
+    case_insensitive: true
+    index: 1
+    subcommands:
+    - servers:
+        index: 1
+        case_insensitive: true
+        about: suspend the server
+        args:
+        - id: *id001
+        visible_aliases:
+        - server
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
+- output:
+    about: get the console output from the resource
+    visible_aliases: []
+    case_insensitive: true
+    index: 1
+    subcommands:
+    - servers:
+        index: 1
+        case_insensitive: true
+        about: get the console output from the server
+        args:
+        - id: *id001
+        - length:
+            help: The number of lines to fetch from the end of console log. All lines
+              will be returned if this is not specified.
+            long: length
+            multiple: false
+            takes_value: true
+        visible_aliases:
+        - server
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
+- remote_console:
+    about: create a remote console to resource
+    visible_aliases: []
+    case_insensitive: true
+    index: 1
+    subcommands:
+    - servers:
+        index: 1
+        case_insensitive: true
+        about: create a remote console to server
+        args:
+        - id: *id001
+        - protocol:
+            help: The protocol of remote console. The valid values are vnc, spice,
+              rdp, serial and mks. The protocol mks is added since Microversion 2.8.
+            required: true
+            long: protocol
+            multiple: false
+            takes_value: true
+        - type:
+            help: The type of remote console. The valid values are novnc, xvpvnc,
+              rdp-html5, spice-html5, serial, and webmks. The type webmks is added
+              since Microversion 2.8.
+            required: true
+            long: type
+            multiple: false
+            takes_value: true
+        visible_aliases:
+        - server
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
 

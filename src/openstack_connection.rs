@@ -1,12 +1,13 @@
 
 use std::io::{Error, ErrorKind};
 use std::collections::HashMap;
+use std::str::FromStr;
 
 use chrono::prelude::*;
 use chrono::Duration;
 
 use enums::OSOperation;
-use structs::{ResourceMap, ResourceTypeEnum, Resource};
+use structs::{ResourceMap, ResourceTypeEnum, Resource, ActionMap};
 use utils::{add_slash, read_yaml, get_first_value_from_hashmap_with_vec, make_hashmaps_from_dot_notation};
 use uuid::Uuid;
 
@@ -167,7 +168,8 @@ impl OpenstackConnection{
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Openstack{
     pub connection: OpenstackConnection,
-    pub resources: ResourceMap
+    pub resources: ResourceMap,
+    pub actions: ActionMap
 }
 
 impl Openstack{
@@ -181,7 +183,8 @@ impl Openstack{
         if let Some(x) = &connection.endpoints{
             rc.update_from_identity(x)
         };
-        Ok(Openstack{connection, resources: rc})
+        let ac = ActionMap::new();
+        Ok(Openstack{connection, resources: rc, actions: ac })
     }
 
     pub fn refresh_token(&mut self) -> Result<&mut Openstack, Error>{
@@ -194,7 +197,7 @@ impl Openstack{
 
     #[allow(dead_code)]
     pub fn list(&mut self, res: String) -> Result<serde_json::Value, Error>{
-        self.act(OSOperation::List, res.clone(), &HashMap::new(), &HashMap::new())
+        self.act("list".to_string(), res.clone(), &HashMap::new(), &HashMap::new())
     }
 
     #[allow(dead_code)]
@@ -212,7 +215,7 @@ impl Openstack{
 
     }
 
-    pub fn act(&mut self, op: OSOperation, res: String,  op_args: &HashMap<String, Vec<String>>, res_args: &HashMap<String, Vec<String>>) -> Result<serde_json::Value, Error>{
+    pub fn act(&mut self, op: String, res: String,  op_args: &HashMap<String, Vec<String>>, res_args: &HashMap<String, Vec<String>>) -> Result<serde_json::Value, Error>{
         if self.connection.endpoints.is_none(){
             self.refresh_token().expect("error while refreshing token");
         }
@@ -230,10 +233,6 @@ impl Openstack{
             None => false
         };
 
-        if is_dry_run{
-            return Ok(post_body)
-        }
-
         // let endpoint: String = match r.resource_type.clone(){
         //     ResourceTypeEnum::ResourceType(x) => x.endpoint,
         //     ResourceTypeEnum::String(x) => x,
@@ -246,8 +245,24 @@ impl Openstack{
             // Some(id) => self.connection.request(op.match_http_method(), &format!("{}{}/{}", endpoint, path, id)),
             // None => self.connection.request(op.match_http_method(), &format!("{}{}", endpoint, path))
         };
+        let http_method: reqwest::Method;
+        if let Some(action) = self.actions.get_action(op.clone(), r.name){
+            post_body = action.make_body(res_args);
+            path = format!("{}/{}", path, action.url_parameter);
+            http_method = reqwest::Method::from_str(&action.http_method).expect(&format!("the method {} from {} {} is not valid", action.http_method, action.action, action.resource));
+        } else{
+            let op_parsed = match OSOperation::from_str(&op){
+                Ok(x) => x,
+                Err(_e) => return Err(Error::new(ErrorKind::Other, format!("'{}' is not a valid operation", &op)))
+            };
+            http_method = op_parsed.match_http_method();
+        }
 
-        let prepared_url = self.make_url(op.match_http_method(), r.resource_type.clone(), path);
+        let prepared_url = self.make_url(http_method, r.resource_type.clone(), path);
+
+        if is_dry_run{
+            return Ok(post_body)
+        }
 
         let mut response = match &post_body{
             serde_json::Value::Null => {

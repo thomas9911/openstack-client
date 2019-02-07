@@ -61,13 +61,13 @@ fn main() {
             Some(x) => Shell::from_str(x).unwrap(),
             None => return
         };
-        App::from_yaml(&yml).gen_completions_to(crate_name!(), a_shell, &mut std::io::stdout());
+        App::from_yaml(&yml).gen_completions_to("openstack-client", a_shell, &mut std::io::stdout()); // crate_name!()
         return ();
     }
 
     let matches_options = make_args_from_arg_matches(&matches);
     let command_options = make_args_from_arg_matches(command_sub);
-    let os_command = OSOperation::from(command_input);
+    // let os_command = OSOperation::from(command_input);
 
     if let Some(x) = get_first_value_from_hashmap_with_vec(&matches_options, "os-cloud"){
         os_cloud = x;
@@ -86,7 +86,7 @@ fn main() {
         Err(e) => {println!("{}", e); return}
     };
 
-    if os_command == OSOperation::Call {
+    if OSOperation::from(command_input) == OSOperation::Call {
         println!("{:?}", command_sub);
         let method = command_sub.value_of("method").expect("this value is requered");
         let os_type = command_sub.value_of("type").expect("this value is requered");
@@ -148,7 +148,7 @@ fn main() {
         return ()
     };
 
-    let outcome = match new_os.act(os_command, resource_input.to_string(), &command_options, &resource_options){
+    let outcome = match new_os.act(command_input.to_string(), resource_input.to_string(), &command_options, &resource_options){
         Ok(x) => x,
         Err(e) => {println!("{}", e); return}
     };
