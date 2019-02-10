@@ -1,0 +1,61 @@
+# these are commands only for the specified resource
+
+start:
+  aliases: []
+  help: start the resource
+  resources:
+    - resource: servers
+      help: start the server
+      url_parameter: action
+      requires_id: true
+      body_name: "os-start"
+      params: []
+stop:
+  aliases: []
+  help: stop the resource
+  resources:
+    - resource: servers
+      help: stop the server
+      url_parameter: action
+      requires_id: true
+      body_name: "os-stop"
+      params: []
+suspend:
+  aliases: []
+  help: suspend the resource
+  resources:
+    - resource: servers
+      help: suspend the server
+      url_parameter: action
+      requires_id: true
+      body_name: "suspend"
+      params: []
+output:
+  aliases: []
+  help: get the console output from the resource
+  resources:
+    - resource: servers
+      help: get the console output from the server
+      url_parameter: action
+      requires_id: true
+      body_name: "os-getConsoleOutput"
+      params:
+        - name: length
+          default: null
+          help: The number of lines to fetch from the end of console log. All lines will be returned if this is not specified.
+remote_console:
+  aliases: []
+  help: create a remote console to resource
+  resources:
+    - resource: servers
+      help: create a remote console to server
+      url_parameter: remote-consoles
+      requires_id: true
+      body_name: "remote_console"
+      params:
+        - name: protocol
+          required: true
+          help: The protocol of remote console. The valid values are vnc, spice, rdp, serial and mks. The protocol mks is added since Microversion 2.8.
+        - name: type
+          required: true
+          help: The type of remote console. The valid values are novnc, xvpvnc, rdp-html5, spice-html5, serial, and webmks. The type webmks is added since Microversion 2.8.
