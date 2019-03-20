@@ -41,7 +41,7 @@ fn main() {
         os_cloud = env::var("OS_CLOUD").unwrap()
     }
 
-    let yml = load_yaml!("../data/cool.yaml");
+    let yml = load_yaml!("../data/cli.yaml");
     let app = App::from_yaml(&yml).subcommand(SubCommand::with_name("generate-autocomplete")
                                     .about("generates autocompletion scripts")
                                     .arg(Arg::with_name("shell")
@@ -140,8 +140,37 @@ fn main() {
     // println!("{:?}", matches_options);
     // println!("{:?}", command_options);
     // println!("{:?}", resource_options);
+    if command_input == "new" && resource_input == "tokens"{
+        if let Some(token) = new_os.connection.token{
+            let return_object = json!({
+                "token": token
+            });
+            println!("{}", serde_json::to_string_pretty(&return_object).unwrap());
+            return;
+        }
+        else{
+            let return_object = json!({
+                "error": "token is not available"
+            });
+            println!("{}", serde_json::to_string_pretty(&return_object).unwrap());
+        }
+    }
 
-
+    if command_input == "list" && resource_input == "endpoints"{
+        if let Some(endpoints) = new_os.connection.endpoints{
+            let return_object = json!({
+                "endpoints": endpoints
+            });
+            println!("{}", serde_json::to_string_pretty(&return_object).unwrap());
+            return;
+        }
+        else{
+            let return_object = json!({
+                "error": "endpoints are not available"
+            });
+            println!("{}", serde_json::to_string_pretty(&return_object).unwrap());
+        }
+    }
 
     if !new_os.is_resource_available(resource_input.into()){
         println!("error: endpoint for resource '{}' is not available", resource_input);

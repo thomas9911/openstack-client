@@ -101,6 +101,22 @@ subcommands:
         - id: *id001
         visible_aliases:
         - user
+    - tokens:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - token
+    - endpoints:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - endpoint
     - images:
         index: 1
         case_insensitive: true
@@ -294,6 +310,20 @@ subcommands:
         args: []
         visible_aliases:
         - user
+    - tokens:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - token
+    - endpoints:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - endpoint
     - images:
         index: 1
         case_insensitive: true
@@ -547,6 +577,20 @@ subcommands:
         args: []
         visible_aliases:
         - user
+    - tokens:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - token
+    - endpoints:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - endpoint
     - images:
         index: 1
         case_insensitive: true
@@ -750,6 +794,22 @@ subcommands:
         - id: *id001
         visible_aliases:
         - user
+    - tokens:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - token
+    - endpoints:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - endpoint
     - images:
         index: 1
         case_insensitive: true
@@ -1027,6 +1087,22 @@ subcommands:
         - id: *id001
         visible_aliases:
         - user
+    - tokens:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - token
+    - endpoints:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - endpoint
     - images:
         index: 1
         case_insensitive: true
@@ -1318,6 +1394,22 @@ subcommands:
         - id: *id001
         visible_aliases:
         - user
+    - tokens:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - token
+    - endpoints:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - endpoint
     - images:
         index: 1
         case_insensitive: true

@@ -109,6 +109,7 @@ impl OpenstackConnection{
 
     fn parse_identity_reponse(&mut self, data: &serde_json::Value){
         let mut endpoints: HashMap<String, String> = HashMap::new();
+        // println!("{}", serde_json::to_string_pretty(data).unwrap());
 
         match data["token"]["catalog"].as_array(){
             Some(catalog) => {
@@ -293,7 +294,13 @@ impl Openstack{
 
     pub fn handle_response(response: &mut reqwest::Response) -> Result<serde_json::Value, Error>{
         if !response.status().is_success(){
-            return Err(Error::new(ErrorKind::Other, format!("{{\"response\": \"{}\"}}", response.text().unwrap())))
+            let error = match response.json::<serde_json::Value>(){
+                Ok(x) => x,
+                Err(_e) => json!({
+                    "error": response.text().unwrap()
+                })
+            };
+            return Err(Error::new(ErrorKind::Other, serde_json::to_string_pretty(&error).unwrap()))
         }
         match response.json::<serde_json::Value>(){
             Ok(x) => return Ok(x),
@@ -301,7 +308,7 @@ impl Openstack{
             // Err(_e) => return Err(Error::new(ErrorKind::InvalidData, "Response is not valid json"))
         };
         match response.text(){
-            Ok(x) => Ok(x.into()),
+            Ok(x) => Ok(json!({"response": x})),
             Err(_e) => Err(Error::new(ErrorKind::InvalidData, "Response cannot be parsed"))
         }
     }

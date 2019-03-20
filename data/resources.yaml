@@ -94,6 +94,12 @@ projects:
 users:
   endpoint_path: users
   resource_type: identity
+tokens:
+  endpoint_path: auth/tokens
+  resource_type: identity
+endpoints:
+  endpoint_path: endpoints
+  resource_type: identity
 images:
   endpoint_path: v2/images
   resource_type: image
