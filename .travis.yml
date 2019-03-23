@@ -12,8 +12,11 @@ matrix:
   fast_finish: true
 cache: cargo
 script:
-  - cargo build --verbose
-  - cargo test --verbose
+  # - cargo build --verbose
+  # - cargo test --verbose
+  - echo $AWS_ENDPOINT
+  - echo $AWS_ACCESS_KEY
+  - echo $AWS_BUCKET
 deploy:
   provider: s3
   endpoint: $AWS_ENDPOINT
