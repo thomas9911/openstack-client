@@ -6,6 +6,12 @@ language: rust
 rust:
   - stable
   # - nightly
+before_install:
+  - sudo apt-get update
+  - sudo apt-get rclone
+env:
+  - RCLONE_CONFIG_RUSTCI_TYPE=swift
+  - RCLONE_CONFIG_RUSTCI_ENV_AUTH=true
 matrix:
   allow_failures:
     - rust: nightly
@@ -14,18 +20,9 @@ cache: cargo
 script:
   # - cargo build --verbose
   # - cargo test --verbose
-  - echo $AWS_ENDPOINT
-  - echo $AWS_ACCESS_KEY_ID
-  - echo $AWS_BUCKET
+  - echo $OS_USERNAME
 deploy:
-  provider: s3
-  endpoint: $AWS_ENDPOINT
-  skip_cleanup: true
-  access_key_id: $AWS_ACCESS_KEY_ID
-  secret_access_key: $AWS_SECRET_ACCESS_KEY
-  bucket: $AWS_BUCKET
-  region: ams
+  provider: script
+  script: rclone sync /home/travis/build/thomas9911/openstack-client/target rustci:rustci
   on:
     all_branches: true
-
-    #/home/travis/build/thomas9911/openstack-client/target
