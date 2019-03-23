@@ -63,6 +63,7 @@ fn main() {
         );
     let matches = app.get_matches();
     // println!("{:?}", matches);
+    let format = matches.value_of("format").expect("this has a default");
 
     let (command_input, command_sub) = match matches.subcommand(){
         (x, Some(y)) => (x, y),
@@ -101,12 +102,12 @@ fn main() {
     };
 
     if OSOperation::from(command_input) == OSOperation::Call {
-        println!("{:?}", command_sub);
+        // println!("{:?}", command_sub);
         let method = command_sub.value_of("method").expect("this value is requered");
         let os_type = command_sub.value_of("type").expect("this value is requered");
         let endpoint = command_sub.value_of("endpoint").expect("this value is requered");
         let body = command_sub.values_of("body");
-        println!("{} {} {}", method, os_type, endpoint);
+        // println!("{} {} {}", method, os_type, endpoint);
         let resource_type = match new_os.resources.get_resource_type(os_type.into()){
             Ok(x) => x,
             Err(e) => {println!("{{\"error\": \"{}\"}}", e); return ()}
@@ -117,6 +118,9 @@ fn main() {
         };
 
         let mut req = new_os.make_url(http_method, resource_type, endpoint.into());
+        if false{
+            println!("{:?}", req);
+        }
 
         req = match body {
             Some(x) => {
@@ -136,7 +140,7 @@ fn main() {
             Err(e) => {println!("{}", e); return}
         };
 
-        println!("{}", serde_json::to_string_pretty(&outcome).unwrap());
+        print_value(&outcome, format);
         return ();
     }
 
@@ -159,14 +163,15 @@ fn main() {
             let return_object = json!({
                 "token": token
             });
-            println!("{}", serde_json::to_string_pretty(&return_object).unwrap());
+            print_value(&return_object, format);
             return;
         }
         else{
             let return_object = json!({
                 "error": "token is not available"
             });
-            println!("{}", serde_json::to_string_pretty(&return_object).unwrap());
+            print_value(&return_object, format);
+            return;
         }
     }
 
@@ -175,14 +180,15 @@ fn main() {
             let return_object = json!({
                 "endpoints": endpoints
             });
-            println!("{}", serde_json::to_string_pretty(&return_object).unwrap());
+            print_value(&return_object, format);
             return;
         }
         else{
             let return_object = json!({
                 "error": "endpoints are not available"
             });
-            println!("{}", serde_json::to_string_pretty(&return_object).unwrap());
+            print_value(&return_object, "json");
+            return;
         }
     }
 
@@ -197,7 +203,7 @@ fn main() {
     };
 
     // println!("{}", serde_json::to_string_pretty(&outcome).unwrap());
-    print_value(&outcome, "json");
+    print_value(&outcome, format);
 
 }
 

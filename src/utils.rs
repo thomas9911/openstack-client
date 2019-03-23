@@ -199,7 +199,7 @@ pub fn print_value(v: &serde_json::Value, f: &str){
         "table" => {
             let a_csv =  convert_to_csv(v);
             let mut table = Table::from_csv_string(&a_csv).unwrap();
-            table.set_format(*prettytable::format::consts::FORMAT_BORDERS_ONLY);
+            table.set_format(*prettytable::format::consts::FORMAT_NO_LINESEP_WITH_TITLE);
             format!("{}", table)
         }
         _ => String::from("")

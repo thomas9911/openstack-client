@@ -18,13 +18,15 @@ pub struct OpenstackConnection{
     pub client: reqwest::Client,
     pub token: Option<String>,
     pub token_expiry: Option<String>,
-    pub endpoints: Option<HashMap<String, String>>
+    pub endpoints: Option<HashMap<String, String>>,
+    pub domain: Option<String>,
+    pub user: Option<String>,
 }
 
 impl OpenstackConnection{
     pub fn new(config: OpenstackInfoMap) -> OpenstackConnection{
         let client = reqwest::Client::new();
-        OpenstackConnection{config, client, token: None, token_expiry: None, endpoints: None}
+        OpenstackConnection{config, client, token: None, token_expiry: None, endpoints: None, domain: None, user: None}
     }
 
     #[allow(dead_code)]
@@ -533,3 +535,4 @@ impl Default for OpenstackInfoMap {
 }
 
 
+// list ec2 credentials /users/<user_id>/credentials/OS-EC2
