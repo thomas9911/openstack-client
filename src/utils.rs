@@ -2,6 +2,10 @@ use std::collections::HashMap;
 use std::io::{Error, ErrorKind};
 use yaml_rust::yaml;
 
+use std::io;
+use std::collections::HashSet;
+use prettytable::Table;
+
 #[allow(dead_code)]
 pub fn convert_to_singular(tmp: &str) -> &str {
     // not 100% bulletproof but good enough for matching
@@ -182,6 +186,91 @@ fn merge(a: &mut serde_json::Value, b: &serde_json::Value) {
             }
         }
     }
+}
+
+
+pub fn print_value(v: &serde_json::Value, f: &str){
+
+    let txt = match f{
+        "json" => {serde_json::to_string_pretty(v).unwrap()},
+        "csv" => {
+            convert_to_csv(v)
+        },
+        "table" => {
+            let a_csv =  convert_to_csv(v);
+            let mut table = Table::from_csv_string(&a_csv).unwrap();
+            table.set_format(*prettytable::format::consts::FORMAT_BORDERS_ONLY);
+            format!("{}", table)
+        }
+        _ => String::from("")
+    };
+
+    println!("{}", txt);
+}
+
+
+fn convert_to_csv(v: &serde_json::Value) -> String{
+    match v{
+        serde_json::Value::Object(x) => {
+            let mut sorted_headers: Vec<String> = vec![];
+            let mut block_data = vec![];
+            for data in x.values(){
+                match data {
+                    serde_json::Value::Array(rows) => {
+                        let mut headers = HashSet::new();
+                        for row in rows{
+                            match row{
+                                serde_json::Value::Object(item) => {
+                                    for (a, b) in item.iter(){
+                                        match b{
+                                            serde_json::Value::Object(_x) => (),
+                                            serde_json::Value::Array(_x) => (),
+                                            _x => {headers.insert(a.clone());}
+                                        }
+                                    };
+                                },
+                                _ => ()
+                            }
+                        }
+                        sorted_headers = headers.iter().map(|x| x.clone()).collect();
+                        sorted_headers.sort();
+
+                        for row in rows{
+                            match row{
+                                serde_json::Value::Object(item) => {
+                                    let mut a_row = vec![];
+                                    for m in sorted_headers.iter(){
+                                        let p = serde_json::Value::String("".into());
+                                        let pop = item.get(m).unwrap_or(&p);
+                                        match pop{
+                                            serde_json::Value::Object(_x) => a_row.push(p.clone()),
+                                            serde_json::Value::Array(_x) => a_row.push(p.clone()),
+                                            x => {
+                                                a_row.push(x.clone())
+                                            }
+                                        }
+                                    }
+                                    block_data.push(a_row);
+                                },
+                                _ => ()
+                            }
+                        }
+                    }
+                    _ => ()
+                }
+            }
+            let mut wtr = csv::Writer::from_writer(vec![]);
+            wtr.write_record(sorted_headers).unwrap();
+            for row in block_data.iter(){
+                wtr.serialize(row).unwrap();
+            }
+
+            let a_csv = String::from_utf8(wtr.into_inner().unwrap()).unwrap();
+            return a_csv;
+        },
+        _ => ()
+    }
+    return String::from("");
 }
 
 
@@ -454,8 +543,32 @@ fn test_hashmaps_from_dot_notation(){
 
 }
 
+// #[test]
+// fn test_creditidentials(){
+//     let hex = hash_credidentials("hello world".to_string());
+//     assert_eq!(hex, "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9");
+// }
+
+
 #[test]
-fn test_creditidentials(){
-    let hex = hash_credidentials("hello world".to_string());
-    assert_eq!(hex, "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9");
+fn test_json_convert_to_csv_for_particular_jsons(){
+    let a_json = json!({
+        "other": [{
+            "more": "cool"
+        }, {
+            "more": "wow",
+            "less": "top"
+        }, {
+            "less": 15,
+            "more": [
+                "this", "data", "is", "now", "gone"
+            ]
+        }, {
+            "more": true
+        }],
+    });
+
+    let a_csv = "less,more\n,cool\ntop,wow\n15,\n,true\n";
+
+    assert_eq!(a_csv, convert_to_csv(&a_json));
 }

@@ -19,4 +19,6 @@ structopt = "0.2"
 heck = "*"
 yaml-rust = "*"
 uuid = {version = "0.7", features = ["serde", "v4"]}
+csv = {version = "*"}
+prettytable-rs = {version = "^0.8", features = ["csv"]}
 # structopt-derive = "*"

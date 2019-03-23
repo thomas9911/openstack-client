@@ -4,6 +4,9 @@ extern crate serde_json;
 extern crate serde_yaml;
 #[macro_use]
 extern crate serde_derive;
+extern crate csv;
+#[macro_use]
+extern crate prettytable;
 
 extern crate chrono;
 #[macro_use]
@@ -32,7 +35,7 @@ use std::string::ToString;
 
 use enums::OSOperation;
 use openstack_connection::{OpenstackInfoMap, Openstack};
-use utils::{get_first_value_from_hashmap_with_vec};
+use utils::{get_first_value_from_hashmap_with_vec, print_value};
 
 
 fn main() {
@@ -42,11 +45,22 @@ fn main() {
     }
 
     let yml = load_yaml!("../data/cli.yaml");
-    let app = App::from_yaml(&yml).subcommand(SubCommand::with_name("generate-autocomplete")
-                                    .about("generates autocompletion scripts")
-                                    .arg(Arg::with_name("shell")
-                                        .possible_values(&Shell::variants())
-                                        .help("which shell to generate script for")));
+    let app = App::from_yaml(&yml)
+        .arg(
+            Arg::with_name("format")
+                .short("f")
+                .help("formats output with this format")
+                .takes_value(true)
+                .global(true)
+                .possible_values(&["json", "csv", "table"])
+                .default_value("json")
+        ).subcommand(
+            SubCommand::with_name("generate-autocomplete")
+                .about("generates autocompletion scripts")
+                .arg(Arg::with_name("shell")
+                    .possible_values(&Shell::variants())
+                    .help("which shell to generate script for"))
+        );
     let matches = app.get_matches();
     // println!("{:?}", matches);
 
@@ -182,7 +196,8 @@ fn main() {
         Err(e) => {println!("{}", e); return}
     };
 
-    println!("{}", serde_json::to_string_pretty(&outcome).unwrap());
+    // println!("{}", serde_json::to_string_pretty(&outcome).unwrap());
+    print_value(&outcome, "json");
 
 }
 
@@ -194,3 +209,4 @@ fn make_args_from_arg_matches(matches: &clap::ArgMatches) -> HashMap<String, Vec
     };
     options
 }
+
