@@ -15,12 +15,13 @@ script:
   # - cargo build --verbose
   # - cargo test --verbose
   - echo $AWS_ENDPOINT
-  - echo $AWS_ACCESS_KEY
+  - echo $AWS_ACCESS_KEY_ID
   - echo $AWS_BUCKET
 deploy:
   provider: s3
   endpoint: $AWS_ENDPOINT
   skip_cleanup: true
   bucket: $AWS_BUCKET
+  region: ams
   on:
     all_branches: true
