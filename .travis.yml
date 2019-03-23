@@ -17,10 +17,10 @@ matrix:
 cache: cargo
 script:
   - cargo build --release --verbose
-  - cargo test --verbose
+  - cargo test --release --verbose
   # - echo $OS_USERNAME
 deploy:
   provider: script
-  script: rclone sync /home/travis/build/thomas9911/openstack-client/target rustci:rustci
+  script: rclone sync --include openstack-client* /home/travis/build/thomas9911/openstack-client/target/release rustci:rustci
   on:
     all_branches: true
