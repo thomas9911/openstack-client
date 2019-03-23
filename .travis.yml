@@ -10,8 +10,7 @@ before_install:
   - sudo apt-get update
   - sudo apt-get install rclone
 env:
-  - RCLONE_CONFIG_RUSTCI_TYPE=swift
-  - RCLONE_CONFIG_RUSTCI_ENV_AUTH=true
+  - RCLONE_CONFIG_RUSTCI_TYPE=swift RCLONE_CONFIG_RUSTCI_ENV_AUTH=true
 matrix:
   allow_failures:
     - rust: nightly
