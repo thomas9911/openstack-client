@@ -19,3 +19,5 @@ deploy:
   endpoint: $AWS_ENDPOINT
   skip_cleanup: true
   bucket: $AWS_BUCKET
+  on:
+    all_branches: true
