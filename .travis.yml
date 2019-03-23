@@ -8,7 +8,7 @@ rust:
   # - nightly
 before_install:
   - sudo apt-get update
-  - sudo apt-get rclone
+  - sudo apt-get install rclone
 env:
   - RCLONE_CONFIG_RUSTCI_TYPE=swift
   - RCLONE_CONFIG_RUSTCI_ENV_AUTH=true
