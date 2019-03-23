@@ -16,9 +16,9 @@ matrix:
   fast_finish: true
 cache: cargo
 script:
-  # - cargo build --verbose
-  # - cargo test --verbose
-  - echo $OS_USERNAME
+  - cargo build --release --verbose
+  - cargo test --verbose
+  # - echo $OS_USERNAME
 deploy:
   provider: script
   script: rclone sync /home/travis/build/thomas9911/openstack-client/target rustci:rustci
