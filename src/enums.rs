@@ -1,7 +1,7 @@
 
 use std;
 use std::fmt;
-use reqwest::Method;
+use http::Method;
 
 
 #[derive(Debug, Clone, PartialEq, EnumIter)]

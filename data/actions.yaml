@@ -59,3 +59,35 @@ remote_console:
         - name: type
           required: true
           help: The type of remote console. The valid values are novnc, xvpvnc, rdp-html5, spice-html5, serial, and webmks. The type webmks is added since Microversion 2.8.
+upload:
+  aliases: []
+  help: upload file to resource
+  resources:
+    - resource: objects
+      help: upload file to object store
+      http_method: add
+      url_parameter: "{{ container }}/{{ name }}"
+      requires_id: false
+      body_name: ""
+      is_multipart: true
+      params:
+      - name: file
+        required: true
+        help: the path to the file to upload.
+      - name: name
+        required: false
+        help: a name to give object (Optional).
+      - name: container
+        required: true
+        help: name of the container to use.
+    - resource: containers
+      help: create a container
+      http_method: add
+      url_parameter: "{{ name }}"
+      requires_id: false
+      body_name: ""
+      is_multipart: true
+      params:
+      - name: name
+        required: true
+        help: a name to give object (Optional).

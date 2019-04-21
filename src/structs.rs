@@ -2,6 +2,9 @@ use std::collections::HashMap;
 use std::io::{Error, ErrorKind};
 use utils::{convert_to_multiple, compare_different_cases, get_first_value_from_hashmap_with_vec};
 
+use error::OpenstackError;
+
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ResourceMap {
     pub map: HashMap<String, Resource>,
@@ -40,7 +43,9 @@ pub struct PostParameter{
     pub required: bool,
     #[serde(default = "false_bool")]
     pub hidden: bool,
-    pub default: Option<String>
+    pub default: Option<String>,
+    #[serde(default = "just_return_string", rename = "type")]
+    pub the_type: String,
 }
 
 
@@ -65,7 +70,9 @@ pub struct Action {
     #[serde(default = "empty_vec_action_parameter")]
     pub params: Vec<ActionParameter>,
     #[serde(default = "post_method")]
-    pub http_method: String
+    pub http_method: String,
+    #[serde(default = "false_bool")]
+    pub is_multipart: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -75,6 +82,39 @@ pub struct ActionParameter {
     pub required: bool,
     pub help: Option<String>,
     pub default: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct CommandMap{
+    pub map: HashMap<String, Command>
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Command{
+    #[serde(default = "empty_vec_string")]
+    pub aliases: Vec<String>,
+    pub help: Option<String>,
+    pub requires_id: bool,
+    pub has_body: bool,
+    pub http_method: String
+}
+
+
+impl CommandMap {
+    pub fn new() -> Self {
+        let raw_string_yaml = include_str!("../data/commands.yaml");
+        let yaml_command: serde_yaml::Value = serde_yaml::from_str(raw_string_yaml).expect("commands.yaml is not valid yaml");
+
+        let mut new_map: HashMap<String, Command> = HashMap::new();
+        if let serde_yaml::Value::Mapping(x) = yaml_command{
+            for (a, b) in  x.iter(){
+                let com: Command = serde_yaml::from_value(b.clone()).expect("not a valid command");
+                let name: String = a.as_str().unwrap().to_string();
+                new_map.insert(name, com);
+            }
+        }
+        CommandMap { map: new_map }
+    }
 }
 
 
@@ -114,15 +154,23 @@ impl ActionMap {
 }
 
 impl Action {
-    pub fn make_body(&self, map: &HashMap<String, Vec<String>>) -> serde_json::Value{
+    pub fn make_body(&self, map: &HashMap<String, Vec<serde_json::Value>>) -> serde_json::Value{
+        if self.is_multipart{
+            return serde_json::Value::Null
+        }
         let mut main_body = HashMap::new();
         let body_name = self.body_name.clone();
-        let mut sub_body = HashMap::new();
+        let mut sub_body: HashMap<String, Option<serde_json::Value>> = HashMap::new();
 
         for param in self.params.iter(){
             let kaas = match get_first_value_from_hashmap_with_vec(map, &param.name){
                 Some(x) => Some(x),
-                None => param.default.clone()
+                None => Some({
+                    match param.default{
+                            Some(ref x) => x.clone().into(),
+                            None => serde_json::Value::Null
+                        }
+                    })
             };
             sub_body.insert(param.name.clone(), kaas);
         };
@@ -197,7 +245,7 @@ impl ResourceMap{
         self.types = resource_types;
     }
 
-    pub fn get_resource(&self, user_input: String) -> Result<Resource, Error>{
+    pub fn get_resource(&self, user_input: String) -> Result<Resource, OpenstackError>{
         let mut tmp = String::from("");
         let mut found = false;
         for key in self.map.keys() {
@@ -208,13 +256,13 @@ impl ResourceMap{
             }
         }
         if !found{
-            return Err(Error::new(ErrorKind::InvalidData, format!("'{}' is not a valid resource", &user_input)))
+            return Err(OpenstackError::new(&format!("'{}' is not a valid resource", &user_input)))
         } else{
             Ok(self.map.get(&tmp).expect("comparision went wrong").clone())
         }
     }
 
-    pub fn get_resource_type(&self, user_input: String) -> Result<ResourceTypeEnum, Error>{
+    pub fn get_resource_type(&self, user_input: String) -> Result<ResourceTypeEnum, OpenstackError>{
         let mut tmp = String::from("");
         let mut found = false;
         for key in self.types.keys() {
@@ -225,7 +273,7 @@ impl ResourceMap{
             }
         }
         if !found{
-            return Err(Error::new(ErrorKind::InvalidData, format!("'{}' is not a valid resource type", &user_input)))
+            return Err(OpenstackError::new(&format!("'{}' is not a valid resource type", &user_input)))
         } else{
             Ok(self.types.get(&tmp).expect("comparision went wrong").clone())
         }
@@ -248,6 +296,17 @@ fn empty_vec_action_parameter() -> Vec<ActionParameter> {
 }
 
 #[allow(dead_code)]
+fn empty_vec_string() -> Vec<String> {
+    vec![]
+}
+
+#[allow(dead_code)]
 fn post_method() -> String{
-    reqwest::Method::POST.as_str().to_string()
+    // reqwest::Method::POST.as_str().to_string()
+    String::from("new")
+}
+
+#[allow(dead_code)]
+fn just_return_string() -> String {
+    String::from("string")
 }

@@ -7,24 +7,34 @@ extern crate serde_derive;
 extern crate csv;
 #[macro_use]
 extern crate prettytable;
+extern crate handlebars;
+extern crate indicatif;
 
 extern crate chrono;
 #[macro_use]
 extern crate clap;
 extern crate heck;
 extern crate secstr;
-extern crate reqwest;
+extern crate curl;
+extern crate url;
+// extern crate reqwest;
+extern crate http;
 extern crate rpassword;
 extern crate strum;
 #[macro_use]
 extern crate strum_macros;
 extern crate yaml_rust;
 extern crate uuid;
+extern crate memmap;
 
+mod error;
+mod client;
 mod enums;
 mod utils;
 mod openstack_connection;
 mod structs;
+mod config;
+
 
 use std::collections::HashMap;
 use std::str::FromStr;
@@ -34,8 +44,11 @@ use clap::{Arg, App, SubCommand, Shell};
 use std::string::ToString;
 
 use enums::OSOperation;
-use openstack_connection::{OpenstackInfoMap, Openstack};
-use utils::{get_first_value_from_hashmap_with_vec, print_value};
+use structs::Command;
+use config::{OpenstackInfoMap};
+use openstack_connection::{Openstack};
+use utils::{get_first_value_from_hashmap_with_vec, print_value, make_args_from_arg_matches};
+use error::OpenstackError;
 
 
 fn main() {
@@ -85,7 +98,7 @@ fn main() {
     // let os_command = OSOperation::from(command_input);
 
     if let Some(x) = get_first_value_from_hashmap_with_vec(&matches_options, "os-cloud"){
-        os_cloud = x;
+        os_cloud = x.to_string();
     };
 
     let os_config_env = OpenstackInfoMap::from_env(os_cloud.clone());
@@ -112,17 +125,23 @@ fn main() {
             Ok(x) => x,
             Err(e) => {println!("{{\"error\": \"{}\"}}", e); return ()}
         };
-        let http_method = match reqwest::Method::from_str(method){
+        let _http_method = match http::Method::from_str(method){
             Ok(x) => x,
             Err(e) => {println!("{{\"error\": \"{}\"}}", e); return ()}
         };
+        let command: Command = serde_json::from_value(
+            json!({
+                "aliases": [],
+                "has_body": false,
+                "help": "",
+                "requires_id": false,
+                "http_method": method
+            })
+        ).unwrap();
 
-        let mut req = new_os.make_url(http_method, resource_type, endpoint.into());
-        if false{
-            println!("{:?}", req);
-        }
+        new_os.make_url(command, resource_type, endpoint.into(), None, None);
 
-        req = match body {
+        match body {
             Some(x) => {
                 let q: String = x.collect::<Vec<&str>>().join(" ");
                 println!("{}", q);
@@ -130,11 +149,13 @@ fn main() {
                     Ok(x) => x,
                     Err(e) => {println!("{{\"error\": \"{}\"}}", e); return ()}
                 };
-                req.json(&v)
+                // req.json(&v)
+                new_os.connection.client.set_json(v);
             },
-            None => req
+            _ => ()
         };
-        let mut lbab = req.send().expect("request failed");
+        // let mut lbab = req.send().expect("request failed");
+        let mut lbab = new_os.connection.client.perform().expect("request failed");
         let outcome = match Openstack::handle_response(&mut lbab){
             Ok(x) => x,
             Err(e) => {println!("{}", e); return}
@@ -206,13 +227,3 @@ fn main() {
     print_value(&outcome, format);
 
 }
-
-
-fn make_args_from_arg_matches(matches: &clap::ArgMatches) -> HashMap<String, Vec<String>>{
-    let mut options: HashMap<String, Vec<String>> = HashMap::new();
-    for (k, v) in matches.args.iter(){
-        options.insert(k.to_string(), v.vals.iter().map(|x| x.clone().into_string().unwrap()).collect());
-    };
-    options
-}
-

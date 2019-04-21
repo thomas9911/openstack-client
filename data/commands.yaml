@@ -4,18 +4,21 @@ show:
   help: shows the given resource.
   requires_id: true
   has_body: false
+  http_method: get
 list:
   aliases:
     - ls
   help: lists the given resource.
   requires_id: false
   has_body: false
+  http_method: get
 new:
   aliases:
     - create
   help: create a new item from the given resource.
   requires_id: false
   has_body: true
+  http_method: post
 delete:
   aliases:
     - remove
@@ -23,12 +26,14 @@ delete:
   help: delete an item from the given resource.
   requires_id: true
   has_body: false
-patch:
+  http_method: delete
+update:
   aliases:
-    - update
+    - patch
   help: update an item from the given resource.
   requires_id: true
   has_body: true
+  http_method: patch
 add:
   aliases:
     - put
@@ -36,6 +41,7 @@ add:
   help: add a propety from an item from the given resource.
   requires_id: true
   has_body: true
+  http_method: put
 call:
   aliases:
     - do
@@ -43,3 +49,4 @@ call:
   help: call an endpoint that is not supported by the commandline interface
   requires_id: false
   has_body: true
+  http_method: ''

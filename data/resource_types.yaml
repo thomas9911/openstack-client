@@ -4,3 +4,4 @@ type:
   - image
   - network
   - volumev3
+  - object-store

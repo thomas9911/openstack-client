@@ -69,6 +69,14 @@ subcommands:
         - id: *id001
         visible_aliases:
         - credential
+    - ec2-credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - ec2-credential
     - domains:
         index: 1
         case_insensitive: true
@@ -85,6 +93,22 @@ subcommands:
         - id: *id001
         visible_aliases:
         - group
+    - user-projects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - user-project
+    - user-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - user-group
     - projects:
         index: 1
         case_insensitive: true
@@ -109,6 +133,14 @@ subcommands:
         - id: *id001
         visible_aliases:
         - token
+    - application-credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - application-credential
     - endpoints:
         index: 1
         case_insensitive: true
@@ -229,6 +261,22 @@ subcommands:
         - id: *id001
         visible_aliases:
         - volume
+    - containers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - container
+    - objects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - object
 - list:
     about: lists the given resource.
     visible_aliases:
@@ -282,6 +330,13 @@ subcommands:
         args: []
         visible_aliases:
         - credential
+    - ec2-credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - ec2-credential
     - domains:
         index: 1
         case_insensitive: true
@@ -296,6 +351,20 @@ subcommands:
         args: []
         visible_aliases:
         - group
+    - user-projects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - user-project
+    - user-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - user-group
     - projects:
         index: 1
         case_insensitive: true
@@ -317,6 +386,13 @@ subcommands:
         args: []
         visible_aliases:
         - token
+    - application-credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - application-credential
     - endpoints:
         index: 1
         case_insensitive: true
@@ -422,6 +498,20 @@ subcommands:
         args: []
         visible_aliases:
         - volume
+    - containers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - container
+    - objects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - object
 - new:
     about: create a new item from the given resource.
     visible_aliases:
@@ -549,6 +639,19 @@ subcommands:
             default_value: ec2
         visible_aliases:
         - credential
+    - ec2-credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - project_id:
+            help: The ID for the project to add the ec2 credentials to.
+            required: true
+            long: project_id
+            takes_value: true
+            multiple: false
+        visible_aliases:
+        - ec2-credential
     - domains:
         index: 1
         case_insensitive: true
@@ -563,6 +666,20 @@ subcommands:
         args: []
         visible_aliases:
         - group
+    - user-projects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - user-project
+    - user-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - user-group
     - projects:
         index: 1
         case_insensitive: true
@@ -584,6 +701,32 @@ subcommands:
         args: []
         visible_aliases:
         - token
+    - application-credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - name:
+            help: The name of the application credential. Must be unique to a user.
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - unrestricted:
+            help: An optional flag to restrict whether the application credential
+              may be used for the creation or destruction of other application credentials
+              or trusts. Defaults to false (Optional).
+            long: unrestricted
+            takes_value: true
+            multiple: false
+        - expires_at:
+            help: An optional expiry time for the application credential. If unset,
+              the application credential does not expire (Optional).
+            long: expires_at
+            takes_value: true
+            multiple: false
+        visible_aliases:
+        - application-credential
     - endpoints:
         index: 1
         case_insensitive: true
@@ -595,7 +738,61 @@ subcommands:
         index: 1
         case_insensitive: true
         about: resource A
-        args: []
+        args:
+        - container_format:
+            help: 'Format of the image container. Example formats are: ami, ari, aki,
+              bare, ovf, ova, or docker. The value might be null (JSON null data type).
+              (Optional)'
+            long: container_format
+            takes_value: true
+            multiple: false
+        - disk_format:
+            help: 'The format of the disk. Example formats are: ami, ari, aki, vhd,
+              vhdx, vmdk, raw, qcow2, vdi, ploop or iso. (Optional)'
+            long: disk_format
+            takes_value: true
+            multiple: false
+        - idx:
+            help: A unique, user-defined image UUID. If you omit this value, the API
+              generates a UUID for the image. (Optional)
+            long: idx
+            takes_value: true
+            multiple: false
+        - min_disk:
+            help: Amount of disk space in GB that is required to boot the image. (Optional)
+            long: min_disk
+            takes_value: true
+            multiple: false
+        - min_ram:
+            help: Amount of RAM in MB that is required to boot the image. (Optional)
+            long: min_ram
+            takes_value: true
+            multiple: false
+        - name:
+            help: The name of the image. (Optional)
+            long: name
+            takes_value: true
+            multiple: false
+        - protected:
+            help: Image protection for deletion. Valid value is true or false. Default
+              is false. (Optional)
+            long: protected
+            takes_value: true
+            multiple: false
+        - tags:
+            help: List of tags for this image. Each tag is a string of at most 255
+              chars. The maximum number of tags allowed on an image is set by the
+              operator. (Optional)
+            long: tags
+            takes_value: true
+            multiple: true
+        - visibility:
+            help: 'Visibility for this image. Valid value is one of: public, private,
+              shared, or community. (Optional)'
+            long: visibility
+            takes_value: true
+            multiple: false
+            default_value: private
         visible_aliases:
         - image
     - address-scopes:
@@ -692,7 +889,30 @@ subcommands:
         index: 1
         case_insensitive: true
         about: resource A
-        args: []
+        args:
+        - name:
+            help: The name of the snapshot.
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - volume_id:
+            help: The UUID of the volume.
+            required: true
+            long: volume_id
+            takes_value: true
+            multiple: false
+        - description:
+            help: A description for the snapshot. Default is None (Optional).
+            long: description
+            takes_value: true
+            multiple: false
+        - force:
+            help: Indicates whether to backup, even if the volume is attached. Default
+              is false (Optional).
+            long: force
+            takes_value: true
+            multiple: false
         visible_aliases:
         - snapshot
     - volumes:
@@ -702,6 +922,20 @@ subcommands:
         args: []
         visible_aliases:
         - volume
+    - containers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - container
+    - objects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - object
 - delete:
     about: delete an item from the given resource.
     visible_aliases:
@@ -762,6 +996,14 @@ subcommands:
         - id: *id001
         visible_aliases:
         - credential
+    - ec2-credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - ec2-credential
     - domains:
         index: 1
         case_insensitive: true
@@ -778,6 +1020,22 @@ subcommands:
         - id: *id001
         visible_aliases:
         - group
+    - user-projects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - user-project
+    - user-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - user-group
     - projects:
         index: 1
         case_insensitive: true
@@ -802,6 +1060,14 @@ subcommands:
         - id: *id001
         visible_aliases:
         - token
+    - application-credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - application-credential
     - endpoints:
         index: 1
         case_insensitive: true
@@ -922,10 +1188,26 @@ subcommands:
         - id: *id001
         visible_aliases:
         - volume
-- patch:
+    - containers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - container
+    - objects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - object
+- update:
     about: update an item from the given resource.
     visible_aliases:
-    - update
+    - patch
     case_insensitive: true
     index: 1
     args:
@@ -1055,6 +1337,20 @@ subcommands:
         - id: *id001
         visible_aliases:
         - credential
+    - ec2-credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - project_id:
+            help: The ID for the project to add the ec2 credentials to.
+            required: true
+            long: project_id
+            takes_value: true
+            multiple: false
+        - id: *id001
+        visible_aliases:
+        - ec2-credential
     - domains:
         index: 1
         case_insensitive: true
@@ -1071,6 +1367,22 @@ subcommands:
         - id: *id001
         visible_aliases:
         - group
+    - user-projects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - user-project
+    - user-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - user-group
     - projects:
         index: 1
         case_insensitive: true
@@ -1095,6 +1407,33 @@ subcommands:
         - id: *id001
         visible_aliases:
         - token
+    - application-credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - name:
+            help: The name of the application credential. Must be unique to a user.
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - unrestricted:
+            help: An optional flag to restrict whether the application credential
+              may be used for the creation or destruction of other application credentials
+              or trusts. Defaults to false (Optional).
+            long: unrestricted
+            takes_value: true
+            multiple: false
+        - expires_at:
+            help: An optional expiry time for the application credential. If unset,
+              the application credential does not expire (Optional).
+            long: expires_at
+            takes_value: true
+            multiple: false
+        - id: *id001
+        visible_aliases:
+        - application-credential
     - endpoints:
         index: 1
         case_insensitive: true
@@ -1108,6 +1447,60 @@ subcommands:
         case_insensitive: true
         about: resource A
         args:
+        - container_format:
+            help: 'Format of the image container. Example formats are: ami, ari, aki,
+              bare, ovf, ova, or docker. The value might be null (JSON null data type).
+              (Optional)'
+            long: container_format
+            takes_value: true
+            multiple: false
+        - disk_format:
+            help: 'The format of the disk. Example formats are: ami, ari, aki, vhd,
+              vhdx, vmdk, raw, qcow2, vdi, ploop or iso. (Optional)'
+            long: disk_format
+            takes_value: true
+            multiple: false
+        - idx:
+            help: A unique, user-defined image UUID. If you omit this value, the API
+              generates a UUID for the image. (Optional)
+            long: idx
+            takes_value: true
+            multiple: false
+        - min_disk:
+            help: Amount of disk space in GB that is required to boot the image. (Optional)
+            long: min_disk
+            takes_value: true
+            multiple: false
+        - min_ram:
+            help: Amount of RAM in MB that is required to boot the image. (Optional)
+            long: min_ram
+            takes_value: true
+            multiple: false
+        - name:
+            help: The name of the image. (Optional)
+            long: name
+            takes_value: true
+            multiple: false
+        - protected:
+            help: Image protection for deletion. Valid value is true or false. Default
+              is false. (Optional)
+            long: protected
+            takes_value: true
+            multiple: false
+        - tags:
+            help: List of tags for this image. Each tag is a string of at most 255
+              chars. The maximum number of tags allowed on an image is set by the
+              operator. (Optional)
+            long: tags
+            takes_value: true
+            multiple: true
+        - visibility:
+            help: 'Visibility for this image. Valid value is one of: public, private,
+              shared, or community. (Optional)'
+            long: visibility
+            takes_value: true
+            multiple: false
+            default_value: private
         - id: *id001
         visible_aliases:
         - image
@@ -1217,6 +1610,29 @@ subcommands:
         case_insensitive: true
         about: resource A
         args:
+        - name:
+            help: The name of the snapshot.
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - volume_id:
+            help: The UUID of the volume.
+            required: true
+            long: volume_id
+            takes_value: true
+            multiple: false
+        - description:
+            help: A description for the snapshot. Default is None (Optional).
+            long: description
+            takes_value: true
+            multiple: false
+        - force:
+            help: Indicates whether to backup, even if the volume is attached. Default
+              is false (Optional).
+            long: force
+            takes_value: true
+            multiple: false
         - id: *id001
         visible_aliases:
         - snapshot
@@ -1228,6 +1644,22 @@ subcommands:
         - id: *id001
         visible_aliases:
         - volume
+    - containers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - container
+    - objects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - object
 - add:
     about: add a propety from an item from the given resource.
     visible_aliases:
@@ -1362,6 +1794,20 @@ subcommands:
         - id: *id001
         visible_aliases:
         - credential
+    - ec2-credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - project_id:
+            help: The ID for the project to add the ec2 credentials to.
+            required: true
+            long: project_id
+            takes_value: true
+            multiple: false
+        - id: *id001
+        visible_aliases:
+        - ec2-credential
     - domains:
         index: 1
         case_insensitive: true
@@ -1378,6 +1824,22 @@ subcommands:
         - id: *id001
         visible_aliases:
         - group
+    - user-projects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - user-project
+    - user-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - user-group
     - projects:
         index: 1
         case_insensitive: true
@@ -1402,6 +1864,33 @@ subcommands:
         - id: *id001
         visible_aliases:
         - token
+    - application-credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - name:
+            help: The name of the application credential. Must be unique to a user.
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - unrestricted:
+            help: An optional flag to restrict whether the application credential
+              may be used for the creation or destruction of other application credentials
+              or trusts. Defaults to false (Optional).
+            long: unrestricted
+            takes_value: true
+            multiple: false
+        - expires_at:
+            help: An optional expiry time for the application credential. If unset,
+              the application credential does not expire (Optional).
+            long: expires_at
+            takes_value: true
+            multiple: false
+        - id: *id001
+        visible_aliases:
+        - application-credential
     - endpoints:
         index: 1
         case_insensitive: true
@@ -1415,6 +1904,60 @@ subcommands:
         case_insensitive: true
         about: resource A
         args:
+        - container_format:
+            help: 'Format of the image container. Example formats are: ami, ari, aki,
+              bare, ovf, ova, or docker. The value might be null (JSON null data type).
+              (Optional)'
+            long: container_format
+            takes_value: true
+            multiple: false
+        - disk_format:
+            help: 'The format of the disk. Example formats are: ami, ari, aki, vhd,
+              vhdx, vmdk, raw, qcow2, vdi, ploop or iso. (Optional)'
+            long: disk_format
+            takes_value: true
+            multiple: false
+        - idx:
+            help: A unique, user-defined image UUID. If you omit this value, the API
+              generates a UUID for the image. (Optional)
+            long: idx
+            takes_value: true
+            multiple: false
+        - min_disk:
+            help: Amount of disk space in GB that is required to boot the image. (Optional)
+            long: min_disk
+            takes_value: true
+            multiple: false
+        - min_ram:
+            help: Amount of RAM in MB that is required to boot the image. (Optional)
+            long: min_ram
+            takes_value: true
+            multiple: false
+        - name:
+            help: The name of the image. (Optional)
+            long: name
+            takes_value: true
+            multiple: false
+        - protected:
+            help: Image protection for deletion. Valid value is true or false. Default
+              is false. (Optional)
+            long: protected
+            takes_value: true
+            multiple: false
+        - tags:
+            help: List of tags for this image. Each tag is a string of at most 255
+              chars. The maximum number of tags allowed on an image is set by the
+              operator. (Optional)
+            long: tags
+            takes_value: true
+            multiple: true
+        - visibility:
+            help: 'Visibility for this image. Valid value is one of: public, private,
+              shared, or community. (Optional)'
+            long: visibility
+            takes_value: true
+            multiple: false
+            default_value: private
         - id: *id001
         visible_aliases:
         - image
@@ -1524,6 +2067,29 @@ subcommands:
         case_insensitive: true
         about: resource A
         args:
+        - name:
+            help: The name of the snapshot.
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - volume_id:
+            help: The UUID of the volume.
+            required: true
+            long: volume_id
+            takes_value: true
+            multiple: false
+        - description:
+            help: A description for the snapshot. Default is None (Optional).
+            long: description
+            takes_value: true
+            multiple: false
+        - force:
+            help: Indicates whether to backup, even if the volume is attached. Default
+              is false (Optional).
+            long: force
+            takes_value: true
+            multiple: false
         - id: *id001
         visible_aliases:
         - snapshot
@@ -1535,6 +2101,22 @@ subcommands:
         - id: *id001
         visible_aliases:
         - volume
+    - containers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - container
+    - objects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - object
 - call:
     about: call an endpoint that is not supported by the commandline interface
     visible_aliases:
@@ -1679,6 +2261,53 @@ subcommands:
             takes_value: true
         visible_aliases:
         - server
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
+- upload:
+    about: upload file to resource
+    visible_aliases: []
+    case_insensitive: true
+    index: 1
+    subcommands:
+    - objects:
+        index: 1
+        case_insensitive: true
+        about: upload file to object store
+        args:
+        - file:
+            help: the path to the file to upload.
+            required: true
+            long: file
+            multiple: false
+            takes_value: true
+        - name:
+            help: a name to give object (Optional).
+            long: name
+            multiple: false
+            takes_value: true
+        - container:
+            help: name of the container to use.
+            required: true
+            long: container
+            multiple: false
+            takes_value: true
+        visible_aliases:
+        - object
+    - containers:
+        index: 1
+        case_insensitive: true
+        about: create a container
+        args:
+        - name:
+            help: a name to give object (Optional).
+            required: true
+            long: name
+            multiple: false
+            takes_value: true
+        visible_aliases:
+        - container
     args:
     - dry-run:
         long: dry-run

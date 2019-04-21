@@ -1,6 +1,6 @@
 [package]
 name = "openstack-client"
-version = "0.4.0"
+version = "0.5.0"
 authors = ["thomas9911 <thomastimmer11@hotmail.com>"]
 
 [dependencies]
@@ -8,7 +8,10 @@ serde = "*"
 serde_derive = "*"
 serde_json = "*"
 serde_yaml = "*"
-reqwest = "*"
+url = "*"
+# reqwest = {version = "*", features = [], default-features = true}
+http = "*"
+curl = "*"
 secstr = {version = "*", features = ['serde']}
 rpassword = "2.1.0"
 chrono = { version = "*", features = ["serde"] }
@@ -21,4 +24,7 @@ yaml-rust = "*"
 uuid = {version = "0.7", features = ["serde", "v4"]}
 csv = {version = "*"}
 prettytable-rs = {version = "^0.8", features = ["csv"]}
+handlebars = "*"
+memmap = "*"
+indicatif = "*"
 # structopt-derive = "*"

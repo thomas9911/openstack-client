@@ -82,11 +82,26 @@ credentials:
       type: string
       help: The credential type, such as ec2 or cert. The implementation determines the list of supported types.
       default: ec2
+ec2_credentials:
+  endpoint_path: users/{{user_id}}/credentials/OS-EC2
+  resource_type: identity
+  post_parameters:
+    - name: project_id
+      path: tenant_id
+      required: true
+      type: string
+      help: The ID for the project to add the ec2 credentials to.
 domains:
   endpoint_path: domains
   resource_type: identity
 groups:
   endpoint_path: group
+  resource_type: identity
+user_projects:
+  endpoint_path: users/{{user_id}}/projects
+  resource_type: identity
+user_groups:
+  endpoint_path: users/{{user_id}}/groups
   resource_type: identity
 projects:
   endpoint_path: projects
@@ -97,12 +112,68 @@ users:
 tokens:
   endpoint_path: auth/tokens
   resource_type: identity
+application_credentials:
+  endpoint_path: users/{{user_id}}/application_credentials
+  resource_type: identity
+  post_parameters:
+    - name: name
+      path: application_credential.name
+      required: true
+      type: string
+      help: The name of the application credential. Must be unique to a user.
+    - name: unrestricted
+      path: application_credential.unrestricted
+      type: string
+      help: An optional flag to restrict whether the application credential may be used for the creation or destruction of other application credentials or trusts. Defaults to false (Optional).
+    - name: expires_at
+      path: application_credential.expires_at
+      type: string
+      help: An optional expiry time for the application credential. If unset, the application credential does not expire (Optional).
 endpoints:
   endpoint_path: endpoints
   resource_type: identity
 images:
   endpoint_path: v2/images
   resource_type: image
+  post_parameters:
+    - name: container_format
+      path: container_format
+      type: string
+      help: "Format of the image container. Example formats are: ami, ari, aki, bare, ovf, ova, or docker. The value might be null (JSON null data type). (Optional)"
+    - name: disk_format
+      path: disk_format
+      type: string
+      help: "The format of the disk. Example formats are: ami, ari, aki, vhd, vhdx, vmdk, raw, qcow2, vdi, ploop or iso. (Optional)"
+    - name: idx
+      path: id
+      type: string
+      help: "A unique, user-defined image UUID. If you omit this value, the API generates a UUID for the image. (Optional)"
+    - name: min_disk
+      path: min_disk
+      type: number
+      help: Amount of disk space in GB that is required to boot the image. (Optional)
+    - name: min_ram
+      path: min_ram
+      type: number
+      help: Amount of RAM in MB that is required to boot the image. (Optional)
+    - name: name
+      path: name
+      type: string
+      help: The name of the image. (Optional)
+    - name: protected
+      path: protected
+      type: string
+      help: Image protection for deletion. Valid value is true or false. Default is false. (Optional)
+    - name: tags
+      path: tags
+      type: string
+      multiple: true
+      help: List of tags for this image. Each tag is a string of at most 255 chars. The maximum number of tags allowed on an image is set by the operator. (Optional)
+    - name: visibility
+      path: visibility
+      type: string
+      help: "Visibility for this image. Valid value is one of: public, private, shared, or community. (Optional)"
+      default: private
 address_scopes:
   endpoint_path: v2.0/address-scopes
   resource_type: network
@@ -151,6 +222,31 @@ backups:
 snapshots:
   endpoint_path: snapshots
   resource_type: volumev3
+  post_parameters:
+  - name: name
+    path: snapshots.name
+    type: string
+    help: The name of the snapshot.
+    required: true
+  - name: volume_id
+    path: snapshots.volume_id
+    type: string
+    help: The UUID of the volume.
+    required: true
+  - name: description
+    path: snapshots.description
+    type: string
+    help: A description for the snapshot. Default is None (Optional).
+  - name: force
+    path: snapshots.force
+    type: string
+    help: Indicates whether to backup, even if the volume is attached. Default is false (Optional).
 volumes:
   endpoint_path: volumes
   resource_type: volumev3
+containers:
+  endpoint_path: ""
+  resource_type: object-store
+objects:
+  endpoint_path: ""
+  resource_type: object-store
