@@ -15,6 +15,9 @@ matrix:
     - rust: nightly
   fast_finish: true
 cache: cargo
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install curl libcurl3
 script:
   - cargo build --release --verbose
   - cargo test --release --verbose
@@ -23,6 +26,9 @@ deploy:
   skip_cleanup: true
   provider: script
   # script: ls && pwd && ls /home/travis/build/thomas9911/openstack-client/target/release
-  script: apt-get update && apt-get install curl libcurl3 && strip /home/travis/build/thomas9911/openstack-client/target/release/openstack-client && /home/travis/build/thomas9911/openstack-client/target/release/openstack-client upload object --file /home/travis/build/thomas9911/openstack-client/target/release/openstack-client --name openstack-client --container rustci
+  script: strip /home/travis/build/thomas9911/openstack-client/target/release/openstack-client && /home/travis/build/thomas9911/openstack-client/target/release/openstack-client upload object --file /home/travis/build/thomas9911/openstack-client/target/release/openstack-client --name openstack-client-$TRAVIS_RUST_VERSION --container rustci
   on:
     all_branches: true
+
+
+# curl -X POST -H "Content-Type: text/yaml" -H "Travis-API-Version: 3" -H "User-Agent: API Explorer" -H "Authorization: token wLMlO6h40GqnA2zAixzAQg" -T ".travis.yml" https://api.travis-ci.com/lint
