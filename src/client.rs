@@ -9,6 +9,8 @@ use error::OpenstackError;
 use memmap::MmapOptions;
 use indicatif::{ProgressBar, ProgressStyle};
 
+use objectstore::{create_file, download_from_object_store, open_file, upload_to_object_store, upload_to_object_store_dynamic_large_objects};
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Client {
     #[serde(skip, default = "Easy::new")]
@@ -20,7 +22,7 @@ pub struct Client {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct Response ( JSONValue, u32, Vec<String> );
+pub struct Response ( pub JSONValue, pub u32, pub Vec<String> );
 
 
 impl Response{
@@ -59,6 +61,12 @@ impl Response{
     }
 }
 
+impl Default for Response{
+    fn default() -> Self{
+        Response{0: JSONValue::Null, 1: 0, 2: vec![]}
+    }
+}
+
 impl Client {
     pub fn new() -> Self {
         let handle = Easy::new();
@@ -71,6 +79,10 @@ impl Client {
 
     pub fn set_token(&mut self, token: &str) {
         self.set_header("x-auth-token", token);
+    }
+
+    pub fn get_token(&mut self) -> Option<&String> {
+        self.headers.get("x-auth-token")
     }
 
     pub fn set_header(&mut self, header: &str, header_value: &str) {
@@ -169,7 +181,7 @@ impl Client {
             transfer.header_function(|header| {
                 remote_headers.push(String::from_utf8(header.to_vec()).unwrap_or(String::from(" : ")));
                 true
-            }).unwrap();
+            })?;
 
             match method.to_lowercase().as_ref() {
                 "put"| "patch" => transfer.read_function(|into| Ok(body.as_bytes().read(into).unwrap()))?,
@@ -210,242 +222,43 @@ impl Client {
         self.request("HEAD", url, JSONValue::String("".to_string()))
     }
 
-    // pub fn upload_to_object_store() -> Result<Response, OpenstackError> {
-    //     upload_to_object_store(file: &mut File, name: &str, container: &str, object_store_url: &str, token: &str)
-    // }
-}
+    fn open_file_ect(&mut self, filename: &str) -> Result<(File, String), OpenstackError> {
+        let token = match self.get_token(){
+            Some(x) => x,
+            None => return Err(OpenstackError::new("token is not set"))
+        };
 
+        let mut file = open_file(filename)?;
 
-fn upload_to_object_store(
-    file: &mut File,
-    name: &str,
-    container: &str,
-    object_store_url: &str,
-    token: &str,
-) -> Result<String, OpenstackError> {
-    let mut headers = List::new();
-    headers.append(&format!("X-Auth-Token: {}", token))?;
-
-    let mut data = Vec::new();
-
-    let mut easy = Easy::new();
-    easy.url(&format!("{}/{}/{}", object_store_url, container, name))?;
-    easy.upload(true)?;
-    easy.http_headers(headers)?;
-    easy.progress(true)?;
-
-    {
-        let progress_bar = make_progress_bar(file.metadata()?.len());
-        let mut transfer = easy.transfer();
-        transfer.progress_function(|_a, _b, _c, d| {
-            if d as u32 != 0 {
-                progress_bar.set_position(d as u64);
-            }
-            true
-        })?;
-        transfer
-            .write_function(|new_data| {
-                data.extend_from_slice(new_data);
-                Ok(new_data.len())
-            })?;
-        transfer.read_function(|into| Ok(file.read(into).unwrap()))?;
-        transfer.perform()?;
-        progress_bar.finish();
+        Ok((file, token.to_string()))
     }
 
-    // println!("{:?}", String::from_utf8(data).unwrap_or(String::from("")));
-    Ok(String::from_utf8(data).unwrap_or(String::from("")))
-}
-
-fn download_from_object_store(
-    file: &mut File,
-    name: &str,
-    container: &str,
-    object_store_url: &str,
-    token: &str,
-) -> Result<(String, u32), OpenstackError> {
-    let mut headers = List::new();
-    headers.append(&format!("X-Auth-Token: {}", token))?;
-
-    let urlpath = &format!("{}/{}/{}", object_store_url, container, name);
-
-    let mut easy = Easy::new();
-    easy.url(urlpath)?;
-    easy.get(true)?;
-    easy.http_headers(headers)?;
-    easy.progress(true)?;
-
-    {
-        let progress_bar = make_progress_bar(0);
-        let mut transfer = easy.transfer();
-        transfer.progress_function(|a, b, _c, _d| {
-            if a as u32 != 0 {
-                progress_bar.set_length(a as u64);
-                progress_bar.set_position(b as u64);
-            }
-            true
-        })?;
-        transfer.write_function(|data| Ok(file.write(data).unwrap()))?;
-        transfer.perform()?;
-        progress_bar.finish();
+    pub fn upload_to_object_store(&mut self, filename: &str, objectstore_url: &str) -> Result<Response, OpenstackError> {
+        let (mut file, token) = self.open_file_ect(filename)?;
+        upload_to_object_store(&mut file, objectstore_url, &token)
     }
 
-    let statuscode = easy.response_code()?;
-
-    Ok((String::from(""), statuscode))
-}
-
-
-fn upload_to_object_store_dynamic_large_objects(
-    file: &File,
-    name: &str,
-    container: &str,
-    object_store_url: &str,
-    token: &str,
-    parts: usize,
-) -> Result<(String, u32), OpenstackError> {
-    let fileurl = format!("{}/{}/{}", object_store_url, container, name);
-
-    let mut headers = List::new();
-    headers.append(&format!("X-Auth-Token: {}", token))?;
-
-    let mut easy = Easy::new();
-    easy.url(&fileurl)?;
-    easy.upload(true)?;
-    easy.http_headers(headers)?;
-    easy.write_function(|into| Ok(stdout().write(into).unwrap()))?;
-    easy.perform()?;
-
-    let mut responses = Vec::new();
-    let mut success = true;
-    {
-        let mmap = unsafe { MmapOptions::new().map(file)? };
-        let amount = (mmap.len() as f32 / (parts as f32 - 0.1)) as usize;
-
-        let chuckies = mmap.chunks(amount);
-        for (index, mut chunk) in chuckies.enumerate() {
-            let response = upload_part(&mut chunk, index, &fileurl, token)?;
-            let text = response.0;
-            let statuscode = response.1;
-            if statuscode != 201 {
-                responses.push((text, statuscode));
-                success = false;
-                break;
-            }
-        }
-    }
-    if success == true {
-        set_dynamic_manifest(&fileurl, container, name, token)?;
+    pub fn upload_to_object_store_large(&mut self, filename: &str, objectstore_url: &str, container: &str, name: &str) -> Result<Response, OpenstackError> {
+        let (mut file, token) = self.open_file_ect(filename)?;
+        upload_to_object_store_dynamic_large_objects(&mut file, name, container, objectstore_url, &token, 20, 0)
     }
 
-    match success {
-        true => Ok((String::from(""), 200)),
-        false => Ok(responses[0].clone()),
+    pub fn upload_to_object_store_large_with_parts(&mut self, filename: &str, objectstore_url: &str, container: &str, name: &str, parts: usize) -> Result<Response, OpenstackError> {
+        let (mut file, token) = self.open_file_ect(filename)?;
+        upload_to_object_store_dynamic_large_objects(&mut file, name, container, objectstore_url, &token, parts, 0)
     }
-}
 
-fn open_file(filename: &str) -> Result<File, OpenstackError> {
-    let filepath = is_file(filename)?;
-    Ok(File::open(filepath)?)
-}
-
-fn create_file(filename: &str) -> Result<File, OpenstackError> {
-    make_sure_folder_exists(filename)?;
-    Ok(File::create(filename)?)
-}
-
-fn is_file(filename: &str) -> Result<std::path::PathBuf, OpenstackError> {
-    let filepath = std::path::PathBuf::from(filename);
-    if !filepath.is_file() {
-        return Err(
-            OpenstackError::new(&format!("'{}' does not exist", filename))
-        );
+    pub fn upload_to_object_store_large_skip_parts(&mut self, filename: &str, objectstore_url: &str, container: &str, name: &str, parts: usize, skip_first: usize) -> Result<Response, OpenstackError> {
+        let (mut file, token) = self.open_file_ect(filename)?;
+        upload_to_object_store_dynamic_large_objects(&mut file, name, container, objectstore_url, &token, parts, skip_first)
     }
-    Ok(filepath)
-}
 
-fn make_sure_folder_exists(filename: &str) -> Result<(), OpenstackError> {
-    let filepath = std::path::PathBuf::from(filename);
-    let parent = match filepath.parent(){
-        Some(x) => x.to_path_buf(),
-        None => return Ok(())
-    };
-    std::fs::DirBuilder::new().recursive(true).create(parent)?;
-    Ok(())
-}
-
-fn set_dynamic_manifest(
-    fileurl: &str,
-    container: &str,
-    filename: &str,
-    token: &str,
-) -> Result<(String, u32), OpenstackError> {
-    let mut headers = List::new();
-    headers.append(&format!("X-Auth-Token: {}", token))?;
-    headers.append(&format!("X-Object-Manifest: {}/{}/", container, filename))?;
-
-    let mut data = Vec::new();
-    let mut easy = Easy::new();
-    easy.url(&fileurl)?;
-    easy.upload(true)?;
-    easy.http_headers(headers)?;
-    {
-        let mut transfer = easy.transfer();
-        transfer.write_function(|new_data| {
-            data.extend_from_slice(new_data);
-            Ok(new_data.len())
-        })?;
-        transfer.perform()?;
+    pub fn download_from_object_store(&mut self, outfile: &str, objectstore_url: &str) -> Result<Response, OpenstackError> {
+        let token = match self.get_token(){
+            Some(x) => x,
+            None => return Err(OpenstackError::new("token is not set"))
+        };
+        let mut file = create_file(outfile)?;
+        download_from_object_store(&mut file, objectstore_url, token)
     }
-    Ok((
-        String::from_utf8(data).unwrap_or(String::from("")),
-        easy.response_code()?,
-    ))
-}
-
-fn upload_part(
-    chunk: &mut &[u8],
-    index: usize,
-    fileurl: &str,
-    token: &str,
-) -> Result<(String, u32), OpenstackError> {
-    let mut headers = List::new();
-    headers.append(&format!("X-Auth-Token: {}", token))?;
-
-    let mut data = Vec::new();
-    let mut easy = Easy::new();
-    easy.url(&format!("{}/{:08}", fileurl, index))?;
-    easy.upload(true)?;
-    easy.progress(true)?;
-    easy.http_headers(headers)?;
-    {
-        let progress_bar = make_progress_bar(chunk.len() as u64);
-        let mut transfer = easy.transfer();
-        transfer.write_function(|new_data| {
-            data.extend_from_slice(new_data);
-            Ok(new_data.len())
-        })?;
-        transfer.progress_function(|_a, _b, _c, d| {
-            if d as u32 != 0 {
-                progress_bar.set_position(d as u64);
-            }
-            true
-        })?;
-        transfer.read_function(|into| Ok(chunk.read(into).unwrap()))?;
-        transfer.perform()?;
-        progress_bar.finish();
-    }
-    Ok((
-        String::from_utf8(data).unwrap_or(String::from("")),
-        easy.response_code()?,
-    ))
-}
-
-fn make_progress_bar(length: u64) -> ProgressBar{
-    let progress_bar = ProgressBar::new(length);
-    progress_bar.set_style(
-        ProgressStyle::default_bar()
-            .template("[{elapsed_precise}] {wide_bar:.cyan/blue} {bytes:>7}/{total_bytes:7}"),
-    );
-    progress_bar
 }

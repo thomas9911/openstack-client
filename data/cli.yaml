@@ -2293,6 +2293,19 @@ subcommands:
             long: container
             multiple: false
             takes_value: true
+        - parts:
+            help: amount of parts to split the file in before uploading. Enables dynamic
+              large objects.
+            long: parts
+            multiple: false
+            takes_value: true
+        - skip-parts:
+            help: skip parts when uploading large files (should be used with the 'parts'
+              argument).
+            long: skip-parts
+            multiple: false
+            takes_value: true
+            default_value: '0'
         visible_aliases:
         - object
     - containers:
@@ -2308,6 +2321,40 @@ subcommands:
             takes_value: true
         visible_aliases:
         - container
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
+- download:
+    about: download file from resource
+    visible_aliases: []
+    case_insensitive: true
+    index: 1
+    subcommands:
+    - objects:
+        index: 1
+        case_insensitive: true
+        about: download file from object store
+        args:
+        - file:
+            help: the path to the file to upload.
+            required: true
+            long: file
+            multiple: false
+            takes_value: true
+        - name:
+            help: a name to give object (Optional).
+            long: name
+            multiple: false
+            takes_value: true
+        - container:
+            help: name of the container to use.
+            required: true
+            long: container
+            multiple: false
+            takes_value: true
+        visible_aliases:
+        - object
     args:
     - dry-run:
         long: dry-run

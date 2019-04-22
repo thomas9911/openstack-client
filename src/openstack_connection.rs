@@ -242,11 +242,18 @@ impl Openstack {
         //     maybe_action,
         //     Some(res_args),
         // )?;
+
+        // println!("{:?}", matched_op);
+        // println!("{:?}", r.resource_type);
+        // println!("{:?}", path);
+        // println!("{:?}", maybe_action);
+        // println!("{:?}", res_args);
+
         self.make_url(
             matched_op,
             r.resource_type.clone(),
             path,
-            maybe_action,
+            &maybe_action,
             Some(res_args),
         );
 
@@ -271,17 +278,63 @@ impl Openstack {
         //         Err(e) => return Err(OpenstackError::new(&format!("{}", e))),
         //     },
         // };
-        self.connection.client.set_json(post_body);
-        let mut response = self.connection.client.perform()?;
+        let mut response = Response::default();
+        let mut matched_action = false;
+
+        if let Some(act) = maybe_action{
+            if (act.action == "upload") && (act.resource == "objects"){
+                matched_action = true;
+                let url = match self.connection.client.url.clone(){
+                    Some(x) => format!("{}", x),
+                    None => return Err(OpenstackError::new("url argument is required"))
+                };
+                let file = get_value(res_args, "file")?;
+
+                match get_value(res_args, "parts"){
+                    Ok(parts_string) => {
+                        let container = get_value(res_args, "container")?;
+                        let name = get_value(res_args, "name")?;
+                        let skip_parts_string = get_value(res_args, "skip-parts")?;
+                        let skip_first: usize = match skip_parts_string.parse(){
+                            Ok(z) => z,
+                            Err(e) => return Err(OpenstackError::new(&format!("{}", e)))
+                        };
+                        let parts: usize = match parts_string.parse(){
+                            Ok(z) => z,
+                            Err(e) => return Err(OpenstackError::new(&format!("{}", e)))
+                        };
+                        response = self.connection.client.upload_to_object_store_large_skip_parts(&file, &url, &container, &name, parts, skip_first)?;
+                    },
+                    _ => {
+                        response = self.connection.client.upload_to_object_store(&file, &url)?;
+                    }
+                };
+            }
+            if (act.action == "download") && (act.resource == "objects"){
+                matched_action = true;
+                let url = match self.connection.client.url.clone(){
+                    Some(x) => format!("{}", x),
+                    None => return Err(OpenstackError::new("url argument is required"))
+                };
+                let file = get_value(res_args, "file")?;
+                response = self.connection.client.download_from_object_store(&file, &url)?;
+            }
+        }
+        if !matched_action{
+            self.connection.client.set_json(post_body);
+            response = self.connection.client.perform()?;
+        }
         Openstack::handle_response(&mut response)
     }
+
+
 
     pub fn make_url(
         &mut self,
         com: Command,
         rt: ResourceTypeEnum,
         path: String,
-        action: Option<Action>,
+        action: &Option<Action>,
         res_args: Option<&HashMap<String, Vec<serde_json::Value>>>,
     ) {
         let endpoint: String = match rt.clone() {
@@ -351,6 +404,7 @@ impl Openstack {
         if op.has_body == false {
             return serde_json::Value::Null;
         }
+
 
         if let Some(ref post_param) = res.post_parameters {
             let mut data: Vec<(String, serde_json::Value)> = vec![];
@@ -429,6 +483,17 @@ impl Openstack {
             _ => false,
         }
     }
+}
+
+fn get_value(hashmap: &HashMap<String, Vec<serde_json::Value>>, key: &str) -> Result<String, OpenstackError>{
+    let string = match get_first_value_from_hashmap_with_vec(hashmap, key){
+        Some(x) => match x{
+            serde_json::Value::String(y) => y,
+            _ => return Err(OpenstackError::new(&format!("{} argument is required", key)))
+        },
+        None => return Err(OpenstackError::new(&format!("{} argument is required", key)))
+    };
+    Ok(string)
 }
 
 // list ec2 credentials /users/<user_id>/credentials/OS-EC2

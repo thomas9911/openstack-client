@@ -80,6 +80,13 @@ upload:
       - name: container
         required: true
         help: name of the container to use.
+      - name: parts
+        required: false
+        help: amount of parts to split the file in before uploading. Enables dynamic large objects.
+      - name: skip-parts
+        required: false
+        help: skip parts when uploading large files (should be used with the 'parts' argument).
+        default: "0"
     - resource: containers
       help: create a container
       http_method: add
@@ -91,3 +98,24 @@ upload:
       - name: name
         required: true
         help: a name to give object (Optional).
+download:
+  aliases: []
+  help: download file from resource
+  resources:
+    - resource: objects
+      help: download file from object store
+      http_method: show
+      url_parameter: "{{ container }}/{{ name }}"
+      requires_id: false
+      body_name: ""
+      is_multipart: true
+      params:
+      - name: file
+        required: true
+        help: the path to the file to upload.
+      - name: name
+        required: false
+        help: a name to give object (Optional).
+      - name: container
+        required: true
+        help: name of the container to use.

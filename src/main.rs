@@ -34,7 +34,7 @@ mod utils;
 mod openstack_connection;
 mod structs;
 mod config;
-
+mod objectstore;
 
 use std::collections::HashMap;
 use std::str::FromStr;
@@ -139,7 +139,7 @@ fn main() {
             })
         ).unwrap();
 
-        new_os.make_url(command, resource_type, endpoint.into(), None, None);
+        new_os.make_url(command, resource_type, endpoint.into(), &None, None);
 
         match body {
             Some(x) => {

@@ -6,10 +6,10 @@ language: rust
 rust:
   - stable
   # - nightly
-before_install:
-  - curl https://rclone.org/install.sh | sudo bash
-env:
-  - RCLONE_CONFIG_RUSTCI_TYPE=swift RCLONE_CONFIG_RUSTCI_ENV_AUTH=true
+# before_install:
+#   - curl https://rclone.org/install.sh | sudo bash
+# env:
+#   - RCLONE_CONFIG_RUSTCI_TYPE=swift RCLONE_CONFIG_RUSTCI_ENV_AUTH=true
 matrix:
   allow_failures:
     - rust: nightly
@@ -21,6 +21,6 @@ script:
   # - echo $OS_USERNAME
 deploy:
   provider: script
-  script: rclone sync --include openstack-client* /home/travis/build/thomas9911/openstack-client/target/release rustci:rustci
+  script: /home/travis/build/thomas9911/openstack-client/target/release/openstack-client upload object --file /home/travis/build/thomas9911/openstack-client/target/release/openstack-client --name openstack-client --container rustci
   on:
     all_branches: true
