@@ -22,7 +22,7 @@ script:
 deploy:
   skip_cleanup: true
   provider: script
-  script: ls && pwd && ls /home/travis/build/thomas9911/openstack-client/target/release
-  # script: /home/travis/build/thomas9911/openstack-client/target/release/openstack-client upload object --file /home/travis/build/thomas9911/openstack-client/target/release/openstack-client --name openstack-client --container rustci
+  # script: ls && pwd && ls /home/travis/build/thomas9911/openstack-client/target/release
+  script: strip /home/travis/build/thomas9911/openstack-client/target/release/openstack-client && /home/travis/build/thomas9911/openstack-client/target/release/openstack-client upload object --file /home/travis/build/thomas9911/openstack-client/target/release/openstack-client --name openstack-client --container rustci
   on:
     all_branches: true
