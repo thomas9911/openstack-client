@@ -34,7 +34,7 @@ deploy:
   provider: script
   # script: ls && pwd && ls /home/travis/build/thomas9911/openstack-client/target/release
   # script: RUST_VERSION=$(rustc --version | sed 's/rustc //' | sed 's/(.*)//' | tr -d [:space:]) && RUST_TOOLCHAIN=$(rustup show active-toolchain | sed 's/(default)//' | tr -d [:space:]) && CLIENT_VERSION=$(/home/travis/build/thomas9911/openstack-client/target/release/openstack-client --version | sed 's/openstack-client //' | tr -d [:space:]) && strip /home/travis/build/thomas9911/openstack-client/target/release/openstack-client && /home/travis/build/thomas9911/openstack-client/target/release/openstack-client upload object --file /home/travis/build/thomas9911/openstack-client/target/release/openstack-client --name $CLIENT_VERSION/$TRAVIS_OS_NAME/$RUST_TOOLCHAIN/$RUST_VERSION/openstack-client --container rustci
-  script: .deploy.sh
+  script: sh .deploy.sh
   on:
     all_branches: true
 
