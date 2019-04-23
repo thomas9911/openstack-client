@@ -18,6 +18,8 @@ matrix:
       rust: stable
     - os: osx
       rust: stable
+    - os: windows
+      rust: stable
   allow_failures:
     - rust: nightly
   fast_finish: true
