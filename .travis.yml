@@ -23,8 +23,8 @@ matrix:
   fast_finish: true
 cache: cargo
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update                ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install curl libcurl3 ; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update                ; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install curl libcurl3 ; fi
 script:
   - cargo build --release --verbose
   - cargo test --release --verbose
