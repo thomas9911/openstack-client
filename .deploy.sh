@@ -3,7 +3,7 @@ RUST_TOOLCHAIN=$(rustup show active-toolchain | sed 's/(default)//' | tr -d [:sp
 echo $RUST_VERSION
 echo $RUST_TOOLCHAIN
 
-if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+if [ "$TRAVIS_OS_NAME" == "linux" ]; then
     FILE=/home/travis/build/thomas9911/openstack-client/target/release/openstack-client
     CLIENT_VERSION=$($FILE --version | sed 's/openstack-client//' | tr -d [:space:])
     ls
@@ -16,7 +16,7 @@ if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
     $FILE upload object --file "$FILE" --name $CLIENT_VERSION/$TRAVIS_OS_NAME/$RUST_TOOLCHAIN/$RUST_VERSION/openstack-client --container rustci
 fi
 
-if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+if [ "$TRAVIS_OS_NAME" == "osx" ]; then
     ls
     pwd
     echo $RUST_VERSION
