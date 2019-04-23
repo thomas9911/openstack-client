@@ -25,13 +25,7 @@ if [ "$TRAVIS_OS_NAME" == "osx" ]; then
 fi
 
 if [ "$TRAVIS_OS_NAME" == "windows" ]; then
-    pwd
-    ls
-    sed --version
-    tr --version
-    strip --version
-
-    FILE=/Users/travis/build/thomas9911/openstack-client/target/release/openstack-client
+    FILE=/c/Users/travis/build/thomas9911/openstack-client/target/release/openstack-client
     CLIENT_VERSION=$($FILE --version | sed 's/openstack-client//' | tr -d '[:space:]')
     echo "$RUST_VERSION"
     echo "$RUST_TOOLCHAIN"
