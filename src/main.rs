@@ -59,6 +59,7 @@ fn main() {
 
     let yml = load_yaml!("../data/cli.yaml");
     let app = App::from_yaml(&yml)
+        .version(&crate_version!()[..])
         .arg(
             Arg::with_name("format")
                 .short("f")

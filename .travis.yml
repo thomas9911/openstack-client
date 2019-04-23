@@ -1,17 +1,22 @@
-os:
-  - linux
-  # - osx
-  # - windows
-dist: xenial
-language: rust
-rust:
-  - stable
+# os:
+#   - linux
+#   # - osx
+#   # - windows
+# dist: xenial
+# language: rust
+# rust:
+#   - stable
   # - nightly
 # before_install:
 #   - curl https://rclone.org/install.sh | sudo bash
 # env:
 #   - RCLONE_CONFIG_RUSTCI_TYPE=swift RCLONE_CONFIG_RUSTCI_ENV_AUTH=true
 matrix:
+  include:
+    - os: linux
+      rust: stable
+    - os: osx
+      rust: stable
   allow_failures:
     - rust: nightly
   fast_finish: true
@@ -27,7 +32,7 @@ deploy:
   skip_cleanup: true
   provider: script
   # script: ls && pwd && ls /home/travis/build/thomas9911/openstack-client/target/release
-  script: strip /home/travis/build/thomas9911/openstack-client/target/release/openstack-client && /home/travis/build/thomas9911/openstack-client/target/release/openstack-client upload object --file /home/travis/build/thomas9911/openstack-client/target/release/openstack-client --name openstack-client-$TRAVIS_RUST_VERSION --container rustci
+  script: RUST_VERSION=$(rustc --version | sed 's/cargo //' | sed 's/(.*)//' | tr -d [:space:]) && RUST_TOOLCHAIN=$(rustup show active-toolchain | sed 's/(default)//' | tr -d [:space:]) && CLIENT_VERSION=$(/home/travis/build/thomas9911/openstack-client/target/release/openstack-client --version | sed 's/openstack-client //' | tr -d [:space:]) &&strip /home/travis/build/thomas9911/openstack-client/target/release/openstack-client && /home/travis/build/thomas9911/openstack-client/target/release/openstack-client upload object --file /home/travis/build/thomas9911/openstack-client/target/release/openstack-client --name $CLIENT_VERSION/$TRAVIS_OS_NAME/$RUST_TOOLCHAIN/$RUST_VERSION/openstack-client --container rustci
   on:
     all_branches: true
 
