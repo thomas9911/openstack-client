@@ -1,5 +1,7 @@
 RUST_VERSION=$(rustc --version | sed 's/rustc //' | sed 's/(.*)//' | tr -d [:space:])
 RUST_TOOLCHAIN=$(rustup show active-toolchain | sed 's/(default)//' | tr -d [:space:])
+echo $RUST_VERSION
+echo $RUST_TOOLCHAIN
 
 if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
     FILE=/home/travis/build/thomas9911/openstack-client/target/release/openstack-client
