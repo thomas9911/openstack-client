@@ -44,7 +44,7 @@ use clap::{Arg, App, SubCommand, Shell};
 use std::string::ToString;
 
 use enums::OSOperation;
-use structs::Command;
+use structs::{Command, Resource};
 use config::{OpenstackInfoMap};
 use openstack_connection::{Openstack};
 use utils::{get_first_value_from_hashmap_with_vec, print_value, make_args_from_arg_matches};
@@ -126,6 +126,11 @@ fn main() {
             Ok(x) => x,
             Err(e) => {println!("{{\"error\": \"{}\"}}", e); return ()}
         };
+        let tmp_resource: Resource = serde_json::from_value(json!({
+            "name": "tmp",
+            "endpoint_path": endpoint,
+            "resource_type": resource_type,
+        })).unwrap();
         let _http_method = match http::Method::from_str(method){
             Ok(x) => x,
             Err(e) => {println!("{{\"error\": \"{}\"}}", e); return ()}
@@ -140,7 +145,7 @@ fn main() {
             })
         ).unwrap();
 
-        new_os.make_url(command, resource_type, endpoint.into(), &None, None);
+        new_os.make_url(command, &tmp_resource, endpoint.into(), HashMap::new(), &None, None);
 
         match body {
             Some(x) => {

@@ -188,8 +188,8 @@ impl Openstack {
             Some(id) => format!("{}{}", add_slash(&path), id.as_str().unwrap()),
             None => path,
         };
-        let renderer = handlebars::Handlebars::new();
-        path = renderer.render_template(&path, &json!({"user_id": self.connection.user_id, "domain_id": self.connection.domain_id}))?;
+        // let renderer = handlebars::Handlebars::new();
+        // path = renderer.render_template(&path, &json!({"user_id": self.connection.user_id, "domain_id": self.connection.domain_id}))?;
 
         let http_method: http::Method;
         let matched_op;
@@ -205,7 +205,7 @@ impl Openstack {
             post_body = action.make_body(&modified_res_args);
             let tmp_json = hashmap_with_vec_to_json(&modified_res_args);
             path = format!("{}{}", add_slash(&path), action.url_parameter);
-            path = renderer.render_template(&path, &tmp_json).unwrap();
+            // path = renderer.render_template(&path, &tmp_json).unwrap();
             http_method = http::Method::from_str(&action.http_method).expect(&format!(
                 "the method {} from {} {} is not valid",
                 action.http_method, action.action, action.resource
@@ -235,6 +235,11 @@ impl Openstack {
         // };
         self._handle_special_body_parameters(&r, &matched_op, &mut post_body);
 
+        let additional_headers = Openstack::handle_header_parameters(&r, &matched_op, res_args);
+        for (k, v) in &additional_headers{
+            self.connection.client.set_header(k, v);
+        }
+
         // let prepared_url = self.make_url(
         //     matched_op,
         //     r.resource_type.clone(),
@@ -248,11 +253,17 @@ impl Openstack {
         // println!("{:?}", path);
         // println!("{:?}", maybe_action);
         // println!("{:?}", res_args);
-
+        let mut url_params = HashMap::new();
+        for (k, v) in vec![("user_id", self.connection.user_id.clone()), ("domain_id", self.connection.domain_id.clone())]{
+            if let Some(the_value) = v{
+                url_params.insert(k.to_string(), the_value);
+            }
+        };
         self.make_url(
             matched_op,
-            r.resource_type.clone(),
+            &r,
             path,
+            url_params,
             &maybe_action,
             Some(res_args),
         );
@@ -332,17 +343,46 @@ impl Openstack {
     pub fn make_url(
         &mut self,
         com: Command,
-        rt: ResourceTypeEnum,
+        res: &Resource,
         path: String,
+        url_params: HashMap<String, String>,
         action: &Option<Action>,
         res_args: Option<&HashMap<String, Vec<serde_json::Value>>>,
     ) {
-        let endpoint: String = match rt.clone() {
+        let mut hm: HashMap<String, String> = HashMap::new();
+        hm.extend(url_params);
+        let mut new_path = path;
+        if let Some(resource_arguments) = res_args{
+            if let Some(ref post_param) = res.post_parameters {
+                for item in post_param {
+                    if item.placement.to_lowercase() == String::from("path"){
+                        let the_value: String;
+                        if let Some(x) = resource_arguments.get(&item.name) {
+                            the_value = match x[0].clone(){
+                                serde_json::Value::String(y) => y,
+                                _ => continue
+                            };
+                        } else {
+                            if let Some(x) = &item.default {
+                                the_value = x.clone();
+                            } else {
+                                continue;
+                            }
+                        }
+                        hm.insert(item.path.clone(), the_value);
+                    }
+                }
+            }
+        }
+        let renderer = handlebars::Handlebars::new();
+        new_path = renderer.render_template(&new_path, &hm).unwrap();
+
+        let endpoint: String = match res.resource_type.clone() {
             ResourceTypeEnum::ResourceType(x) => x.endpoint,
             ResourceTypeEnum::String(x) => x,
         };
         // let endpoint = "https://httpbin.org/anything";
-        let new_path = format!("{}{}", add_slash(&endpoint), remove_slash_start(&path));
+        new_path = format!("{}{}", add_slash(&endpoint), remove_slash_start(&new_path));
         let method = http::Method::from_str(&com.http_method)
             .expect("command has not a valid http method");
 
@@ -427,22 +467,52 @@ impl Openstack {
                         continue;
                     }
                 }
-                match item.the_type.as_ref() {
-                    "string" => data.push((path.clone(), the_value)),
-                    "number" => {
-                        let v = match serde_json::Number::from_str(&the_value.as_str().unwrap()) {
-                            Ok(x) => serde_json::Value::Number(x),
-                            Err(_e) => the_value.clone(),
-                        };
-                        data.push((path.clone(), v));
+                if item.placement.to_lowercase() == String::from("body"){
+                    match item.the_type.as_ref() {
+                        "string" => data.push((path.clone(), the_value)),
+                        "number" => {
+                            let v = match serde_json::Number::from_str(&the_value.as_str().unwrap()) {
+                                Ok(x) => serde_json::Value::Number(x),
+                                Err(_e) => the_value.clone(),
+                            };
+                            data.push((path.clone(), v));
+                        }
+                        _ => {}
                     }
-                    _ => {}
                 }
             }
             return make_hashmaps_from_dot_notation(data);
         };
         serde_json::Value::Null
     }
+
+    fn handle_header_parameters(res: &Resource,
+        op: &Command,
+        res_args: &HashMap<String, Vec<serde_json::Value>>) -> HashMap<String, String>{
+            let mut hm = HashMap::new();
+
+            if let Some(ref post_param) = res.post_parameters {
+                for item in post_param {
+                    if item.placement.to_lowercase() == String::from("header"){
+                        let the_value: String;
+                        if let Some(x) = res_args.get(&item.name) {
+                            the_value = match x[0].clone(){
+                                serde_json::Value::String(y) => y,
+                                _ => continue
+                            };
+                        } else {
+                            if let Some(x) = &item.default {
+                                the_value = x.clone();
+                            } else {
+                                continue;
+                            }
+                        }
+                        hm.insert(item.path.clone(), the_value);
+                    }
+                }
+            }
+            hm
+        }
 
     fn _handle_special_body_parameters(
         &self,

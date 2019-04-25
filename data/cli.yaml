@@ -58,6 +58,11 @@ subcommands:
         case_insensitive: true
         about: resource A
         args:
+        - microversion:
+            help: Sets microversion for the nova api. (Optional)
+            long: microversion
+            takes_value: true
+            multiple: false
         - id: *id001
         visible_aliases:
         - server
@@ -274,6 +279,12 @@ subcommands:
         case_insensitive: true
         about: resource A
         args:
+        - container:
+            help: name of the container to use.
+            required: true
+            long: container
+            takes_value: true
+            multiple: false
         - id: *id001
         visible_aliases:
         - object
@@ -320,7 +331,12 @@ subcommands:
         index: 1
         case_insensitive: true
         about: resource A
-        args: []
+        args:
+        - microversion:
+            help: Sets microversion for the nova api. (Optional)
+            long: microversion
+            takes_value: true
+            multiple: false
         visible_aliases:
         - server
     - credentials:
@@ -509,7 +525,13 @@ subcommands:
         index: 1
         case_insensitive: true
         about: resource A
-        args: []
+        args:
+        - container:
+            help: name of the container to use.
+            required: true
+            long: container
+            takes_value: true
+            multiple: false
         visible_aliases:
         - object
 - new:
@@ -609,6 +631,11 @@ subcommands:
               the UUID of the network in the uuid attribute in a networks object.
               Required if you omit the port attribute. (Optional)
             long: network-id
+            takes_value: true
+            multiple: false
+        - microversion:
+            help: Sets microversion for the nova api. (Optional)
+            long: microversion
             takes_value: true
             multiple: false
         visible_aliases:
@@ -933,7 +960,13 @@ subcommands:
         index: 1
         case_insensitive: true
         about: resource A
-        args: []
+        args:
+        - container:
+            help: name of the container to use.
+            required: true
+            long: container
+            takes_value: true
+            multiple: false
         visible_aliases:
         - object
 - delete:
@@ -985,6 +1018,11 @@ subcommands:
         case_insensitive: true
         about: resource A
         args:
+        - microversion:
+            help: Sets microversion for the nova api. (Optional)
+            long: microversion
+            takes_value: true
+            multiple: false
         - id: *id001
         visible_aliases:
         - server
@@ -1201,6 +1239,12 @@ subcommands:
         case_insensitive: true
         about: resource A
         args:
+        - container:
+            help: name of the container to use.
+            required: true
+            long: container
+            takes_value: true
+            multiple: false
         - id: *id001
         visible_aliases:
         - object
@@ -1307,6 +1351,11 @@ subcommands:
             long: network-id
             takes_value: true
             multiple: false
+        - microversion:
+            help: Sets microversion for the nova api. (Optional)
+            long: microversion
+            takes_value: true
+            multiple: false
         - id: *id001
         visible_aliases:
         - server
@@ -1657,6 +1706,12 @@ subcommands:
         case_insensitive: true
         about: resource A
         args:
+        - container:
+            help: name of the container to use.
+            required: true
+            long: container
+            takes_value: true
+            multiple: false
         - id: *id001
         visible_aliases:
         - object
@@ -1764,6 +1819,11 @@ subcommands:
             long: network-id
             takes_value: true
             multiple: false
+        - microversion:
+            help: Sets microversion for the nova api. (Optional)
+            long: microversion
+            takes_value: true
+            multiple: false
         - id: *id001
         visible_aliases:
         - server
@@ -2114,6 +2174,12 @@ subcommands:
         case_insensitive: true
         about: resource A
         args:
+        - container:
+            help: name of the container to use.
+            required: true
+            long: container
+            takes_value: true
+            multiple: false
         - id: *id001
         visible_aliases:
         - object

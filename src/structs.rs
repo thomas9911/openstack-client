@@ -44,6 +44,8 @@ pub struct PostParameter{
     #[serde(default = "false_bool")]
     pub hidden: bool,
     pub default: Option<String>,
+    #[serde(default = "return_body_string")]
+    pub placement: String,
     #[serde(default = "just_return_string", rename = "type")]
     pub the_type: String,
 }
@@ -309,4 +311,9 @@ fn post_method() -> String{
 #[allow(dead_code)]
 fn just_return_string() -> String {
     String::from("string")
+}
+
+#[allow(dead_code)]
+fn return_body_string() -> String {
+    String::from("body")
 }

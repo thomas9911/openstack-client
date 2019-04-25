@@ -59,6 +59,10 @@ servers:
     type: string
     help: To provision the server instance with a NIC for a network, specify the UUID of the network in the uuid attribute in a networks object. Required if you omit the port attribute. (Optional)
     path: server.networks.uuid
+  - name: microversion
+    path: X-OpenStack-Nova-API-Version
+    placement: header
+    help: Sets microversion for the nova api. (Optional)
 credentials:
   endpoint_path: credentials
   resource_type: identity
@@ -248,5 +252,11 @@ containers:
   endpoint_path: ""
   resource_type: object-store
 objects:
-  endpoint_path: ""
+  endpoint_path: "{{ container }}"
   resource_type: object-store
+  post_parameters:
+  - name: container
+    path: container
+    required: true
+    help: name of the container to use.
+    placement: path

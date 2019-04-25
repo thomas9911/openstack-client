@@ -29,6 +29,13 @@ def snake_to_kebabcase(val):
     return val
 
 
+def kebab_to_snakecase(val):
+    t = val.split("-")
+    if len(t)>1:
+        return "_".join(t)
+    return val
+
+
 def make_singular(text):
     if text[-1] == 's' or text[-1] == 's':
         return text[:-1]
@@ -94,6 +101,7 @@ for k, v in resources.items():
 
             tmp['takes_value'] = True
             tmp['multiple'] = l.get('multiple', False)
+            tmp['placement'] = l.get("placement", "body")
             d = l.get('default')
             if d is not None:
                 tmp['default_value'] = d
@@ -157,7 +165,29 @@ for command, data in commands.items():
             if item.get(command):
                 for j, item in enumerate(clap_app["subcommands"][i][command]['subcommands']):
                     for resource in clap_app["subcommands"][i][command]['subcommands'][j]:
-                        clap_app["subcommands"][i][command]['subcommands'][j][resource]['args'] = []
+                        for k, arg in enumerate(clap_app["subcommands"][i][command]['subcommands'][j][resource]['args']):
+                            to_delete = []
+                            for name in arg:
+                                try:
+                                    if clap_app["subcommands"][i][command]['subcommands'][j][resource]['args'][k][name]["placement"] == 'body':
+                                        to_delete.append((k, name))
+                                except Exception:
+                                    pass
+                            for delete in to_delete:
+                                # pass
+                                del clap_app["subcommands"][i][command]['subcommands'][j][resource]['args'][delete[0]][delete[1]]
+
+                        # clap_app["subcommands"][i][command]['subcommands'][j][resource]['args'] = []
+    for i, item in enumerate(clap_app["subcommands"]):
+        try:
+            for j, item in enumerate(clap_app["subcommands"][i][command]['subcommands']):
+                for resource in clap_app["subcommands"][i][command]['subcommands'][j]:
+                    clap_app["subcommands"][i][command]['subcommands'][j][resource]['args'] = [x for x in clap_app["subcommands"][i][command]['subcommands'][j][resource]['args'] if x]
+                    for k, arg in enumerate(clap_app["subcommands"][i][command]['subcommands'][j][resource]['args']):
+                        for name in arg:
+                            del clap_app["subcommands"][i][command]['subcommands'][j][resource]['args'][k][name]['placement']
+        except KeyError:
+            pass
     if data['requires_id']:
         for i, item in enumerate(clap_app["subcommands"]):
             if item.get(command):
