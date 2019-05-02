@@ -271,6 +271,12 @@ subcommands:
         case_insensitive: true
         about: resource A
         args:
+        - api-format:
+            help: specify the output format (Optional).
+            long: api-format
+            takes_value: true
+            multiple: false
+            default_value: json
         - id: *id001
         visible_aliases:
         - container
@@ -285,6 +291,12 @@ subcommands:
             long: container
             takes_value: true
             multiple: false
+        - api-format:
+            help: specify the output format (Optional).
+            long: api-format
+            takes_value: true
+            multiple: false
+            default_value: json
         - id: *id001
         visible_aliases:
         - object
@@ -518,7 +530,13 @@ subcommands:
         index: 1
         case_insensitive: true
         about: resource A
-        args: []
+        args:
+        - api-format:
+            help: specify the output format (Optional).
+            long: api-format
+            takes_value: true
+            multiple: false
+            default_value: json
         visible_aliases:
         - container
     - objects:
@@ -532,6 +550,12 @@ subcommands:
             long: container
             takes_value: true
             multiple: false
+        - api-format:
+            help: specify the output format (Optional).
+            long: api-format
+            takes_value: true
+            multiple: false
+            default_value: json
         visible_aliases:
         - object
 - new:
@@ -631,6 +655,22 @@ subcommands:
               the UUID of the network in the uuid attribute in a networks object.
               Required if you omit the port attribute. (Optional)
             long: network-id
+            takes_value: true
+            multiple: false
+        - key-name:
+            help: Key pair name. (Optional)
+            long: key-name
+            takes_value: true
+            multiple: false
+        - min-count:
+            help: The min number of servers to be created. Defaults to 1. (Optional)
+            long: min-count
+            takes_value: true
+            multiple: false
+        - max-count:
+            help: The max number of servers to be created. Defaults to the value of
+              min_count. (Optional)
+            long: max-count
             takes_value: true
             multiple: false
         - microversion:
@@ -953,7 +993,13 @@ subcommands:
         index: 1
         case_insensitive: true
         about: resource A
-        args: []
+        args:
+        - api-format:
+            help: specify the output format (Optional).
+            long: api-format
+            takes_value: true
+            multiple: false
+            default_value: json
         visible_aliases:
         - container
     - objects:
@@ -967,6 +1013,12 @@ subcommands:
             long: container
             takes_value: true
             multiple: false
+        - api-format:
+            help: specify the output format (Optional).
+            long: api-format
+            takes_value: true
+            multiple: false
+            default_value: json
         visible_aliases:
         - object
 - delete:
@@ -1231,6 +1283,12 @@ subcommands:
         case_insensitive: true
         about: resource A
         args:
+        - api-format:
+            help: specify the output format (Optional).
+            long: api-format
+            takes_value: true
+            multiple: false
+            default_value: json
         - id: *id001
         visible_aliases:
         - container
@@ -1245,6 +1303,12 @@ subcommands:
             long: container
             takes_value: true
             multiple: false
+        - api-format:
+            help: specify the output format (Optional).
+            long: api-format
+            takes_value: true
+            multiple: false
+            default_value: json
         - id: *id001
         visible_aliases:
         - object
@@ -1349,6 +1413,22 @@ subcommands:
               the UUID of the network in the uuid attribute in a networks object.
               Required if you omit the port attribute. (Optional)
             long: network-id
+            takes_value: true
+            multiple: false
+        - key-name:
+            help: Key pair name. (Optional)
+            long: key-name
+            takes_value: true
+            multiple: false
+        - min-count:
+            help: The min number of servers to be created. Defaults to 1. (Optional)
+            long: min-count
+            takes_value: true
+            multiple: false
+        - max-count:
+            help: The max number of servers to be created. Defaults to the value of
+              min_count. (Optional)
+            long: max-count
             takes_value: true
             multiple: false
         - microversion:
@@ -1698,6 +1778,12 @@ subcommands:
         case_insensitive: true
         about: resource A
         args:
+        - api-format:
+            help: specify the output format (Optional).
+            long: api-format
+            takes_value: true
+            multiple: false
+            default_value: json
         - id: *id001
         visible_aliases:
         - container
@@ -1712,6 +1798,12 @@ subcommands:
             long: container
             takes_value: true
             multiple: false
+        - api-format:
+            help: specify the output format (Optional).
+            long: api-format
+            takes_value: true
+            multiple: false
+            default_value: json
         - id: *id001
         visible_aliases:
         - object
@@ -1819,6 +1911,22 @@ subcommands:
             long: network-id
             takes_value: true
             multiple: false
+        - key-name:
+            help: Key pair name. (Optional)
+            long: key-name
+            takes_value: true
+            multiple: false
+        - min-count:
+            help: The min number of servers to be created. Defaults to 1. (Optional)
+            long: min-count
+            takes_value: true
+            multiple: false
+        - max-count:
+            help: The max number of servers to be created. Defaults to the value of
+              min_count. (Optional)
+            long: max-count
+            takes_value: true
+            multiple: false
         - microversion:
             help: Sets microversion for the nova api. (Optional)
             long: microversion
@@ -2166,6 +2274,12 @@ subcommands:
         case_insensitive: true
         about: resource A
         args:
+        - api-format:
+            help: specify the output format (Optional).
+            long: api-format
+            takes_value: true
+            multiple: false
+            default_value: json
         - id: *id001
         visible_aliases:
         - container
@@ -2180,6 +2294,12 @@ subcommands:
             long: container
             takes_value: true
             multiple: false
+        - api-format:
+            help: specify the output format (Optional).
+            long: api-format
+            takes_value: true
+            multiple: false
+            default_value: json
         - id: *id001
         visible_aliases:
         - object

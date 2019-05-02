@@ -9,7 +9,7 @@ use chrono::Duration;
 use enums::OSOperation;
 use structs::{Action, ActionMap, Command, CommandMap, Resource, ResourceMap, ResourceTypeEnum};
 use utils::{
-    add_slash, get_first_value_from_hashmap_with_vec, hashmap_with_vec_to_json,
+    add_slash, remove_slash, get_first_value_from_hashmap_with_vec, hashmap_with_vec_to_json,
     make_hashmaps_from_dot_notation, read_yaml, remove_slash_start,
 };
 use uuid::Uuid;
@@ -350,6 +350,7 @@ impl Openstack {
         res_args: Option<&HashMap<String, Vec<serde_json::Value>>>,
     ) {
         let mut hm: HashMap<String, String> = HashMap::new();
+        let mut query: HashMap<String, String> = HashMap::new();
         hm.extend(url_params);
         let mut new_path = path;
         if let Some(resource_arguments) = res_args{
@@ -371,6 +372,22 @@ impl Openstack {
                         }
                         hm.insert(item.path.clone(), the_value);
                     }
+                    if item.placement.to_lowercase() == String::from("query"){
+                        let the_value: String;
+                        if let Some(x) = resource_arguments.get(&item.name) {
+                            the_value = match x[0].clone(){
+                                serde_json::Value::String(y) => y,
+                                _ => continue
+                            };
+                        } else {
+                            if let Some(x) = &item.default {
+                                the_value = x.clone();
+                            } else {
+                                continue;
+                            }
+                        }
+                        query.insert(item.path.clone(), the_value);
+                    }
                 }
             }
         }
@@ -382,9 +399,14 @@ impl Openstack {
             ResourceTypeEnum::String(x) => x,
         };
         // let endpoint = "https://httpbin.org/anything";
-        new_path = format!("{}{}", add_slash(&endpoint), remove_slash_start(&new_path));
+        new_path = remove_slash(&format!("{}{}", add_slash(&endpoint), remove_slash_start(&new_path)));
+
         let method = http::Method::from_str(&com.http_method)
             .expect("command has not a valid http method");
+
+        let mut parsed_url = url::Url::parse(&new_path).expect("this is not a url");
+        parsed_url.query_pairs_mut()
+                  .extend_pairs(query);
 
         // if let Some(act) = action{
         //     if act.is_multipart{
@@ -402,7 +424,7 @@ impl Openstack {
         // Ok(self.connection.request(method, &new_path))
         // Ok(new_path)
         self.connection.client.set_method(&method.as_str().to_uppercase());
-        self.connection.client.set_url(&new_path);
+        self.connection.client.set_url(parsed_url.as_str());
     }
 
     pub fn handle_response(response: &mut Response) -> Result<serde_json::Value, OpenstackError> {

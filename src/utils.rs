@@ -61,6 +61,13 @@ pub fn add_slash(tmp: &str) -> String {
     }
 }
 
+pub fn remove_slash(tmp: &str) -> String {
+    if tmp.len() == 0{
+        return String::from("/");
+    }
+    tmp.trim_end_matches('/').to_string()
+}
+
 pub fn remove_slash_start(tmp: &str) -> String{
     if tmp.len() == 0{
         return String::from("/");
@@ -381,6 +388,13 @@ fn test_to_boolean() {
 fn test_add_slash() {
     assert_eq!(add_slash("test.com"), "test.com/");
     assert_eq!(add_slash("test.com/"), "test.com/");
+}
+
+#[test]
+fn test_remove_slash() {
+    assert_eq!(remove_slash("test.com///"), "test.com");
+    assert_eq!(remove_slash("test.com/"), "test.com");
+    assert_eq!(remove_slash("test.com/oke/"), "test.com/oke");
 }
 
 #[test]

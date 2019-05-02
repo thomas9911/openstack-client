@@ -59,6 +59,17 @@ servers:
     type: string
     help: To provision the server instance with a NIC for a network, specify the UUID of the network in the uuid attribute in a networks object. Required if you omit the port attribute. (Optional)
     path: server.networks.uuid
+  - name: key-name
+    path: server.key_name
+    help: Key pair name. (Optional)
+  - name: min-count
+    path: server.min_count
+    help: The min number of servers to be created. Defaults to 1. (Optional)
+    type: number
+  - name: max-count
+    path: server.max_count
+    help: The max number of servers to be created. Defaults to the value of min_count. (Optional)
+    type: number
   - name: microversion
     path: X-OpenStack-Nova-API-Version
     placement: header
@@ -251,6 +262,12 @@ volumes:
 containers:
   endpoint_path: ""
   resource_type: object-store
+  post_parameters:
+  - name: api-format
+    path: format
+    help: specify the output format (Optional).
+    placement: query
+    default: json
 objects:
   endpoint_path: "{{ container }}"
   resource_type: object-store
@@ -260,3 +277,8 @@ objects:
     required: true
     help: name of the container to use.
     placement: path
+  - name: api-format
+    path: format
+    help: specify the output format (Optional).
+    placement: query
+    default: json
