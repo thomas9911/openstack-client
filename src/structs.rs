@@ -158,27 +158,31 @@ impl ActionMap {
 }
 
 impl Action {
-    pub fn make_body(&self, map: &HashMap<String, Vec<serde_json::Value>>) -> serde_json::Value{
-        if self.is_multipart{
+    pub fn make_body(&self, map: &HashMap<String, Vec<serde_json::Value>>, command: &Command) -> serde_json::Value{
+        if !command.has_body{
             return serde_json::Value::Null
         }
         let mut main_body = HashMap::new();
         let body_name = self.body_name.clone();
+        if body_name == ""{
+            return serde_json::Value::Null
+        }
         let mut sub_body: HashMap<String, Option<serde_json::Value>> = HashMap::new();
 
-        // for param in self.params.iter(){
         if let Some(ref parameters) = self.post_parameters{
             for param in parameters.iter(){
-                let kaas = match get_first_value_from_hashmap_with_vec(map, &param.name){
-                    Some(x) => Some(x),
-                    None => Some({
-                        match param.default{
-                                Some(ref x) => x.clone().into(),
-                                None => serde_json::Value::Null
-                            }
-                        })
-                };
-                sub_body.insert(param.name.clone(), kaas);
+                if param.placement == "body"{
+                    let kaas = match get_first_value_from_hashmap_with_vec(map, &param.name){
+                        Some(x) => Some(x),
+                        None => Some({
+                            match param.default{
+                                    Some(ref x) => x.clone().into(),
+                                    None => serde_json::Value::Null
+                                }
+                            })
+                    };
+                    sub_body.insert(param.name.clone(), kaas);
+                }
             };
         }
         let sub_body_value = match sub_body.is_empty(){

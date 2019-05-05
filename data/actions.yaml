@@ -59,6 +59,35 @@ remote_console:
         - name: type
           required: true
           help: The type of remote console. The valid values are novnc, xvpvnc, rdp-html5, spice-html5, serial, and webmks. The type webmks is added since Microversion 2.8.
+copy:
+  aliases: []
+  help: copy instance from location to destination
+  resources:
+    - resource: objects
+      help: copy object to other destination
+      http_method: copy
+      url_parameter: "{{ container }}/{{ name }}"
+      requires_id: false
+      body_name: ""
+      post_parameters:
+      - name: from
+        path: name
+        required: true
+        help: the object to copy.
+        placement: path
+      - name: to
+        path: Destination
+        required: true
+        help: "the destination to copy to, including the container name. example: container/object"
+        placement: header
+      - name: container
+        required: true
+        help: name of the container to use.
+        placement: path
+      - name: api-format
+        default: ""
+        hidden: true
+        placement: query
 upload:
   aliases: []
   help: upload file to resource
@@ -69,20 +98,16 @@ upload:
       url_parameter: "{{ container }}/{{ name }}"
       requires_id: false
       body_name: ""
-      is_multipart: true
       post_parameters:
       - name: file
-        # path: file
         required: true
         help: the path to the file to upload.
         placement: path
       - name: name
-        # path: file
         required: false
         help: a name to give object (Optional).
         placement: path
       - name: container
-        # path: container
         required: true
         help: name of the container to use.
         placement: path
@@ -118,8 +143,7 @@ download:
       url_parameter: "{{ container }}/{{ name }}"
       requires_id: false
       body_name: ""
-      is_multipart: true
-      params:
+      post_parameters:
       - name: file
         required: true
         help: the path to the file to upload.

@@ -202,8 +202,8 @@ impl Openstack {
                 }
             };
 
-            post_body = action.make_body(&new_res_args);
-            let tmp_json = hashmap_with_vec_to_json(&new_res_args);
+            // let tmp_json = hashmap_with_vec_to_json(&new_res_args);
+
             // println!("{}", path);
             // println!("{}", action.url_parameter);
             // println!("{:?}", new_res_args);
@@ -220,6 +220,7 @@ impl Openstack {
                 .get(&action.http_method)
                 .expect("http method not mapped for action")
                 .clone();
+            post_body = action.make_body(&new_res_args, &matched_op);
         } else if let Ok(op_parsed) = OSOperation::from_str(&op) {
             http_method = op_parsed.match_http_method();
             matched_op = self
@@ -228,7 +229,7 @@ impl Openstack {
                 .get(&op_parsed.to_string())
                 .expect("commands is not complete")
                 .clone();
-            post_body = Openstack::handle_post_parameters(&r, &matched_op, res_args);
+            post_body = Openstack::handle_post_parameters(&r, &matched_op, &new_res_args);
         } else {
             return Err(OpenstackError::new(&format!("'{}' is not a valid operation", &op)))
         }
@@ -239,7 +240,7 @@ impl Openstack {
         // };
         self._handle_special_body_parameters(&r, &matched_op, &mut post_body);
 
-        let additional_headers = Openstack::handle_header_parameters(&r, &matched_op, res_args);
+        let additional_headers = Openstack::handle_header_parameters(&r, &matched_op, &new_res_args, &maybe_action);
         for (k, v) in &additional_headers{
             self.connection.client.set_header(k, v);
         }
@@ -535,11 +536,17 @@ impl Openstack {
 
     fn handle_header_parameters(res: &Resource,
         op: &Command,
-        res_args: &HashMap<String, Vec<serde_json::Value>>) -> HashMap<String, String>{
+        res_args: &HashMap<String, Vec<serde_json::Value>>,
+        action: &Option<Action>,
+        ) -> HashMap<String, String>{
             let mut hm = HashMap::new();
-
-            if let Some(ref post_param) = res.post_parameters {
+            let parameter_option = match action {
+                Some(actual_action) => actual_action.post_parameters.clone(),
+                None => res.post_parameters.clone()
+            };
+            if let Some(ref post_param) = parameter_option {
                 for item in post_param {
+                    // println!("{:?}", item);
                     if item.placement.to_lowercase() == String::from("header"){
                         let the_value: String;
                         if let Some(x) = res_args.get(&item.name) {

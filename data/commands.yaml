@@ -34,6 +34,12 @@ update:
   requires_id: true
   has_body: true
   http_method: patch
+copy:
+  aliases: []
+  help: copy item from the given resource from location to destination
+  requires_id: false
+  has_body: false
+  http_method: copy
 add:
   aliases:
     - put

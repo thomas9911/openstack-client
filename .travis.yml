@@ -1,23 +1,16 @@
-# os:
-#   - linux
-#   # - osx
-#   # - windows
-# dist: xenial
 language: rust
-# rust:
-#   - stable
-  # - nightly
-# before_install:
-#   - curl https://rclone.org/install.sh | sudo bash
-# env:
-#   - RCLONE_CONFIG_RUSTCI_TYPE=swift RCLONE_CONFIG_RUSTCI_ENV_AUTH=true
 matrix:
   include:
     - os: linux
       dist: xenial
       rust: stable
+    - os: linux
+      dist: xenial
+      rust: nightly
     - os: osx
       rust: stable
+    - os: osx
+      rust: nightly
     - os: windows
       rust: stable
   allow_failures:
@@ -30,7 +23,6 @@ before_install:
 script:
   - cargo build --release --verbose
   - cargo test --release --verbose
-  # - echo $OS_USERNAME
 deploy:
   skip_cleanup: true
   provider: script
@@ -39,6 +31,3 @@ deploy:
   script: bash .deploy.sh
   on:
     all_branches: true
-
-
-# curl -X POST -H "Content-Type: text/yaml" -H "Travis-API-Version: 3" -H "User-Agent: API Explorer" -H "Authorization: token wLMlO6h40GqnA2zAixzAQg" -T ".travis.yml" https://api.travis-ci.com/lint

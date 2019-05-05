@@ -2430,6 +2430,40 @@ subcommands:
     - dry-run:
         long: dry-run
         help: prints the post body of the request, does not send the request
+- copy:
+    about: copy instance from location to destination
+    visible_aliases: []
+    case_insensitive: true
+    index: 1
+    subcommands:
+    - objects:
+        index: 1
+        case_insensitive: true
+        about: copy object to other destination
+        args:
+        - from:
+            help: the object to copy.
+            required: true
+            long: from
+            takes_value: true
+            multiple: false
+        - to:
+            required: true
+            long: to
+            takes_value: true
+            multiple: false
+        - container:
+            help: name of the container to use.
+            required: true
+            long: container
+            takes_value: true
+            multiple: false
+        visible_aliases:
+        - object
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
 - upload:
     about: upload file to resource
     visible_aliases: []
@@ -2500,7 +2534,24 @@ subcommands:
         index: 1
         case_insensitive: true
         about: download file from object store
-        args: []
+        args:
+        - file:
+            help: the path to the file to upload.
+            required: true
+            long: file
+            takes_value: true
+            multiple: false
+        - name:
+            help: a name to give object (Optional).
+            long: name
+            takes_value: true
+            multiple: false
+        - container:
+            help: name of the container to use.
+            required: true
+            long: container
+            takes_value: true
+            multiple: false
         visible_aliases:
         - object
     args:

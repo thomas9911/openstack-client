@@ -14,6 +14,7 @@ if [ "$TRAVIS_OS_NAME" == "linux" ]; then
     echo "$RUST_TOOLCHAIN"
     echo "$CLIENT_VERSION"
     strip "$FILE"
+    chmod +x "$FILE"
     $FILE upload object --file "$FILE" --name "$CLIENT_VERSION"/"$TRAVIS_OS_NAME"/"$RUST_TOOLCHAIN"/"$RUST_VERSION"/openstack-client --container "$CONTAINER"
     $FILE upload object --file "$FILE" --name latest/"$TRAVIS_OS_NAME"/openstack-client --container "$CONTAINER"
 fi
@@ -24,6 +25,7 @@ if [ "$TRAVIS_OS_NAME" == "osx" ]; then
     echo "$RUST_VERSION"
     echo "$RUST_TOOLCHAIN"
     strip "$FILE"
+    chmod +x "$FILE"
     $FILE upload object --file "$FILE" --name "$CLIENT_VERSION"/"$TRAVIS_OS_NAME"/"$RUST_TOOLCHAIN"/"$RUST_VERSION"/openstack-client --container "$CONTAINER"
     $FILE upload object --file "$FILE" --name latest/"$TRAVIS_OS_NAME"/openstack-client --container "$CONTAINER"
 fi
@@ -33,6 +35,6 @@ if [ "$TRAVIS_OS_NAME" == "windows" ]; then
     CLIENT_VERSION=$($FILE --version | sed 's/openstack-client//' | tr -d '[:space:]')
     echo "$RUST_VERSION"
     echo "$RUST_TOOLCHAIN"
-    strip "$FILE"
+    $FILE upload object --file "$FILE" --name "$CLIENT_VERSION"/"$TRAVIS_OS_NAME"/"$RUST_TOOLCHAIN"/"$RUST_VERSION"/openstack-client.exe --container "$CONTAINER"
     $FILE upload object --file "$FILE" --name latest/"$TRAVIS_OS_NAME"/openstack-client.exe --container "$CONTAINER"
 fi
