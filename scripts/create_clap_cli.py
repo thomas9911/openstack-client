@@ -228,21 +228,38 @@ for action, data in actions.items():
         if rs_data['requires_id']:
             val[new_rs]['args'].append({"id": id_blub})
 
-        for param in rs_data['params']:
-            tmp = od({})
-            if param.get('help'):
-                tmp['help'] = param['help']
-            if param.get('required', False):
-                tmp['required'] = True
-                # print(action, tmp)
-            tmp['long'] = param['name']
-            tmp['multiple'] = False
+        for l in rs_data.get('post_parameters', []):
+            if not l.get('hidden', False):
+                tmp = od({})
+                if l.get('help'):
+                    tmp['help'] = l['help']
+                if l.get('required', False):
+                    tmp['required'] = True
+                # if not l.get('required', False):
+                tmp['long'] = l['name']
 
-            tmp['takes_value'] = True
-            d = param.get('default', None)
-            if d is not None:
-                tmp['default_value'] = d
-            val[new_rs]['args'].append({param['name']: tmp})
+                tmp['takes_value'] = True
+                tmp['multiple'] = l.get('multiple', False)
+                # tmp['placement'] = l.get("placement", "body")
+                d = l.get('default')
+                if d is not None:
+                    tmp['default_value'] = d
+
+                val[new_rs]["args"].append({l['name']: tmp.copy()})
+            # tmp = od({})
+            # if param.get('help'):
+            #     tmp['help'] = param['help']
+            # if param.get('required', False):
+            #     tmp['required'] = True
+            #     # print(action, tmp)
+            # tmp['long'] = param['name']
+            # tmp['multiple'] = False
+
+            # tmp['takes_value'] = True
+            # d = param.get('default', None)
+            # if d is not None:
+            #     tmp['default_value'] = d
+            # val[new_rs]['args'].append({param['name']: tmp})
         new_stuff['subcommands'].append(val)
 
         # print(action, resource, val)

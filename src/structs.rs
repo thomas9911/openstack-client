@@ -35,7 +35,8 @@ pub struct ResourceType {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct PostParameter{
     pub name: String,
-    pub path: String,
+    // #[serde(default = "return_body_string")]
+    pub path: Option<String>,
     pub help: Option<String>,
     #[serde(default = "false_bool")]
     pub multiple: bool,
@@ -69,22 +70,23 @@ pub struct Action {
     pub url_parameter: String,
     pub requires_id: bool,
     pub body_name: String,
-    #[serde(default = "empty_vec_action_parameter")]
-    pub params: Vec<ActionParameter>,
+    // #[serde(default = "empty_vec_action_parameter")]
+    // pub params: Vec<ActionParameter>,
+    pub post_parameters: Option<Vec<PostParameter>>,
     #[serde(default = "post_method")]
     pub http_method: String,
     #[serde(default = "false_bool")]
     pub is_multipart: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct ActionParameter {
-    pub name: String,
-    #[serde(default = "false_bool")]
-    pub required: bool,
-    pub help: Option<String>,
-    pub default: Option<String>,
-}
+// #[derive(Debug, Serialize, Deserialize, Clone)]
+// pub struct ActionParameter {
+//     pub name: String,
+//     #[serde(default = "false_bool")]
+//     pub required: bool,
+//     pub help: Option<String>,
+//     pub default: Option<String>,
+// }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct CommandMap{
@@ -164,18 +166,21 @@ impl Action {
         let body_name = self.body_name.clone();
         let mut sub_body: HashMap<String, Option<serde_json::Value>> = HashMap::new();
 
-        for param in self.params.iter(){
-            let kaas = match get_first_value_from_hashmap_with_vec(map, &param.name){
-                Some(x) => Some(x),
-                None => Some({
-                    match param.default{
-                            Some(ref x) => x.clone().into(),
-                            None => serde_json::Value::Null
-                        }
-                    })
+        // for param in self.params.iter(){
+        if let Some(ref parameters) = self.post_parameters{
+            for param in parameters.iter(){
+                let kaas = match get_first_value_from_hashmap_with_vec(map, &param.name){
+                    Some(x) => Some(x),
+                    None => Some({
+                        match param.default{
+                                Some(ref x) => x.clone().into(),
+                                None => serde_json::Value::Null
+                            }
+                        })
+                };
+                sub_body.insert(param.name.clone(), kaas);
             };
-            sub_body.insert(param.name.clone(), kaas);
-        };
+        }
         let sub_body_value = match sub_body.is_empty(){
             true => serde_json::Value::Null,
             false => serde_json::to_value(sub_body).expect("you broke it")
@@ -292,8 +297,13 @@ fn false_bool() -> bool {
     false
 }
 
+// #[allow(dead_code)]
+// fn empty_vec_action_parameter() -> Vec<ActionParameter> {
+//     vec![]
+// }
+
 #[allow(dead_code)]
-fn empty_vec_action_parameter() -> Vec<ActionParameter> {
+fn empty_vec_post_parameter() -> Vec<PostParameter> {
     vec![]
 }
 

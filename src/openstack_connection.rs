@@ -190,21 +190,25 @@ impl Openstack {
         };
         // let renderer = handlebars::Handlebars::new();
         // path = renderer.render_template(&path, &json!({"user_id": self.connection.user_id, "domain_id": self.connection.domain_id}))?;
+        let mut new_res_args = res_args.clone();
 
         let http_method: http::Method;
         let matched_op;
         let maybe_action = self.actions.get_action(op.clone(), r.name.clone());
         if let Some(ref action) = maybe_action {
-            let mut modified_res_args = res_args.clone();
             if get_first_value_from_hashmap_with_vec(res_args, "name") == None {
                 if let Some(x) = res_args.get("file") {
-                    modified_res_args.insert("name".to_string(), x.clone());
+                    new_res_args.insert("name".to_string(), x.clone());
                 }
             };
 
-            post_body = action.make_body(&modified_res_args);
-            let tmp_json = hashmap_with_vec_to_json(&modified_res_args);
-            path = format!("{}{}", add_slash(&path), action.url_parameter);
+            post_body = action.make_body(&new_res_args);
+            let tmp_json = hashmap_with_vec_to_json(&new_res_args);
+            // println!("{}", path);
+            // println!("{}", action.url_parameter);
+            // println!("{:?}", new_res_args);
+            // path = format!("{}{}", add_slash(&path), action.url_parameter);
+            path = action.url_parameter.clone();
             // path = renderer.render_template(&path, &tmp_json).unwrap();
             http_method = http::Method::from_str(&action.http_method).expect(&format!(
                 "the method {} from {} {} is not valid",
@@ -265,7 +269,7 @@ impl Openstack {
             path,
             url_params,
             &maybe_action,
-            Some(res_args),
+            Some(&new_res_args),
         );
 
         if is_dry_run {
@@ -352,10 +356,18 @@ impl Openstack {
         let mut hm: HashMap<String, String> = HashMap::new();
         let mut query: HashMap<String, String> = HashMap::new();
         hm.extend(url_params);
+        // println!("{:?}", hm);
+
         let mut new_path = path;
         if let Some(resource_arguments) = res_args{
-            if let Some(ref post_param) = res.post_parameters {
+            let parameter_option = match action {
+                Some(actual_action) => actual_action.post_parameters.clone(),
+                None => res.post_parameters.clone()
+            };
+
+            if let Some(ref post_param) = parameter_option {
                 for item in post_param {
+                    // println!("{:?}", item);
                     if item.placement.to_lowercase() == String::from("path"){
                         let the_value: String;
                         if let Some(x) = resource_arguments.get(&item.name) {
@@ -370,7 +382,11 @@ impl Openstack {
                                 continue;
                             }
                         }
-                        hm.insert(item.path.clone(), the_value);
+                        let key = match &item.path{
+                            Some(x) => x.clone(),
+                            None => item.name.clone()
+                        };
+                        hm.insert(key, the_value);
                     }
                     if item.placement.to_lowercase() == String::from("query"){
                         let the_value: String;
@@ -386,7 +402,13 @@ impl Openstack {
                                 continue;
                             }
                         }
-                        query.insert(item.path.clone(), the_value);
+                        if the_value != ""{
+                            let key = match &item.path{
+                                Some(x) => x.clone(),
+                                None => item.name.clone()
+                            };
+                            query.insert(key, the_value);
+                        }
                     }
                 }
             }
@@ -471,7 +493,10 @@ impl Openstack {
         if let Some(ref post_param) = res.post_parameters {
             let mut data: Vec<(String, serde_json::Value)> = vec![];
             for item in post_param {
-                let path = item.path.clone();
+                let path = match &item.path{
+                    Some(x) => x.clone(),
+                    None => item.name.clone()
+                };
                 if item.hidden {
                     data.push((path.clone(), Vec::<serde_json::Value>::new().into()))
                 }
@@ -529,7 +554,11 @@ impl Openstack {
                                 continue;
                             }
                         }
-                        hm.insert(item.path.clone(), the_value);
+                        let key = match &item.path{
+                            Some(x) => x.clone(),
+                            None => item.name.clone()
+                        };
+                        hm.insert(key, the_value);
                     }
                 }
             }

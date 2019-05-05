@@ -70,16 +70,22 @@ upload:
       requires_id: false
       body_name: ""
       is_multipart: true
-      params:
+      post_parameters:
       - name: file
+        # path: file
         required: true
         help: the path to the file to upload.
+        placement: path
       - name: name
+        # path: file
         required: false
         help: a name to give object (Optional).
+        placement: path
       - name: container
+        # path: container
         required: true
         help: name of the container to use.
+        placement: path
       - name: parts
         required: false
         help: amount of parts to split the file in before uploading. Enables dynamic large objects.
@@ -87,6 +93,10 @@ upload:
         required: false
         help: skip parts when uploading large files (should be used with the 'parts' argument).
         default: "0"
+      - name: api-format
+        default: ""
+        hidden: true
+        placement: query
     - resource: containers
       help: create a container
       http_method: add
@@ -94,7 +104,7 @@ upload:
       requires_id: false
       body_name: ""
       is_multipart: true
-      params:
+      post_parameters:
       - name: name
         required: true
         help: a name to give object (Optional).
@@ -119,3 +129,6 @@ download:
       - name: container
         required: true
         help: name of the container to use.
+      - name: api-format
+        default: ""
+        hidden: true
