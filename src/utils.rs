@@ -346,6 +346,23 @@ fn _do_array_thing(
     (sorted_headers, block_data)
 }
 
+fn remove_empty_fields(val: &mut serde_json::Value){
+    let mut delete_keys = vec![];
+    if let Some(x) = val.as_object(){
+        for (k, v) in x.iter(){
+            if v == ""{
+                delete_keys.push(k.clone())
+            }
+        };
+    };
+    if let Some(x) = val.as_object_mut(){
+        for key in delete_keys{
+            x.remove(&key);
+        };
+    };
+}
+
+
 #[test]
 fn test_convert_to_singular() {
     assert_eq!(convert_to_singular("TESTS"), "TEST");
@@ -688,4 +705,33 @@ fn test_hashmap_with_vec_to_json(){
     });
 
     assert_eq!(expected, hashmap_with_vec_to_json(&h));
+}
+
+#[test]
+fn test_remove_fields(){
+    let mut data = json!({
+        "auth-url": "https://example.com/",
+        "domain-id": "",
+        "domain-name": "",
+        "password": "",
+        "project-domain-id": "",
+        "project-domain-name": "",
+        "project-id": "",
+        "project-name": "",
+        "system-scope": "",
+        "token": "",
+        "trust-id": "",
+        "user-domain-id": "1234-124",
+        "user-domain-name": "",
+        "user-id": "",
+        "username": "Test"
+    });
+    let expected_output = json!({
+        "user-domain-id": "1234-124",
+        "auth-url": "https://example.com/",
+        "username": "Test"
+    });
+    remove_empty_fields(&mut data);
+
+    assert_eq!(data, expected_output);
 }

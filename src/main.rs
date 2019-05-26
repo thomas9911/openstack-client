@@ -5,6 +5,7 @@ extern crate serde_yaml;
 #[macro_use]
 extern crate serde_derive;
 extern crate csv;
+extern crate envy;
 #[macro_use]
 extern crate prettytable;
 extern crate handlebars;
@@ -27,14 +28,18 @@ extern crate yaml_rust;
 extern crate uuid;
 extern crate memmap;
 
+#[macro_use]
+mod macros;
+
 mod error;
 mod client;
 mod enums;
 mod utils;
 mod openstack_connection;
 mod structs;
-mod config;
 mod objectstore;
+mod traits;
+mod config;
 
 use std::collections::HashMap;
 use std::str::FromStr;
@@ -58,23 +63,7 @@ fn main() {
     }
 
     let yml = load_yaml!("../data/cli.yaml");
-    let app = App::from_yaml(&yml)
-        .version(&crate_version!()[..])
-        .arg(
-            Arg::with_name("format")
-                .short("f")
-                .help("formats output with this format")
-                .takes_value(true)
-                .global(true)
-                .possible_values(&["json", "csv", "table"])
-                .default_value("json")
-        ).subcommand(
-            SubCommand::with_name("generate-autocomplete")
-                .about("generates autocompletion scripts")
-                .arg(Arg::with_name("shell")
-                    .possible_values(&Shell::variants())
-                    .help("which shell to generate script for"))
-        );
+    let app = prepare_app(App::from_yaml(&yml));
     let matches = app.get_matches();
     // println!("{:?}", matches);
     let format = matches.value_of("format").expect("this has a default");
@@ -90,7 +79,7 @@ fn main() {
             Some(x) => Shell::from_str(x).unwrap(),
             None => return
         };
-        App::from_yaml(&yml).gen_completions_to("openstack-client", a_shell, &mut std::io::stdout()); // crate_name!()
+        prepare_app(App::from_yaml(&yml)).gen_completions_to("openstack-client", a_shell, &mut std::io::stdout()); // crate_name!()
         return ();
     }
 
@@ -232,4 +221,24 @@ fn main() {
     // println!("{}", serde_json::to_string_pretty(&outcome).unwrap());
     print_value(&outcome, format);
 
+}
+
+
+fn prepare_app<'a>(app: App<'a, 'a>) -> App<'a, 'a>{
+    app.version(&crate_version!()[..])
+        .arg(
+            Arg::with_name("format")
+                .short("f")
+                .help("formats output with this format")
+                .takes_value(true)
+                .global(true)
+                .possible_values(&["json", "csv", "table"])
+                .default_value("json")
+        ).subcommand(
+            SubCommand::with_name("generate-autocomplete")
+                .about("generates autocompletion scripts")
+                .arg(Arg::with_name("shell")
+                    .possible_values(&Shell::variants())
+                    .help("which shell to generate script for"))
+        )
 }

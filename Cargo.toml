@@ -1,6 +1,6 @@
 [package]
 name = "openstack-client"
-version = "0.5.0"
+version = "0.6.0"
 authors = ["thomas9911 <thomastimmer11@hotmail.com>"]
 
 [dependencies]
@@ -8,11 +8,12 @@ serde = "*"
 serde_derive = "*"
 serde_json = "*"
 serde_yaml = "*"
+envy = "*"
 url = "*"
 # reqwest = {version = "*", features = [], default-features = true}
 http = "*"
 curl = "*"
-secstr = {version = "*", features = ['serde']}
+secstr = {git = "https://github.com/myfreeweb/secstr", tag = "v0.3.2", features = ['serde']}
 rpassword = "2.1.0"
 chrono = { version = "*", features = ["serde"] }
 strum = "*"
