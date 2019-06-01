@@ -156,6 +156,14 @@ for command, data in commands.items():
                 "takes_value": True,
                 "value_name": "BODY",
             }
+        }, {
+            "header": {
+                "help": 'set additional headers, for example "X-Testing: test"',
+                "takes_value": True,
+                "long": "header",
+                "short": "H",
+                "multiple": True,
+            },
         }])
 
     clap_app["subcommands"].append({command: stuff})

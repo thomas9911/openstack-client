@@ -14,6 +14,9 @@ extern crate indicatif;
 extern crate chrono;
 #[macro_use]
 extern crate clap;
+#[macro_use]
+extern crate log;
+extern crate simple_logger;
 extern crate heck;
 extern crate secstr;
 extern crate curl;
@@ -47,6 +50,7 @@ use std::env;
 
 use clap::{Arg, App, SubCommand, Shell};
 use std::string::ToString;
+use std::error::Error;
 
 use enums::OSOperation;
 use structs::{Command, Resource};
@@ -66,7 +70,10 @@ fn main() {
     let app = prepare_app(App::from_yaml(&yml));
     let matches = app.get_matches();
     // println!("{:?}", matches);
+    set_log_level(&matches);
+
     let format = matches.value_of("format").expect("this has a default");
+    debug!("set output format to {}", format);
 
     let (command_input, command_sub) = match matches.subcommand(){
         (x, Some(y)) => (x, y),
@@ -92,12 +99,17 @@ fn main() {
     };
 
     let os_config_env = OpenstackInfoMap::from_env(os_cloud.clone());
+    debug!("config from env {:?}", os_config_env);
     let mut os_config = match OpenstackInfoMap::from_clouds_yaml(os_cloud.clone()){
         Ok(x) => x,
         Err(_e) => OpenstackInfoMap::default()
     };
+    debug!("config from yaml {:?}", os_config);
+
     os_config.apply(&os_config_env)
       .add_password_if_not_existing().unwrap();
+
+    debug!("config combined {:?}", os_config);
 
     let mut new_os = match Openstack::new(os_config){
         Ok(x) => x,
@@ -105,12 +117,14 @@ fn main() {
     };
 
     if OSOperation::from(command_input) == OSOperation::Call {
-        // println!("{:?}", command_sub);
-        let method = command_sub.value_of("method").expect("this value is requered");
-        let os_type = command_sub.value_of("type").expect("this value is requered");
-        let endpoint = command_sub.value_of("endpoint").expect("this value is requered");
+        debug!("initialize call operation");
+
+        let method = command_sub.value_of("method").expect("this value is required");
+        let os_type = command_sub.value_of("type").expect("this value is required");
+        let endpoint = command_sub.value_of("endpoint").expect("this value is required");
         let body = command_sub.values_of("body");
-        // println!("{} {} {}", method, os_type, endpoint);
+        let headers = command_sub.values_of("header");
+
         let resource_type = match new_os.resources.get_resource_type(os_type.into()){
             Ok(x) => x,
             Err(e) => {println!("{{\"error\": \"{}\"}}", e); return ()}
@@ -134,24 +148,43 @@ fn main() {
             })
         ).unwrap();
 
+        if let Some(x) = headers {
+            for header in x{
+                let header_parts: Vec<&str> = header.split(":").collect();
+                if header_parts.len() != 2 {
+                    return print_value(&json!({"error": "invalid header"}), format);
+                }
+                new_os.connection.client.set_header(header_parts[0], header_parts[1])
+            }
+        };
+
         new_os.make_url(command, &tmp_resource, endpoint.into(), HashMap::new(), &None, None);
 
-        match body {
-            Some(x) => {
-                let q: String = x.collect::<Vec<&str>>().join(" ");
-                println!("{}", q);
-                let v: serde_json::Value = match serde_json::from_str(&q){
-                    Ok(x) => x,
-                    Err(e) => {println!("{{\"error\": \"{}\"}}", e); return ()}
-                };
-                // req.json(&v)
-                new_os.connection.client.set_json(v);
-            },
-            _ => ()
+        debug!("{:?}", new_os.connection.client);
+
+        if let Some(x) = body {
+            let q: String = x.collect::<Vec<&str>>().join(" ");
+            let v: serde_json::Value = match serde_json::from_str(&q){
+                Ok(x) => x,
+                Err(_e) => {
+                    let error = json!({
+                        "error": "given body is invalid json"
+                    });
+                    print_value(&error, format);
+                    return ()
+                }
+            };
+            new_os.connection.client.set_json(v);
         };
+
+        if command_options.get("dry-run").is_some(){
+            println!("{:?} {:?}\nHeaders: {:?}", new_os.connection.client.method, new_os.connection.client.url, new_os.connection.client.headers);
+            print_value(&new_os.connection.client.json, format);
+            return ();
+        }
         // let mut lbab = req.send().expect("request failed");
-        let mut lbab = new_os.connection.client.perform().expect("request failed");
-        let outcome = match Openstack::handle_response(&mut lbab){
+        let mut response = new_os.connection.client.perform().expect("request failed");
+        let outcome = match Openstack::handle_response(&mut response){
             Ok(x) => x,
             Err(e) => {println!("{}", e); return}
         };
@@ -203,7 +236,7 @@ fn main() {
             let return_object = json!({
                 "error": "endpoints are not available"
             });
-            print_value(&return_object, "json");
+            print_value(&return_object, format);
             return;
         }
     }
@@ -234,11 +267,28 @@ fn prepare_app<'a>(app: App<'a, 'a>) -> App<'a, 'a>{
                 .global(true)
                 .possible_values(&["json", "csv", "table"])
                 .default_value("json")
-        ).subcommand(
+        )
+        .arg(Arg::with_name("verbose")
+                .help("increases the verbosity")
+                .short("v")
+                .long("verbosity")
+                .multiple(true)
+        )
+        .subcommand(
             SubCommand::with_name("generate-autocomplete")
                 .about("generates autocompletion scripts")
                 .arg(Arg::with_name("shell")
                     .possible_values(&Shell::variants())
                     .help("which shell to generate script for"))
         )
+}
+
+fn set_log_level(matches: &clap::ArgMatches){
+    let log_level = match matches.occurrences_of("verbose"){
+        0 => log::Level::Error,
+        1 => log::Level::Info,
+        2 => log::Level::Debug,
+        _ => log::Level::Trace
+    };
+    simple_logger::init_with_level(log_level).expect("unable to set logger");
 }

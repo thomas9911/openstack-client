@@ -1807,6 +1807,263 @@ subcommands:
         - id: *id001
         visible_aliases:
         - object
+- copy:
+    about: copy item from the given resource from location to destination
+    visible_aliases: []
+    case_insensitive: true
+    index: 1
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
+    subcommands:
+    - flavors:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - flavor
+    - keypairs:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - keypair
+    - limits:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - limit
+    - server-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - server-group
+    - servers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - microversion:
+            help: Sets microversion for the nova api. (Optional)
+            long: microversion
+            takes_value: true
+            multiple: false
+        visible_aliases:
+        - server
+    - credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - credential
+    - ec2-credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - ec2-credential
+    - domains:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - domain
+    - groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - group
+    - user-projects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - user-project
+    - user-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - user-group
+    - projects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - project
+    - users:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - user
+    - tokens:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - token
+    - application-credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - application-credential
+    - endpoints:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - endpoint
+    - images:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - image
+    - address-scopes:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - address-scope
+    - availability-zones:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - availability-zone
+    - floating-ips:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - floating-ip
+    - networks:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - network
+    - ports:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - port
+    - routers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - router
+    - security-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - security-group
+    - security-groups-rules:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - security-groups-rule
+    - subnets:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - subnet
+    - attachments:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - attachment
+    - backups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - backup
+    - snapshots:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - snapshot
+    - volumes:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - volume
+    - containers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - api-format:
+            help: specify the output format (Optional).
+            long: api-format
+            takes_value: true
+            multiple: false
+            default_value: json
+        visible_aliases:
+        - container
+    - objects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - container:
+            help: name of the container to use.
+            required: true
+            long: container
+            takes_value: true
+            multiple: false
+        - api-format:
+            help: specify the output format (Optional).
+            long: api-format
+            takes_value: true
+            multiple: false
+            default_value: json
+        visible_aliases:
+        - object
 - add:
     about: add a propety from an item from the given resource.
     visible_aliases:
@@ -2340,6 +2597,12 @@ subcommands:
         help: 'a json object as a string, for example "{\"test\": \"test\"}"'
         takes_value: true
         value_name: BODY
+    - header:
+        help: 'set additional headers, for example "X-Testing: test"'
+        takes_value: true
+        long: header
+        short: H
+        multiple: true
 - start:
     about: start the resource
     visible_aliases: []
@@ -2448,6 +2711,8 @@ subcommands:
             takes_value: true
             multiple: false
         - to:
+            help: 'the destination to copy to, including the container name. example:
+              container/object'
             required: true
             long: to
             takes_value: true
