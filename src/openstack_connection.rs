@@ -55,6 +55,48 @@ impl OpenstackConnection {
         }
     }
 
+    pub fn from_cache(config: &OpenstackInfoMap) -> Result<OpenstackConnection, OpenstackError> {
+        let config = OpenstackTokenizer::from_cache(config)?;
+        debug!("use cache");
+        let client = Client::new();
+        let mut connection = OpenstackConnection {
+            config,
+            client,
+            token: None,
+            token_expiry: None,
+            endpoints: None,
+            domain_id: None,
+            user_id: None,
+        };
+        connection.copy_from_tokenizer()?;
+        Ok(connection)
+    }
+
+    pub fn from_cache_or_new(config: OpenstackInfoMap) -> OpenstackConnection {
+        match OpenstackConnection::from_cache(&config) {
+            Ok(x) => return x,
+            Err(_e) => ()
+        };
+        OpenstackConnection::new(config)
+    }
+
+    pub fn from_cache_or_new_refreshed(config: OpenstackInfoMap) -> Result<OpenstackConnection, OpenstackError> {
+        match OpenstackConnection::from_cache(&config) {
+            Ok(x) => return Ok(x),
+            Err(_e) => ()
+        };
+        debug!("refresh cache");
+        let mut connection = OpenstackConnection::new(config);
+        connection.refresh_token()?;
+        connection.to_cache()?;
+        Ok(connection)
+    }
+
+    pub fn to_cache(&self) -> Result<(), OpenstackError> {
+        self.config.to_cache()?;
+        Ok(())
+    }
+
     // #[allow(dead_code)]
     // pub fn get<T: reqwest::IntoUrl>(&mut self, url: T) -> reqwest::RequestBuilder {
     //     self.request(reqwest::Method::GET, url)
@@ -91,8 +133,7 @@ impl OpenstackConnection {
     //     self.client.request(method, url).headers(headers)
     // }
 
-    pub fn refresh_token(&mut self) -> Result<(), OpenstackError> {
-        self.config.refresh_token()?;
+    pub fn copy_from_tokenizer(&mut self) -> Result<(), OpenstackError> {
         self.token = self.config.token.clone();
         match self.token.as_ref(){
             Some(x) => self.client.set_token(x),
@@ -102,6 +143,12 @@ impl OpenstackConnection {
         self.endpoints = self.config.endpoints.clone();
         self.domain_id = self.config.domain_id.clone();
         self.user_id = self.config.user_id.clone();
+        Ok(())
+    }
+
+    pub fn refresh_token(&mut self) -> Result<(), OpenstackError> {
+        self.config.refresh_token()?;
+        self.copy_from_tokenizer()?;
         Ok(())
     }
 }
@@ -118,18 +165,34 @@ impl Openstack {
     pub fn new(config: OpenstackInfoMap) -> Result<Self, OpenstackError> {
         let mut connection = OpenstackConnection::new(config);
         connection.refresh_token()?;
+        Ok(Self::add_static_data(connection))
+    }
+
+    fn add_static_data(connection: OpenstackConnection) -> Self {
         let mut rc = ResourceMap::new();
         if let Some(x) = &connection.endpoints {
             rc.update_from_identity(x)
         };
         let ac = ActionMap::new();
         let cm = CommandMap::new();
-        Ok(Openstack {
+        Openstack {
             connection,
             resources: rc,
             actions: ac,
             commands: cm,
-        })
+        }
+    }
+
+    pub fn from_cache(config: OpenstackInfoMap) -> Result<Self, OpenstackError>  {
+        // create Openstack only from cache.
+        let connection = OpenstackConnection::from_cache(&config)?;
+        Ok(Self::add_static_data(connection))
+    }
+
+    pub fn from_cache_or_new_refreshed(config: OpenstackInfoMap) -> Result<Self, OpenstackError> {
+        // create Openstack from cache or create a new one with a new token.
+        let connection = OpenstackConnection::from_cache_or_new_refreshed(config)?;
+        Ok(Self::add_static_data(connection))
     }
 
     pub fn refresh_token(&mut self) -> Result<&mut Openstack, OpenstackError> {
@@ -163,6 +226,7 @@ impl Openstack {
         op_args: &HashMap<String, Vec<serde_json::Value>>,
         res_args: &HashMap<String, Vec<serde_json::Value>>,
     ) -> Result<serde_json::Value, OpenstackError> {
+
         if self.connection.endpoints.is_none() {
             self.refresh_token().expect("error while refreshing token");
         }

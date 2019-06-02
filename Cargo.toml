@@ -1,6 +1,6 @@
 [package]
 name = "openstack-client"
-version = "0.6.1"
+version = "0.6.2"
 authors = ["thomas9911 <thomastimmer11@hotmail.com>"]
 
 [dependencies]
@@ -19,7 +19,7 @@ chrono = { version = "*", features = ["serde"] }
 strum = "*"
 strum_macros = "*"
 clap = {version = "*", features = ["yaml"]}
-structopt = "0.2"
+# structopt = "0.2"
 heck = "*"
 yaml-rust = "*"
 uuid = {version = "0.7", features = ["serde", "v4"]}

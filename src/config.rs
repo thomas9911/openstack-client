@@ -1,5 +1,7 @@
 use std::collections::HashMap;
-use std::io::{Error, ErrorKind};
+use std::collections::hash_map::DefaultHasher;
+use std::io::{Error, ErrorKind, Read, Write};
+use std::hash::{Hash, Hasher};
 
 use client::{Client, Response};
 use utils::{
@@ -28,6 +30,57 @@ impl OpenstackTokenizer {
             domain_id: None,
             user_id: None,
         }
+    }
+
+    pub fn from_cache_or_new(config: OpenstackInfoMap) -> Self {
+        match Self::from_cache(&config){
+            Ok(x) => return x,
+            Err(_x) => ()
+        };
+        Self::new(config)
+    }
+
+    // from_cache
+    // - from reader
+
+    pub fn from_cache(config: &OpenstackInfoMap) -> Result<Self, Error> {
+        let dir = Self::get_tmp_cache_location(config);
+        let file = std::fs::File::open(dir)?;
+        let reader = std::io::BufReader::new(file);
+        let obj = Self::from_reader(reader)?;
+        Ok(obj)
+    }
+
+    pub fn from_reader<R>(reader: R) -> Result<Self, Error>
+        where R: Read
+    {
+        let obj = serde_json::from_reader(reader)?;
+        Ok(obj)
+    }
+
+    // to_cache
+    // - to writer
+
+    pub fn to_cache(&self) -> Result<(), Error>{
+        let dir = Self::get_tmp_cache_location(&self.config);
+        let file = std::fs::File::create(dir)?;
+        let writer = std::io::BufWriter::new(file);
+        self.to_writer(writer)?;
+        Ok(())
+    }
+
+    pub fn to_writer<W>(&self, writer: W) -> Result<(), Error>
+        where W: Write
+    {
+        serde_json::to_writer(writer, self)?;
+        Ok(())
+    }
+
+    fn get_tmp_cache_location(config: &OpenstackInfoMap) -> std::path::PathBuf {
+        let mut dir = std::env::temp_dir();
+        let filename_hash = format!("openstack-client-{}", config.auth.create_hash());
+        dir.push(filename_hash);
+        dir
     }
 
     pub fn refresh_token(&mut self) -> Result<(), Error> {
@@ -501,6 +554,29 @@ impl From<&Auth> for HashMap<String, serde_json::Value> {
     }
 }
 
+impl Hash for Auth{
+    fn hash<H: Hasher>(&self, state: &mut H) {
+       for x in self.values(){
+           if let Some(y) = x.as_bool(){
+                y.hash(state);
+                continue;
+           }
+           if let Some(y) = x.as_u64(){
+                y.hash(state);
+                continue;
+           }
+           if let Some(y) = x.as_i64(){
+                y.hash(state);
+                continue;
+           }
+           if let Some(y) = x.as_str(){
+                y.hash(state);
+                continue;
+           }
+       }
+    }
+}
+
 
 impl Auth {
     pub fn from_env() -> Self {
@@ -532,6 +608,12 @@ impl Auth {
 
     pub fn pick_token_body(&self) -> serde_json::Value{
         create_token_body(&self)
+    }
+
+    pub fn create_hash(&self) -> String{
+        let mut s = DefaultHasher::new();
+        self.hash(&mut s);
+        format!("{:X}", s.finish())
     }
 }
 

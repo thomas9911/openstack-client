@@ -111,9 +111,21 @@ fn main() {
 
     debug!("config combined {:?}", os_config);
 
-    let mut new_os = match Openstack::new(os_config){
-        Ok(x) => x,
-        Err(e) => {println!("{}", e); return}
+    let mut new_os = match matches_options.get("use-cache").is_some(){
+        true => {
+            debug!("trying to use cache");
+            match Openstack::from_cache_or_new_refreshed(os_config){
+                Ok(x) => x,
+                Err(e) => return print_error(e, format)
+            }
+        }
+        false => {
+            debug!("trying to create new openstack-client");
+            match Openstack::new(os_config){
+                Ok(x) => x,
+                Err(e) => return print_error(e, format)
+            }
+        }
     };
 
     if OSOperation::from(command_input) == OSOperation::Call {
@@ -242,13 +254,13 @@ fn main() {
     }
 
     if !new_os.is_resource_available(resource_input.into()){
-        println!("error: endpoint for resource '{}' is not available", resource_input);
+        print_value(&json!({"error": format!("endpoint for resource '{}' is not available", resource_input)}), format);
         return ()
     };
 
     let outcome = match new_os.act(command_input.to_string(), resource_input.to_string(), &command_options, &resource_options){
         Ok(x) => x,
-        Err(e) => {println!("{}", e); return}
+        Err(e) => return print_value(&json!({"error": format!("{}", e)}), format)
     };
 
     // println!("{}", serde_json::to_string_pretty(&outcome).unwrap());
@@ -274,6 +286,10 @@ fn prepare_app<'a>(app: App<'a, 'a>) -> App<'a, 'a>{
                 .long("verbosity")
                 .multiple(true)
         )
+        .arg(Arg::with_name("use-cache")
+                .help("try to use cache, but when that fails use normal api calls")
+                .long("use-cache")
+        )
         .subcommand(
             SubCommand::with_name("generate-autocomplete")
                 .about("generates autocompletion scripts")
@@ -291,4 +307,9 @@ fn set_log_level(matches: &clap::ArgMatches){
         _ => log::Level::Trace
     };
     simple_logger::init_with_level(log_level).expect("unable to set logger");
+}
+
+
+fn print_error(err: OpenstackError, format: &str){
+    print_value(&json!({"error": format!("{}", err)}), format)
 }
