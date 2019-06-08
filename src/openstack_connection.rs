@@ -85,6 +85,7 @@ impl OpenstackConnection {
             Ok(x) => return Ok(x),
             Err(_e) => ()
         };
+
         debug!("refresh cache");
         let mut connection = OpenstackConnection::new(config);
         connection.refresh_token()?;

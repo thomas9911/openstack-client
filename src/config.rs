@@ -45,6 +45,7 @@ impl OpenstackTokenizer {
 
     pub fn from_cache(config: &OpenstackInfoMap) -> Result<Self, Error> {
         let dir = Self::get_tmp_cache_location(config);
+        debug!("using cache from {:?}", dir);
         let file = std::fs::File::open(dir)?;
         let reader = std::io::BufReader::new(file);
         let obj = Self::from_reader(reader)?;
@@ -1136,3 +1137,14 @@ fn test_create_token_body_picks_correct_body_and_set_unscoped(){
 //     "project-domain-name": "",
 //     "trust-id": ""
 // }
+
+
+#[test]
+fn test_auth_create_hash(){
+    let auth: Auth = serde_json::from_value(json!({
+        "username": "username",
+        "password": "password",
+        "auth_url": "https://example.com"
+    })).unwrap();
+    assert_eq!("53AB15A5FC9889D6", auth.create_hash())
+}
