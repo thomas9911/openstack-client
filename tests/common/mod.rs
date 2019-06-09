@@ -81,7 +81,7 @@ pub fn create_cmd() -> Command{
 
     let mut cmd = process::Command::new(program);
     cmd.envs(env)
-        // .arg("-vvv")
+        .arg("-vvv")
         .arg("--use-cache");
     cmd
 }
