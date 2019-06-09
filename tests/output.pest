@@ -1,0 +1,27 @@
+WHITESPACE = _{ " "+  | "\t" | "\r" | "\n" | "\r\n" | "␊"}
+
+output = { SOI ~ first_line ~ second_line ~ third_line ~ EOI }
+first_line = _{ some_or_none ~ some_or_none }
+second_line = _{ "Headers:" ~ json }
+third_line = _{ json }
+some_or_none = _{ none | some }
+none = { "None" }
+some = { "Some(" ~ string ~ ")" }
+string = _{ "\"" ~ str ~ "\"" }
+str = @{ (ASCII_ALPHANUMERIC|SPECIAL_CHARS)* }
+SPECIAL_CHARS = _{"/"|":"|"?"|"-"|"."}
+
+
+null = { "null" }
+json = { (object | array | null ) }
+object = {
+    "{" ~ "}" |
+    "{" ~ pair ~ ("," ~ pair)* ~ "}"
+}
+object_or_string = _{ object | string | null }
+pair = { string ~ ":" ~ object_or_string }
+
+array = {
+    "[" ~ "]" |
+    "[" ~ string ~ ("," ~ string)* ~ "]"
+}

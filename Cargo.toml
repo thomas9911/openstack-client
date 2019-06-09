@@ -33,3 +33,7 @@ log = "*"
 simple_logger = "*"
 sha2 = "*"
 # structopt-derive = "*"
+
+[dev-dependencies]
+pest = "*"
+pest_derive = "*"
