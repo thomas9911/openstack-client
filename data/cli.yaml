@@ -1,0 +1,2826 @@
+name: openstack-client
+settings:
+- ArgRequiredElseHelp
+args:
+- os-cloud:
+    long: os-cloud
+    help: use this as the cloud name from the clouds.yaml
+    takes_value: true
+subcommands:
+- show:
+    about: shows the given resource.
+    visible_aliases:
+    - get
+    case_insensitive: true
+    index: 1
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
+    subcommands:
+    - flavors:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: &id001
+            help: id of object that will be used
+            required: true
+            index: 1
+        visible_aliases:
+        - flavor
+    - keypairs:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - keypair
+    - limits:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - limit
+    - server-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - server-group
+    - servers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - microversion:
+            help: Sets microversion for the nova api. (Optional)
+            long: microversion
+            takes_value: true
+            multiple: false
+        - id: *id001
+        visible_aliases:
+        - server
+    - credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - credential
+    - ec2-credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - ec2-credential
+    - domains:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - domain
+    - groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - group
+    - user-projects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - user-project
+    - user-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - user-group
+    - projects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - project
+    - users:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - user
+    - tokens:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - token
+    - application-credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - application-credential
+    - endpoints:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - endpoint
+    - images:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - image
+    - address-scopes:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - address-scope
+    - availability-zones:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - availability-zone
+    - floating-ips:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - floating-ip
+    - networks:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - network
+    - ports:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - port
+    - routers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - router
+    - security-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - security-group
+    - security-groups-rules:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - security-groups-rule
+    - subnets:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - subnet
+    - attachments:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - attachment
+    - backups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - backup
+    - snapshots:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - snapshot
+    - volumes:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - volume
+    - containers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - api-format:
+            help: specify the output format (Optional).
+            long: api-format
+            takes_value: true
+            multiple: false
+            default_value: json
+        - id: *id001
+        visible_aliases:
+        - container
+    - objects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - container:
+            help: name of the container to use.
+            required: true
+            long: container
+            takes_value: true
+            multiple: false
+        - api-format:
+            help: specify the output format (Optional).
+            long: api-format
+            takes_value: true
+            multiple: false
+            default_value: json
+        - id: *id001
+        visible_aliases:
+        - object
+- list:
+    about: lists the given resource.
+    visible_aliases:
+    - ls
+    case_insensitive: true
+    index: 1
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
+    subcommands:
+    - flavors:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - flavor
+    - keypairs:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - keypair
+    - limits:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - limit
+    - server-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - server-group
+    - servers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - microversion:
+            help: Sets microversion for the nova api. (Optional)
+            long: microversion
+            takes_value: true
+            multiple: false
+        visible_aliases:
+        - server
+    - credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - credential
+    - ec2-credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - ec2-credential
+    - domains:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - domain
+    - groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - group
+    - user-projects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - user-project
+    - user-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - user-group
+    - projects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - project
+    - users:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - user
+    - tokens:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - token
+    - application-credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - application-credential
+    - endpoints:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - endpoint
+    - images:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - image
+    - address-scopes:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - address-scope
+    - availability-zones:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - availability-zone
+    - floating-ips:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - floating-ip
+    - networks:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - network
+    - ports:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - port
+    - routers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - router
+    - security-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - security-group
+    - security-groups-rules:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - security-groups-rule
+    - subnets:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - subnet
+    - attachments:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - attachment
+    - backups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - backup
+    - snapshots:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - snapshot
+    - volumes:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - volume
+    - containers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - api-format:
+            help: specify the output format (Optional).
+            long: api-format
+            takes_value: true
+            multiple: false
+            default_value: json
+        visible_aliases:
+        - container
+    - objects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - container:
+            help: name of the container to use.
+            required: true
+            long: container
+            takes_value: true
+            multiple: false
+        - api-format:
+            help: specify the output format (Optional).
+            long: api-format
+            takes_value: true
+            multiple: false
+            default_value: json
+        visible_aliases:
+        - object
+- new:
+    about: create a new item from the given resource.
+    visible_aliases:
+    - create
+    case_insensitive: true
+    index: 1
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
+    subcommands:
+    - flavors:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - flavor
+    - keypairs:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - name:
+            help: A name for the keypair which will be used to reference it later.
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - public_key:
+            help: The public ssh key to import. If you omit this value, a keypair
+              is generated for you. (Optional)
+            long: public_key
+            takes_value: true
+            multiple: false
+        - type:
+            help: The type of the keypair. Allowed values are ssh or x509. (Optional)
+            long: type
+            takes_value: true
+            multiple: false
+        - user_id:
+            help: The user_id for a keypair. This allows administrative users to upload
+              keys for other users than themselves. (Optional)
+            long: user_id
+            takes_value: true
+            multiple: false
+        visible_aliases:
+        - keypair
+    - limits:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - limit
+    - server-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - server-group
+    - servers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - name:
+            help: The server name.
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - flavor:
+            help: The flavor reference, as an ID (including a UUID) or full URL, for
+              the flavor for your server instance.
+            required: true
+            long: flavor
+            takes_value: true
+            multiple: false
+        - image:
+            help: The UUID of the image to use for your server instance. This is not
+              required in case of boot from volume. In all other cases it is required
+              and must be a valid UUID otherwise API will return 400. (Optional)
+            long: image
+            takes_value: true
+            multiple: false
+        - access-ipv4:
+            help: IPv4 address that should be used to access this server. (Optional)
+            long: access-ipv4
+            takes_value: true
+            multiple: false
+        - network-id:
+            help: To provision the server instance with a NIC for a network, specify
+              the UUID of the network in the uuid attribute in a networks object.
+              Required if you omit the port attribute. (Optional)
+            long: network-id
+            takes_value: true
+            multiple: false
+        - key-name:
+            help: Key pair name. (Optional)
+            long: key-name
+            takes_value: true
+            multiple: false
+        - min-count:
+            help: The min number of servers to be created. Defaults to 1. (Optional)
+            long: min-count
+            takes_value: true
+            multiple: false
+        - max-count:
+            help: The max number of servers to be created. Defaults to the value of
+              min_count. (Optional)
+            long: max-count
+            takes_value: true
+            multiple: false
+        - microversion:
+            help: Sets microversion for the nova api. (Optional)
+            long: microversion
+            takes_value: true
+            multiple: false
+        visible_aliases:
+        - server
+    - credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - project_id:
+            help: The ID for the project.
+            required: true
+            long: project_id
+            takes_value: true
+            multiple: false
+        - user_id:
+            help: The ID of the user who owns the credential.
+            required: true
+            long: user_id
+            takes_value: true
+            multiple: false
+        - type:
+            help: The credential type, such as ec2 or cert. The implementation determines
+              the list of supported types.
+            long: type
+            takes_value: true
+            multiple: false
+            default_value: ec2
+        visible_aliases:
+        - credential
+    - ec2-credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - project_id:
+            help: The ID for the project to add the ec2 credentials to.
+            required: true
+            long: project_id
+            takes_value: true
+            multiple: false
+        visible_aliases:
+        - ec2-credential
+    - domains:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - domain
+    - groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - group
+    - user-projects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - user-project
+    - user-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - user-group
+    - projects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - project
+    - users:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - user
+    - tokens:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - token
+    - application-credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - name:
+            help: The name of the application credential. Must be unique to a user.
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - unrestricted:
+            help: An optional flag to restrict whether the application credential
+              may be used for the creation or destruction of other application credentials
+              or trusts. Defaults to false (Optional).
+            long: unrestricted
+            takes_value: true
+            multiple: false
+        - expires_at:
+            help: An optional expiry time for the application credential. If unset,
+              the application credential does not expire (Optional).
+            long: expires_at
+            takes_value: true
+            multiple: false
+        visible_aliases:
+        - application-credential
+    - endpoints:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - endpoint
+    - images:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - container_format:
+            help: 'Format of the image container. Example formats are: ami, ari, aki,
+              bare, ovf, ova, or docker. The value might be null (JSON null data type).
+              (Optional)'
+            long: container_format
+            takes_value: true
+            multiple: false
+        - disk_format:
+            help: 'The format of the disk. Example formats are: ami, ari, aki, vhd,
+              vhdx, vmdk, raw, qcow2, vdi, ploop or iso. (Optional)'
+            long: disk_format
+            takes_value: true
+            multiple: false
+        - idx:
+            help: A unique, user-defined image UUID. If you omit this value, the API
+              generates a UUID for the image. (Optional)
+            long: idx
+            takes_value: true
+            multiple: false
+        - min_disk:
+            help: Amount of disk space in GB that is required to boot the image. (Optional)
+            long: min_disk
+            takes_value: true
+            multiple: false
+        - min_ram:
+            help: Amount of RAM in MB that is required to boot the image. (Optional)
+            long: min_ram
+            takes_value: true
+            multiple: false
+        - name:
+            help: The name of the image. (Optional)
+            long: name
+            takes_value: true
+            multiple: false
+        - protected:
+            help: Image protection for deletion. Valid value is true or false. Default
+              is false. (Optional)
+            long: protected
+            takes_value: true
+            multiple: false
+        - tags:
+            help: List of tags for this image. Each tag is a string of at most 255
+              chars. The maximum number of tags allowed on an image is set by the
+              operator. (Optional)
+            long: tags
+            takes_value: true
+            multiple: true
+        - visibility:
+            help: 'Visibility for this image. Valid value is one of: public, private,
+              shared, or community. (Optional)'
+            long: visibility
+            takes_value: true
+            multiple: false
+            default_value: private
+        visible_aliases:
+        - image
+    - address-scopes:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - address-scope
+    - availability-zones:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - availability-zone
+    - floating-ips:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - name:
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - amount:
+            long: amount
+            takes_value: true
+            multiple: false
+        - cheese:
+            long: cheese
+            takes_value: true
+            multiple: true
+        visible_aliases:
+        - floating-ip
+    - networks:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - network
+    - ports:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - port
+    - routers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - router
+    - security-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - security-group
+    - security-groups-rules:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - security-groups-rule
+    - subnets:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - subnet
+    - attachments:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - attachment
+    - backups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - backup
+    - snapshots:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - name:
+            help: The name of the snapshot.
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - volume_id:
+            help: The UUID of the volume.
+            required: true
+            long: volume_id
+            takes_value: true
+            multiple: false
+        - description:
+            help: A description for the snapshot. Default is None (Optional).
+            long: description
+            takes_value: true
+            multiple: false
+        - force:
+            help: Indicates whether to backup, even if the volume is attached. Default
+              is false (Optional).
+            long: force
+            takes_value: true
+            multiple: false
+        visible_aliases:
+        - snapshot
+    - volumes:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - volume
+    - containers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - api-format:
+            help: specify the output format (Optional).
+            long: api-format
+            takes_value: true
+            multiple: false
+            default_value: json
+        visible_aliases:
+        - container
+    - objects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - container:
+            help: name of the container to use.
+            required: true
+            long: container
+            takes_value: true
+            multiple: false
+        - api-format:
+            help: specify the output format (Optional).
+            long: api-format
+            takes_value: true
+            multiple: false
+            default_value: json
+        visible_aliases:
+        - object
+- delete:
+    about: delete an item from the given resource.
+    visible_aliases:
+    - remove
+    - rm
+    case_insensitive: true
+    index: 1
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
+    subcommands:
+    - flavors:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - flavor
+    - keypairs:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - keypair
+    - limits:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - limit
+    - server-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - server-group
+    - servers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - microversion:
+            help: Sets microversion for the nova api. (Optional)
+            long: microversion
+            takes_value: true
+            multiple: false
+        - id: *id001
+        visible_aliases:
+        - server
+    - credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - credential
+    - ec2-credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - ec2-credential
+    - domains:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - domain
+    - groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - group
+    - user-projects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - user-project
+    - user-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - user-group
+    - projects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - project
+    - users:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - user
+    - tokens:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - token
+    - application-credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - application-credential
+    - endpoints:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - endpoint
+    - images:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - image
+    - address-scopes:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - address-scope
+    - availability-zones:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - availability-zone
+    - floating-ips:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - floating-ip
+    - networks:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - network
+    - ports:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - port
+    - routers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - router
+    - security-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - security-group
+    - security-groups-rules:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - security-groups-rule
+    - subnets:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - subnet
+    - attachments:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - attachment
+    - backups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - backup
+    - snapshots:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - snapshot
+    - volumes:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - volume
+    - containers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - api-format:
+            help: specify the output format (Optional).
+            long: api-format
+            takes_value: true
+            multiple: false
+            default_value: json
+        - id: *id001
+        visible_aliases:
+        - container
+    - objects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - container:
+            help: name of the container to use.
+            required: true
+            long: container
+            takes_value: true
+            multiple: false
+        - api-format:
+            help: specify the output format (Optional).
+            long: api-format
+            takes_value: true
+            multiple: false
+            default_value: json
+        - id: *id001
+        visible_aliases:
+        - object
+- update:
+    about: update an item from the given resource.
+    visible_aliases:
+    - patch
+    case_insensitive: true
+    index: 1
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
+    subcommands:
+    - flavors:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - flavor
+    - keypairs:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - name:
+            help: A name for the keypair which will be used to reference it later.
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - public_key:
+            help: The public ssh key to import. If you omit this value, a keypair
+              is generated for you. (Optional)
+            long: public_key
+            takes_value: true
+            multiple: false
+        - type:
+            help: The type of the keypair. Allowed values are ssh or x509. (Optional)
+            long: type
+            takes_value: true
+            multiple: false
+        - user_id:
+            help: The user_id for a keypair. This allows administrative users to upload
+              keys for other users than themselves. (Optional)
+            long: user_id
+            takes_value: true
+            multiple: false
+        - id: *id001
+        visible_aliases:
+        - keypair
+    - limits:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - limit
+    - server-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - server-group
+    - servers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - name:
+            help: The server name.
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - flavor:
+            help: The flavor reference, as an ID (including a UUID) or full URL, for
+              the flavor for your server instance.
+            required: true
+            long: flavor
+            takes_value: true
+            multiple: false
+        - image:
+            help: The UUID of the image to use for your server instance. This is not
+              required in case of boot from volume. In all other cases it is required
+              and must be a valid UUID otherwise API will return 400. (Optional)
+            long: image
+            takes_value: true
+            multiple: false
+        - access-ipv4:
+            help: IPv4 address that should be used to access this server. (Optional)
+            long: access-ipv4
+            takes_value: true
+            multiple: false
+        - network-id:
+            help: To provision the server instance with a NIC for a network, specify
+              the UUID of the network in the uuid attribute in a networks object.
+              Required if you omit the port attribute. (Optional)
+            long: network-id
+            takes_value: true
+            multiple: false
+        - key-name:
+            help: Key pair name. (Optional)
+            long: key-name
+            takes_value: true
+            multiple: false
+        - min-count:
+            help: The min number of servers to be created. Defaults to 1. (Optional)
+            long: min-count
+            takes_value: true
+            multiple: false
+        - max-count:
+            help: The max number of servers to be created. Defaults to the value of
+              min_count. (Optional)
+            long: max-count
+            takes_value: true
+            multiple: false
+        - microversion:
+            help: Sets microversion for the nova api. (Optional)
+            long: microversion
+            takes_value: true
+            multiple: false
+        - id: *id001
+        visible_aliases:
+        - server
+    - credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - project_id:
+            help: The ID for the project.
+            required: true
+            long: project_id
+            takes_value: true
+            multiple: false
+        - user_id:
+            help: The ID of the user who owns the credential.
+            required: true
+            long: user_id
+            takes_value: true
+            multiple: false
+        - type:
+            help: The credential type, such as ec2 or cert. The implementation determines
+              the list of supported types.
+            long: type
+            takes_value: true
+            multiple: false
+            default_value: ec2
+        - id: *id001
+        visible_aliases:
+        - credential
+    - ec2-credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - project_id:
+            help: The ID for the project to add the ec2 credentials to.
+            required: true
+            long: project_id
+            takes_value: true
+            multiple: false
+        - id: *id001
+        visible_aliases:
+        - ec2-credential
+    - domains:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - domain
+    - groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - group
+    - user-projects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - user-project
+    - user-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - user-group
+    - projects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - project
+    - users:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - user
+    - tokens:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - token
+    - application-credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - name:
+            help: The name of the application credential. Must be unique to a user.
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - unrestricted:
+            help: An optional flag to restrict whether the application credential
+              may be used for the creation or destruction of other application credentials
+              or trusts. Defaults to false (Optional).
+            long: unrestricted
+            takes_value: true
+            multiple: false
+        - expires_at:
+            help: An optional expiry time for the application credential. If unset,
+              the application credential does not expire (Optional).
+            long: expires_at
+            takes_value: true
+            multiple: false
+        - id: *id001
+        visible_aliases:
+        - application-credential
+    - endpoints:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - endpoint
+    - images:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - container_format:
+            help: 'Format of the image container. Example formats are: ami, ari, aki,
+              bare, ovf, ova, or docker. The value might be null (JSON null data type).
+              (Optional)'
+            long: container_format
+            takes_value: true
+            multiple: false
+        - disk_format:
+            help: 'The format of the disk. Example formats are: ami, ari, aki, vhd,
+              vhdx, vmdk, raw, qcow2, vdi, ploop or iso. (Optional)'
+            long: disk_format
+            takes_value: true
+            multiple: false
+        - idx:
+            help: A unique, user-defined image UUID. If you omit this value, the API
+              generates a UUID for the image. (Optional)
+            long: idx
+            takes_value: true
+            multiple: false
+        - min_disk:
+            help: Amount of disk space in GB that is required to boot the image. (Optional)
+            long: min_disk
+            takes_value: true
+            multiple: false
+        - min_ram:
+            help: Amount of RAM in MB that is required to boot the image. (Optional)
+            long: min_ram
+            takes_value: true
+            multiple: false
+        - name:
+            help: The name of the image. (Optional)
+            long: name
+            takes_value: true
+            multiple: false
+        - protected:
+            help: Image protection for deletion. Valid value is true or false. Default
+              is false. (Optional)
+            long: protected
+            takes_value: true
+            multiple: false
+        - tags:
+            help: List of tags for this image. Each tag is a string of at most 255
+              chars. The maximum number of tags allowed on an image is set by the
+              operator. (Optional)
+            long: tags
+            takes_value: true
+            multiple: true
+        - visibility:
+            help: 'Visibility for this image. Valid value is one of: public, private,
+              shared, or community. (Optional)'
+            long: visibility
+            takes_value: true
+            multiple: false
+            default_value: private
+        - id: *id001
+        visible_aliases:
+        - image
+    - address-scopes:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - address-scope
+    - availability-zones:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - availability-zone
+    - floating-ips:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - name:
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - amount:
+            long: amount
+            takes_value: true
+            multiple: false
+        - cheese:
+            long: cheese
+            takes_value: true
+            multiple: true
+        - id: *id001
+        visible_aliases:
+        - floating-ip
+    - networks:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - network
+    - ports:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - port
+    - routers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - router
+    - security-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - security-group
+    - security-groups-rules:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - security-groups-rule
+    - subnets:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - subnet
+    - attachments:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - attachment
+    - backups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - backup
+    - snapshots:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - name:
+            help: The name of the snapshot.
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - volume_id:
+            help: The UUID of the volume.
+            required: true
+            long: volume_id
+            takes_value: true
+            multiple: false
+        - description:
+            help: A description for the snapshot. Default is None (Optional).
+            long: description
+            takes_value: true
+            multiple: false
+        - force:
+            help: Indicates whether to backup, even if the volume is attached. Default
+              is false (Optional).
+            long: force
+            takes_value: true
+            multiple: false
+        - id: *id001
+        visible_aliases:
+        - snapshot
+    - volumes:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - volume
+    - containers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - api-format:
+            help: specify the output format (Optional).
+            long: api-format
+            takes_value: true
+            multiple: false
+            default_value: json
+        - id: *id001
+        visible_aliases:
+        - container
+    - objects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - container:
+            help: name of the container to use.
+            required: true
+            long: container
+            takes_value: true
+            multiple: false
+        - api-format:
+            help: specify the output format (Optional).
+            long: api-format
+            takes_value: true
+            multiple: false
+            default_value: json
+        - id: *id001
+        visible_aliases:
+        - object
+- copy:
+    about: copy item from the given resource from location to destination
+    visible_aliases: []
+    case_insensitive: true
+    index: 1
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
+    subcommands:
+    - flavors:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - flavor
+    - keypairs:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - keypair
+    - limits:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - limit
+    - server-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - server-group
+    - servers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - microversion:
+            help: Sets microversion for the nova api. (Optional)
+            long: microversion
+            takes_value: true
+            multiple: false
+        visible_aliases:
+        - server
+    - credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - credential
+    - ec2-credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - ec2-credential
+    - domains:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - domain
+    - groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - group
+    - user-projects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - user-project
+    - user-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - user-group
+    - projects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - project
+    - users:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - user
+    - tokens:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - token
+    - application-credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - application-credential
+    - endpoints:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - endpoint
+    - images:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - image
+    - address-scopes:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - address-scope
+    - availability-zones:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - availability-zone
+    - floating-ips:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - floating-ip
+    - networks:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - network
+    - ports:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - port
+    - routers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - router
+    - security-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - security-group
+    - security-groups-rules:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - security-groups-rule
+    - subnets:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - subnet
+    - attachments:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - attachment
+    - backups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - backup
+    - snapshots:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - snapshot
+    - volumes:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args: []
+        visible_aliases:
+        - volume
+    - containers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - api-format:
+            help: specify the output format (Optional).
+            long: api-format
+            takes_value: true
+            multiple: false
+            default_value: json
+        visible_aliases:
+        - container
+    - objects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - container:
+            help: name of the container to use.
+            required: true
+            long: container
+            takes_value: true
+            multiple: false
+        - api-format:
+            help: specify the output format (Optional).
+            long: api-format
+            takes_value: true
+            multiple: false
+            default_value: json
+        visible_aliases:
+        - object
+- add:
+    about: add a propety from an item from the given resource.
+    visible_aliases:
+    - put
+    - append
+    case_insensitive: true
+    index: 1
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
+    subcommands:
+    - flavors:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - flavor
+    - keypairs:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - name:
+            help: A name for the keypair which will be used to reference it later.
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - public_key:
+            help: The public ssh key to import. If you omit this value, a keypair
+              is generated for you. (Optional)
+            long: public_key
+            takes_value: true
+            multiple: false
+        - type:
+            help: The type of the keypair. Allowed values are ssh or x509. (Optional)
+            long: type
+            takes_value: true
+            multiple: false
+        - user_id:
+            help: The user_id for a keypair. This allows administrative users to upload
+              keys for other users than themselves. (Optional)
+            long: user_id
+            takes_value: true
+            multiple: false
+        - id: *id001
+        visible_aliases:
+        - keypair
+    - limits:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - limit
+    - server-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - server-group
+    - servers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - name:
+            help: The server name.
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - flavor:
+            help: The flavor reference, as an ID (including a UUID) or full URL, for
+              the flavor for your server instance.
+            required: true
+            long: flavor
+            takes_value: true
+            multiple: false
+        - image:
+            help: The UUID of the image to use for your server instance. This is not
+              required in case of boot from volume. In all other cases it is required
+              and must be a valid UUID otherwise API will return 400. (Optional)
+            long: image
+            takes_value: true
+            multiple: false
+        - access-ipv4:
+            help: IPv4 address that should be used to access this server. (Optional)
+            long: access-ipv4
+            takes_value: true
+            multiple: false
+        - network-id:
+            help: To provision the server instance with a NIC for a network, specify
+              the UUID of the network in the uuid attribute in a networks object.
+              Required if you omit the port attribute. (Optional)
+            long: network-id
+            takes_value: true
+            multiple: false
+        - key-name:
+            help: Key pair name. (Optional)
+            long: key-name
+            takes_value: true
+            multiple: false
+        - min-count:
+            help: The min number of servers to be created. Defaults to 1. (Optional)
+            long: min-count
+            takes_value: true
+            multiple: false
+        - max-count:
+            help: The max number of servers to be created. Defaults to the value of
+              min_count. (Optional)
+            long: max-count
+            takes_value: true
+            multiple: false
+        - microversion:
+            help: Sets microversion for the nova api. (Optional)
+            long: microversion
+            takes_value: true
+            multiple: false
+        - id: *id001
+        visible_aliases:
+        - server
+    - credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - project_id:
+            help: The ID for the project.
+            required: true
+            long: project_id
+            takes_value: true
+            multiple: false
+        - user_id:
+            help: The ID of the user who owns the credential.
+            required: true
+            long: user_id
+            takes_value: true
+            multiple: false
+        - type:
+            help: The credential type, such as ec2 or cert. The implementation determines
+              the list of supported types.
+            long: type
+            takes_value: true
+            multiple: false
+            default_value: ec2
+        - id: *id001
+        visible_aliases:
+        - credential
+    - ec2-credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - project_id:
+            help: The ID for the project to add the ec2 credentials to.
+            required: true
+            long: project_id
+            takes_value: true
+            multiple: false
+        - id: *id001
+        visible_aliases:
+        - ec2-credential
+    - domains:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - domain
+    - groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - group
+    - user-projects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - user-project
+    - user-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - user-group
+    - projects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - project
+    - users:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - user
+    - tokens:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - token
+    - application-credentials:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - name:
+            help: The name of the application credential. Must be unique to a user.
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - unrestricted:
+            help: An optional flag to restrict whether the application credential
+              may be used for the creation or destruction of other application credentials
+              or trusts. Defaults to false (Optional).
+            long: unrestricted
+            takes_value: true
+            multiple: false
+        - expires_at:
+            help: An optional expiry time for the application credential. If unset,
+              the application credential does not expire (Optional).
+            long: expires_at
+            takes_value: true
+            multiple: false
+        - id: *id001
+        visible_aliases:
+        - application-credential
+    - endpoints:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - endpoint
+    - images:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - container_format:
+            help: 'Format of the image container. Example formats are: ami, ari, aki,
+              bare, ovf, ova, or docker. The value might be null (JSON null data type).
+              (Optional)'
+            long: container_format
+            takes_value: true
+            multiple: false
+        - disk_format:
+            help: 'The format of the disk. Example formats are: ami, ari, aki, vhd,
+              vhdx, vmdk, raw, qcow2, vdi, ploop or iso. (Optional)'
+            long: disk_format
+            takes_value: true
+            multiple: false
+        - idx:
+            help: A unique, user-defined image UUID. If you omit this value, the API
+              generates a UUID for the image. (Optional)
+            long: idx
+            takes_value: true
+            multiple: false
+        - min_disk:
+            help: Amount of disk space in GB that is required to boot the image. (Optional)
+            long: min_disk
+            takes_value: true
+            multiple: false
+        - min_ram:
+            help: Amount of RAM in MB that is required to boot the image. (Optional)
+            long: min_ram
+            takes_value: true
+            multiple: false
+        - name:
+            help: The name of the image. (Optional)
+            long: name
+            takes_value: true
+            multiple: false
+        - protected:
+            help: Image protection for deletion. Valid value is true or false. Default
+              is false. (Optional)
+            long: protected
+            takes_value: true
+            multiple: false
+        - tags:
+            help: List of tags for this image. Each tag is a string of at most 255
+              chars. The maximum number of tags allowed on an image is set by the
+              operator. (Optional)
+            long: tags
+            takes_value: true
+            multiple: true
+        - visibility:
+            help: 'Visibility for this image. Valid value is one of: public, private,
+              shared, or community. (Optional)'
+            long: visibility
+            takes_value: true
+            multiple: false
+            default_value: private
+        - id: *id001
+        visible_aliases:
+        - image
+    - address-scopes:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - address-scope
+    - availability-zones:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - availability-zone
+    - floating-ips:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - name:
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - amount:
+            long: amount
+            takes_value: true
+            multiple: false
+        - cheese:
+            long: cheese
+            takes_value: true
+            multiple: true
+        - id: *id001
+        visible_aliases:
+        - floating-ip
+    - networks:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - network
+    - ports:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - port
+    - routers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - router
+    - security-groups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - security-group
+    - security-groups-rules:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - security-groups-rule
+    - subnets:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - subnet
+    - attachments:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - attachment
+    - backups:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - backup
+    - snapshots:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - name:
+            help: The name of the snapshot.
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        - volume_id:
+            help: The UUID of the volume.
+            required: true
+            long: volume_id
+            takes_value: true
+            multiple: false
+        - description:
+            help: A description for the snapshot. Default is None (Optional).
+            long: description
+            takes_value: true
+            multiple: false
+        - force:
+            help: Indicates whether to backup, even if the volume is attached. Default
+              is false (Optional).
+            long: force
+            takes_value: true
+            multiple: false
+        - id: *id001
+        visible_aliases:
+        - snapshot
+    - volumes:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - id: *id001
+        visible_aliases:
+        - volume
+    - containers:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - api-format:
+            help: specify the output format (Optional).
+            long: api-format
+            takes_value: true
+            multiple: false
+            default_value: json
+        - id: *id001
+        visible_aliases:
+        - container
+    - objects:
+        index: 1
+        case_insensitive: true
+        about: resource A
+        args:
+        - container:
+            help: name of the container to use.
+            required: true
+            long: container
+            takes_value: true
+            multiple: false
+        - api-format:
+            help: specify the output format (Optional).
+            long: api-format
+            takes_value: true
+            multiple: false
+            default_value: json
+        - id: *id001
+        visible_aliases:
+        - object
+- call:
+    about: call an endpoint that is not supported by the commandline interface
+    visible_aliases:
+    - do
+    - raw
+    case_insensitive: true
+    index: 1
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
+    - method:
+        help: http method to use
+        takes_value: true
+        possible_values:
+        - POST
+        - GET
+        - PATCH
+        - DELETE
+        - PUT
+        - OPTIONS
+        - HEAD
+        - CONNECT
+        - TRACE
+        required: true
+    - type:
+        help: the openstack type to use, such as 'compute' or 'image'
+        takes_value: true
+        required: true
+    - endpoint:
+        help: endpoint or path to send the call to
+        takes_value: true
+        required: true
+    - body:
+        help: 'a json object as a string, for example "{\"test\": \"test\"}"'
+        takes_value: true
+        value_name: BODY
+    - header:
+        help: 'set additional headers, for example "X-Testing: test"'
+        takes_value: true
+        long: header
+        short: H
+        multiple: true
+- start:
+    about: start the resource
+    visible_aliases: []
+    case_insensitive: true
+    index: 1
+    subcommands:
+    - servers:
+        index: 1
+        case_insensitive: true
+        about: start the server
+        args:
+        - id: *id001
+        visible_aliases:
+        - server
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
+- stop:
+    about: stop the resource
+    visible_aliases: []
+    case_insensitive: true
+    index: 1
+    subcommands:
+    - servers:
+        index: 1
+        case_insensitive: true
+        about: stop the server
+        args:
+        - id: *id001
+        visible_aliases:
+        - server
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
+- suspend:
+    about: suspend the resource
+    visible_aliases: []
+    case_insensitive: true
+    index: 1
+    subcommands:
+    - servers:
+        index: 1
+        case_insensitive: true
+        about: suspend the server
+        args:
+        - id: *id001
+        visible_aliases:
+        - server
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
+- output:
+    about: get the console output from the resource
+    visible_aliases: []
+    case_insensitive: true
+    index: 1
+    subcommands:
+    - servers:
+        index: 1
+        case_insensitive: true
+        about: get the console output from the server
+        args:
+        - id: *id001
+        visible_aliases:
+        - server
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
+- remote_console:
+    about: create a remote console to resource
+    visible_aliases: []
+    case_insensitive: true
+    index: 1
+    subcommands:
+    - servers:
+        index: 1
+        case_insensitive: true
+        about: create a remote console to server
+        args:
+        - id: *id001
+        visible_aliases:
+        - server
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
+- copy:
+    about: copy instance from location to destination
+    visible_aliases: []
+    case_insensitive: true
+    index: 1
+    subcommands:
+    - objects:
+        index: 1
+        case_insensitive: true
+        about: copy object to other destination
+        args:
+        - from:
+            help: the object to copy.
+            required: true
+            long: from
+            takes_value: true
+            multiple: false
+        - to:
+            help: 'the destination to copy to, including the container name. example:
+              container/object'
+            required: true
+            long: to
+            takes_value: true
+            multiple: false
+        - container:
+            help: name of the container to use.
+            required: true
+            long: container
+            takes_value: true
+            multiple: false
+        visible_aliases:
+        - object
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
+- upload:
+    about: upload file to resource
+    visible_aliases: []
+    case_insensitive: true
+    index: 1
+    subcommands:
+    - objects:
+        index: 1
+        case_insensitive: true
+        about: upload file to object store
+        args:
+        - file:
+            help: the path to the file to upload.
+            required: true
+            long: file
+            takes_value: true
+            multiple: false
+        - name:
+            help: a name to give object (Optional).
+            long: name
+            takes_value: true
+            multiple: false
+        - container:
+            help: name of the container to use.
+            required: true
+            long: container
+            takes_value: true
+            multiple: false
+        - parts:
+            help: amount of parts to split the file in before uploading. Enables dynamic
+              large objects.
+            long: parts
+            takes_value: true
+            multiple: false
+        - skip-parts:
+            help: skip parts when uploading large files (should be used with the 'parts'
+              argument).
+            long: skip-parts
+            takes_value: true
+            multiple: false
+            default_value: '0'
+        visible_aliases:
+        - object
+    - containers:
+        index: 1
+        case_insensitive: true
+        about: create a container
+        args:
+        - name:
+            help: a name to give object (Optional).
+            required: true
+            long: name
+            takes_value: true
+            multiple: false
+        visible_aliases:
+        - container
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
+- download:
+    about: download file from resource
+    visible_aliases: []
+    case_insensitive: true
+    index: 1
+    subcommands:
+    - objects:
+        index: 1
+        case_insensitive: true
+        about: download file from object store
+        args:
+        - file:
+            help: the path to the file to upload.
+            required: true
+            long: file
+            takes_value: true
+            multiple: false
+        - name:
+            help: a name to give object (Optional).
+            long: name
+            takes_value: true
+            multiple: false
+        - container:
+            help: name of the container to use.
+            required: true
+            long: container
+            takes_value: true
+            multiple: false
+        visible_aliases:
+        - object
+    args:
+    - dry-run:
+        long: dry-run
+        help: prints the post body of the request, does not send the request
+

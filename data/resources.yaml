@@ -1,0 +1,284 @@
+flavors:
+  endpoint_path: flavors
+  resource_type: compute
+keypairs:
+  endpoint_path: os-keypairs
+  resource_type: compute
+  post_parameters:
+  - name: name
+    type: string
+    help: A name for the keypair which will be used to reference it later.
+    required: true
+    path: keypair.name
+  - name: public_key
+    help: The public ssh key to import. If you omit this value, a keypair is generated for you. (Optional)
+    type: string
+    path: keypair.public_key
+  - name: type
+    help: The type of the keypair. Allowed values are ssh or x509. (Optional)
+    type: string
+    path: keypair.type
+  - name: user_id
+    help: The user_id for a keypair. This allows administrative users to upload keys for other users than themselves. (Optional)
+    type: string
+    path: keypair.user_id
+limits:
+  endpoint_path: limits
+  resource_type: compute
+server_groups:
+  endpoint_path: os-server-groups
+  resource_type: compute
+servers:
+  endpoint_path: servers
+  resource_type: compute
+  post_parameters:
+  - name: name
+    type: string
+    help: The server name.
+    required: true
+    path: server.name
+  - name: flavor
+    type: string
+    help: The flavor reference, as an ID (including a UUID) or full URL, for the flavor for your server instance.
+    required: true
+    path: server.flavorRef
+  - name: image
+    type: string
+    help: The UUID of the image to use for your server instance. This is not required in case of boot from volume. In all other cases it is required and must be a valid UUID otherwise API will return 400. (Optional)
+    path: server.imageRef
+  - name: access-ipv4
+    type: string
+    help: IPv4 address that should be used to access this server. (Optional)
+    path: server.accessIPv4
+  - name: networks
+    type: string
+    path: server.networks
+    multiple: true
+    hidden: true
+  - name: network-id
+    type: string
+    help: To provision the server instance with a NIC for a network, specify the UUID of the network in the uuid attribute in a networks object. Required if you omit the port attribute. (Optional)
+    path: server.networks.uuid
+  - name: key-name
+    path: server.key_name
+    help: Key pair name. (Optional)
+  - name: min-count
+    path: server.min_count
+    help: The min number of servers to be created. Defaults to 1. (Optional)
+    type: number
+  - name: max-count
+    path: server.max_count
+    help: The max number of servers to be created. Defaults to the value of min_count. (Optional)
+    type: number
+  - name: microversion
+    path: X-OpenStack-Nova-API-Version
+    placement: header
+    help: Sets microversion for the nova api. (Optional)
+credentials:
+  endpoint_path: credentials
+  resource_type: identity
+  post_parameters:
+    - name: project_id
+      path: credentials.project_id
+      required: true
+      type: string
+      help: The ID for the project.
+    - name: user_id
+      path: credentials.user_id
+      required: true
+      type: string
+      help: The ID of the user who owns the credential.
+    - name: blob
+      path: credentials.blob
+      type: string
+      hidden: true
+    - name: type
+      path: credentials.type
+      type: string
+      help: The credential type, such as ec2 or cert. The implementation determines the list of supported types.
+      default: ec2
+ec2_credentials:
+  endpoint_path: users/{{user_id}}/credentials/OS-EC2
+  resource_type: identity
+  post_parameters:
+    - name: project_id
+      path: tenant_id
+      required: true
+      type: string
+      help: The ID for the project to add the ec2 credentials to.
+domains:
+  endpoint_path: domains
+  resource_type: identity
+groups:
+  endpoint_path: group
+  resource_type: identity
+user_projects:
+  endpoint_path: users/{{user_id}}/projects
+  resource_type: identity
+user_groups:
+  endpoint_path: users/{{user_id}}/groups
+  resource_type: identity
+projects:
+  endpoint_path: projects
+  resource_type: identity
+users:
+  endpoint_path: users
+  resource_type: identity
+tokens:
+  endpoint_path: auth/tokens
+  resource_type: identity
+application_credentials:
+  endpoint_path: users/{{user_id}}/application_credentials
+  resource_type: identity
+  post_parameters:
+    - name: name
+      path: application_credential.name
+      required: true
+      type: string
+      help: The name of the application credential. Must be unique to a user.
+    - name: unrestricted
+      path: application_credential.unrestricted
+      type: string
+      help: An optional flag to restrict whether the application credential may be used for the creation or destruction of other application credentials or trusts. Defaults to false (Optional).
+    - name: expires_at
+      path: application_credential.expires_at
+      type: string
+      help: An optional expiry time for the application credential. If unset, the application credential does not expire (Optional).
+endpoints:
+  endpoint_path: endpoints
+  resource_type: identity
+images:
+  endpoint_path: v2/images
+  resource_type: image
+  post_parameters:
+    - name: container_format
+      path: container_format
+      type: string
+      help: "Format of the image container. Example formats are: ami, ari, aki, bare, ovf, ova, or docker. The value might be null (JSON null data type). (Optional)"
+    - name: disk_format
+      path: disk_format
+      type: string
+      help: "The format of the disk. Example formats are: ami, ari, aki, vhd, vhdx, vmdk, raw, qcow2, vdi, ploop or iso. (Optional)"
+    - name: idx
+      path: id
+      type: string
+      help: "A unique, user-defined image UUID. If you omit this value, the API generates a UUID for the image. (Optional)"
+    - name: min_disk
+      path: min_disk
+      type: number
+      help: Amount of disk space in GB that is required to boot the image. (Optional)
+    - name: min_ram
+      path: min_ram
+      type: number
+      help: Amount of RAM in MB that is required to boot the image. (Optional)
+    - name: name
+      path: name
+      type: string
+      help: The name of the image. (Optional)
+    - name: protected
+      path: protected
+      type: string
+      help: Image protection for deletion. Valid value is true or false. Default is false. (Optional)
+    - name: tags
+      path: tags
+      type: string
+      multiple: true
+      help: List of tags for this image. Each tag is a string of at most 255 chars. The maximum number of tags allowed on an image is set by the operator. (Optional)
+    - name: visibility
+      path: visibility
+      type: string
+      help: "Visibility for this image. Valid value is one of: public, private, shared, or community. (Optional)"
+      default: private
+address_scopes:
+  endpoint_path: v2.0/address-scopes
+  resource_type: network
+availability_zones:
+  endpoint_path: v2.0/availability_zones
+  resource_type: network
+floating_ips:
+  endpoint_path: v2.0/floatingips
+  resource_type: network
+  post_parameters:
+  - name: name
+    path: name
+    type: string
+    required: true
+  - name: amount
+    path: amount
+    type: u32
+  - name: cheese
+    path: cheese
+    type: string
+    multiple: true
+networks:
+  endpoint_path: v2.0/networks
+  resource_type: network
+ports:
+  endpoint_path: v2.0/ports
+  resource_type: network
+routers:
+  endpoint_path: v2.0/routers
+  resource_type: network
+security_groups:
+  endpoint_path: v2.0/security-groups
+  resource_type: network
+security_groups_rules:
+  endpoint_path: v2.0/security-groups-rules
+  resource_type: network
+subnets:
+  endpoint_path: v2.0/subnets
+  resource_type: network
+attachments:
+  endpoint_path: attachments
+  resource_type: volumev3
+backups:
+  endpoint_path: backups
+  resource_type: volumev3
+snapshots:
+  endpoint_path: snapshots
+  resource_type: volumev3
+  post_parameters:
+  - name: name
+    path: snapshots.name
+    type: string
+    help: The name of the snapshot.
+    required: true
+  - name: volume_id
+    path: snapshots.volume_id
+    type: string
+    help: The UUID of the volume.
+    required: true
+  - name: description
+    path: snapshots.description
+    type: string
+    help: A description for the snapshot. Default is None (Optional).
+  - name: force
+    path: snapshots.force
+    type: string
+    help: Indicates whether to backup, even if the volume is attached. Default is false (Optional).
+volumes:
+  endpoint_path: volumes
+  resource_type: volumev3
+containers:
+  endpoint_path: ""
+  resource_type: object-store
+  post_parameters:
+  - name: api-format
+    path: format
+    help: specify the output format (Optional).
+    placement: query
+    default: json
+objects:
+  endpoint_path: "{{ container }}"
+  resource_type: object-store
+  post_parameters:
+  - name: container
+    path: container
+    required: true
+    help: name of the container to use.
+    placement: path
+  - name: api-format
+    path: format
+    help: specify the output format (Optional).
+    placement: query
+    default: json

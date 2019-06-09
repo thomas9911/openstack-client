@@ -1,11 +1,39 @@
 [package]
 name = "openstack-client"
-version = "0.1.0"
+version = "0.6.2"
 authors = ["thomas9911 <thomastimmer11@hotmail.com>"]
 
 [dependencies]
-openstack = { git = "https://github.com/dtantsur/rust-openstack" }
 serde = "*"
+serde_derive = "*"
 serde_json = "*"
-argparse = "*"
-waiter = "*"
+serde_yaml = "*"
+bincode = "*"
+envy = "*"
+url = "*"
+# reqwest = {version = "*", features = [], default-features = true}
+http = "*"
+curl = "*"
+secstr = {git = "https://github.com/myfreeweb/secstr", tag = "v0.3.2", features = ['serde']}
+rpassword = "2.1.0"
+chrono = { version = "*", features = ["serde"] }
+strum = "*"
+strum_macros = "*"
+clap = {version = "*", features = ["yaml"]}
+# structopt = "0.2"
+heck = "*"
+yaml-rust = "*"
+uuid = {version = "0.7", features = ["serde", "v4"]}
+csv = {version = "*"}
+prettytable-rs = {version = "^0.8", features = ["csv"]}
+handlebars = "*"
+memmap = "*"
+indicatif = "*"
+log = "*"
+simple_logger = "*"
+sha2 = "*"
+# structopt-derive = "*"
+
+[dev-dependencies]
+pest = "*"
+pest_derive = "*"

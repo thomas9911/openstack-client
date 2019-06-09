@@ -1,0 +1,58 @@
+show:
+  aliases:
+    - get
+  help: shows the given resource.
+  requires_id: true
+  has_body: false
+  http_method: get
+list:
+  aliases:
+    - ls
+  help: lists the given resource.
+  requires_id: false
+  has_body: false
+  http_method: get
+new:
+  aliases:
+    - create
+  help: create a new item from the given resource.
+  requires_id: false
+  has_body: true
+  http_method: post
+delete:
+  aliases:
+    - remove
+    - rm
+  help: delete an item from the given resource.
+  requires_id: true
+  has_body: false
+  http_method: delete
+update:
+  aliases:
+    - patch
+  help: update an item from the given resource.
+  requires_id: true
+  has_body: true
+  http_method: patch
+copy:
+  aliases: []
+  help: copy item from the given resource from location to destination
+  requires_id: false
+  has_body: false
+  http_method: copy
+add:
+  aliases:
+    - put
+    - append
+  help: add a propety from an item from the given resource.
+  requires_id: true
+  has_body: true
+  http_method: put
+call:
+  aliases:
+    - do
+    - raw
+  help: call an endpoint that is not supported by the commandline interface
+  requires_id: false
+  has_body: true
+  http_method: ''
