@@ -83,7 +83,7 @@ impl OpenstackConnection {
     pub fn from_cache_or_new_refreshed(config: OpenstackInfoMap) -> Result<OpenstackConnection, OpenstackError> {
         match OpenstackConnection::from_cache(&config) {
             Ok(x) => return Ok(x),
-            Err(_e) => ()
+            Err(e) => debug!("cache failed because {}", e)
         };
 
         debug!("refresh cache");

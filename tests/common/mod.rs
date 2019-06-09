@@ -1,6 +1,7 @@
 use std::process::{self, Command};
 use std::env;
 use std::io::Write;
+use std::collections::HashMap;
 
 use serde_json::json;
 
@@ -26,8 +27,13 @@ pub fn create_cmd() -> Command{
         ("OS_AUTH_URL", "https://example.com"),
     ];
 
+    let filtered_env : HashMap<String, String> =
+    env::vars().filter(|&(ref k, _)|
+        !k.starts_with("OS_")
+    ).collect();
+
     let mut dir = env::temp_dir();
-    let auth_cache_name = "openstack-client-9F02FE9731328414";
+    let auth_cache_name = "openstack-client-E78E50ECD12BFBAA";
     dir.push(auth_cache_name);
 
     let mut file = std::fs::File::create(dir).expect("unable to create file");
@@ -80,8 +86,8 @@ pub fn create_cmd() -> Command{
     file.write(format!("{}", cache).as_bytes()).unwrap();
 
     let mut cmd = process::Command::new(program);
-    cmd.envs(env)
-        .arg("-vvv")
+    cmd.env_clear().envs(filtered_env).envs(env)
+        // .arg("-vvv")
         .arg("--use-cache");
     cmd
 }
