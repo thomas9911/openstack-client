@@ -27,7 +27,7 @@ pub fn create_cmd() -> Command{
     ];
 
     let mut dir = env::temp_dir();
-    let auth_cache_name = "openstack-client-99821938A89A44D1";
+    let auth_cache_name = "openstack-client-9F02FE9731328414";
     dir.push(auth_cache_name);
 
     let mut file = std::fs::File::create(dir).expect("unable to create file");

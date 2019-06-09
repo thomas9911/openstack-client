@@ -30,6 +30,7 @@ extern crate strum_macros;
 extern crate yaml_rust;
 extern crate uuid;
 extern crate memmap;
+extern crate sha2;
 
 #[macro_use]
 mod macros;

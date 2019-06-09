@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::collections::hash_map::DefaultHasher;
 use std::io::{Error, ErrorKind, Read, Write};
 use std::hash::{Hash, Hasher};
+use sha2::Digest;
 
 use client::{Client, Response};
 use utils::{
@@ -612,9 +613,9 @@ impl Auth {
     }
 
     pub fn create_hash(&self) -> String{
-        let mut s = DefaultHasher::new();
-        self.hash(&mut s);
-        format!("{:X}", s.finish())
+        let mut s = sha2::Sha256::new();
+        s.input(bincode::serialize(self).unwrap());
+        format!("{:.16X}", s.result())
     }
 }
 
@@ -1146,5 +1147,5 @@ fn test_auth_create_hash(){
         "password": "password",
         "auth_url": "https://example.com"
     })).unwrap();
-    assert_eq!("53AB15A5FC9889D6", auth.create_hash())
+    assert_eq!("E78E50ECD12BFBAA", auth.create_hash())
 }
