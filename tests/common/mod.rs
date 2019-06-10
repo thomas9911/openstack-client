@@ -53,6 +53,17 @@ impl From<Vec<&str>> for Output {
     }
 }
 
+impl Default for Output {
+    fn default() -> Self {
+        Output {
+            http_method: String::from("GET"),
+            url: String::from("https://example.com"),
+            headers: json!({"x-auth-token": "token"}),
+            body: json!(null),
+        }
+    }
+}
+
 pub fn create_cmd() -> Command {
     let root = env::current_exe()
         .unwrap()
@@ -152,10 +163,10 @@ pub fn get_stdout(cmd: &mut Command) -> String {
 }
 
 fn to_output(parsable: &str) -> Output {
-    let parsed = OutputParser::parse(Rule::output, parsable)
-        .expect("unsuccessful parse") // unwrap the parse result
-        .next()
-        .unwrap();
+    let parsed = match OutputParser::parse(Rule::output, parsable){
+        Ok(mut x) => x.next().unwrap(),
+        Err(e) => panic!("{}\n{}", e, parsable),
+    };
 
     let mut stuff = vec![];
     for line in parsed.into_inner() {
@@ -182,6 +193,12 @@ fn to_output(parsable: &str) -> Output {
         }
     }
     Output::from(stuff)
+}
+
+pub fn exec_command(args: Vec<&'static str>) -> Output {
+    let mut cmd = create_cmd();
+    let raw_output = get_stdout(cmd.args(make_args(args)));
+    Output::from_stdout(&raw_output)
 }
 
 #[test]

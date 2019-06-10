@@ -9,7 +9,7 @@ none = { "None" }
 some = { "Some(" ~ string ~ ")" }
 string = _{ "\"" ~ str ~ "\"" }
 str = @{ (ASCII_ALPHANUMERIC|SPECIAL_CHARS)* }
-SPECIAL_CHARS = _{"/"|":"|"?"|"-"|"."}
+SPECIAL_CHARS = _{"/"|":"|"?"|"-"|"."|"_"}
 
 
 null = { "null" }
@@ -18,10 +18,10 @@ object = {
     "{" ~ "}" |
     "{" ~ pair ~ ("," ~ pair)* ~ "}"
 }
-object_or_string = _{ object | string | null }
-pair = { string ~ ":" ~ object_or_string }
+json_or_string = _{ json | string }
+pair = { string ~ ":" ~ json_or_string }
 
 array = {
     "[" ~ "]" |
-    "[" ~ string ~ ("," ~ string)* ~ "]"
+    "[" ~ json_or_string ~ ("," ~ json_or_string)* ~ "]"
 }

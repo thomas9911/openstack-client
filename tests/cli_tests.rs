@@ -1,10 +1,10 @@
-extern crate serde_json;
-mod common;
-use common::{create_cmd, get_stdout, make_args, Output};
-
 extern crate pest;
+extern crate serde_json;
 #[macro_use]
 extern crate pest_derive;
+
+mod common;
+use common::{exec_command, Output};
 
 use serde_json::json;
 
@@ -16,11 +16,7 @@ fn list_servers() {
         json!({"x-auth-token": "token"}),
         json!(null),
     );
-
-    let mut cmd = create_cmd();
-    let raw_output = get_stdout(cmd.args(make_args(vec!["list", "servers"])));
-    let output = Output::from_stdout(&raw_output);
-    assert_eq!(expected, output);
+    assert_eq!(expected, exec_command(vec!["list", "servers"]));
 }
 
 #[test]
@@ -31,11 +27,7 @@ fn get_server() {
         json!({"x-auth-token": "token"}),
         json!(null),
     );
-
-    let mut cmd = create_cmd();
-    let raw_output = get_stdout(cmd.args(make_args(vec!["get", "server", "123456789"])));
-    let output = Output::from_stdout(&raw_output);
-    assert_eq!(expected, output);
+    assert_eq!(expected, exec_command(vec!["get", "server", "123456789"]));
 }
 
 #[test]
@@ -46,11 +38,7 @@ fn list_images() {
         json!({"x-auth-token": "token"}),
         json!(null),
     );
-
-    let mut cmd = create_cmd();
-    let raw_output = get_stdout(cmd.args(make_args(vec!["list", "images"])));
-    let output = Output::from_stdout(&raw_output);
-    assert_eq!(expected, output);
+    assert_eq!(expected, exec_command(vec!["list", "images"]));
 }
 
 #[test]
@@ -61,11 +49,7 @@ fn list_volumes() {
         json!({"x-auth-token": "token"}),
         json!(null),
     );
-
-    let mut cmd = create_cmd();
-    let raw_output = get_stdout(cmd.args(make_args(vec!["list", "volumes"])));
-    let output = Output::from_stdout(&raw_output);
-    assert_eq!(expected, output);
+    assert_eq!(expected, exec_command(vec!["list", "volumes"]));
 }
 
 #[test]
@@ -80,9 +64,47 @@ fn create_keypair() {
           }
         }),
     );
+    assert_eq!(
+        expected,
+        exec_command(vec!["new", "keypair", "--name", "testing"])
+    );
+}
 
-    let mut cmd = create_cmd();
-    let raw_output = get_stdout(cmd.args(make_args(vec!["new", "keypair", "--name", "testing"])));
-    let output = Output::from_stdout(&raw_output);
-    assert_eq!(expected, output);
+#[test]
+fn create_server() {
+    let expected = Output::new(
+        "POST",
+        "https://example.com/compute/servers?",
+        json!({"x-auth-token": "token"}),
+        json!({
+          "server": {
+            "flavorRef": "flavor-id-1234",
+            "imageRef": "image-id-1234",
+            "key_name": "keyname",
+            "name": "testing",
+            "networks": [
+              {
+                "uuid": "network-id-1234"
+              }
+            ]
+          }
+        }),
+    );
+    assert_eq!(
+        expected,
+        exec_command(vec![
+            "create",
+            "server",
+            "--name",
+            "testing",
+            "--key-name",
+            "keyname",
+            "--network-id",
+            "network-id-1234",
+            "--image",
+            "image-id-1234",
+            "--flavor",
+            "flavor-id-1234"
+        ])
+    );
 }
