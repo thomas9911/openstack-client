@@ -51,7 +51,7 @@ use std::env;
 
 use clap::{Arg, App, SubCommand, Shell};
 use std::string::ToString;
-use std::error::Error;
+
 
 use enums::OSOperation;
 use structs::{Command, Resource};

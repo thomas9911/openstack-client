@@ -6,8 +6,8 @@ use std::fs::File;
 use curl::easy::{Easy, List};
 use serde_json::Value as JSONValue;
 use error::OpenstackError;
-use memmap::MmapOptions;
-use indicatif::{ProgressBar, ProgressStyle};
+
+
 
 use objectstore::{create_file, download_from_object_store, open_file, upload_to_object_store, upload_to_object_store_dynamic_large_objects};
 
@@ -228,7 +228,7 @@ impl Client {
             None => return Err(OpenstackError::new("token is not set"))
         };
 
-        let mut file = open_file(filename)?;
+        let file = open_file(filename)?;
 
         Ok((file, token.to_string()))
     }

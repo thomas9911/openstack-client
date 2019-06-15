@@ -96,7 +96,7 @@ pub fn download_from_object_store(
         progress_bar.finish();
     }
 
-    let statuscode = easy.response_code()?;
+    let _statuscode = easy.response_code()?;
 
     // Ok((String::from(""), statuscode))
     let response_data = JSONValue::String(String::from(""));

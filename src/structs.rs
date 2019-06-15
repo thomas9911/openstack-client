@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::io::{Error, ErrorKind};
+
 use utils::{convert_to_multiple, compare_different_cases, get_first_value_from_hashmap_with_vec};
 
 use error::OpenstackError;

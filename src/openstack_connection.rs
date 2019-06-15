@@ -1,10 +1,10 @@
 use std::collections::HashMap;
-use std::io::{Error, ErrorKind};
-use std::iter::DoubleEndedIterator;
+
+
 use std::str::FromStr;
 
-use chrono::prelude::*;
-use chrono::Duration;
+
+
 
 use enums::OSOperation;
 use structs::{Action, ActionMap, Command, CommandMap, Resource, ResourceMap, ResourceTypeEnum};
@@ -212,13 +212,13 @@ impl Openstack {
     }
 
     #[allow(dead_code)]
-    pub fn delete(self, res: String, id: String) {}
+    pub fn delete(self, _res: String, _id: String) {}
 
     #[allow(dead_code)]
-    pub fn get(self, res: String, id: String) {}
+    pub fn get(self, _res: String, _id: String) {}
 
     #[allow(dead_code)]
-    pub fn update(self, res: String, id: String) {}
+    pub fn update(self, _res: String, _id: String) {}
 
     pub fn act(
         &mut self,
@@ -600,7 +600,7 @@ impl Openstack {
     }
 
     fn handle_header_parameters(res: &Resource,
-        op: &Command,
+        _op: &Command,
         res_args: &HashMap<String, Vec<serde_json::Value>>,
         action: &Option<Action>,
         ) -> HashMap<String, String>{
@@ -640,7 +640,7 @@ impl Openstack {
     fn _handle_special_body_parameters(
         &self,
         res: &Resource,
-        com: &Command,
+        _com: &Command,
         body: &mut serde_json::Value,
     ) {
         if res.name == "credentials" {
