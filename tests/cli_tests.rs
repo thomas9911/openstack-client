@@ -108,3 +108,34 @@ fn create_server() {
         ])
     );
 }
+
+#[test]
+fn call_option() {
+    let expected = Output::new(
+        "POST",
+        "https://example.com/compute/os-keypair?",
+        json!({"x-auth-token": "token", "Accept": " text/plain"}),
+        json!({
+            "key1": {
+                "key2": "value"
+            }
+        }),
+    );
+
+    assert_eq!(
+        expected,
+        exec_command(vec![
+            "call",
+            "POST",
+            "compute",
+            "os-keypair",
+            r#"{
+                "key1": {
+                    "key2": "value"
+                }
+            }"#,
+            "-H",
+            "Accept: text/plain",
+        ])
+    );
+}

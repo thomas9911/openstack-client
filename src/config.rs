@@ -1,15 +1,11 @@
-use std::collections::HashMap;
-use std::collections::hash_map::DefaultHasher;
-use std::io::{Error, ErrorKind, Read, Write};
-use std::hash::{Hash, Hasher};
 use sha2::Digest;
+use std::collections::HashMap;
+use std::hash::{Hash, Hasher};
+use std::io::{Error, ErrorKind, Read, Write};
 
 use client::{Client, Response};
-use utils::{
-    add_slash, get_first_value_from_hashmap_with_vec, hashmap_with_vec_to_json,
-    make_hashmaps_from_dot_notation, read_yaml, remove_slash_start,
-};
 use traits::SerdeList;
+use utils::{add_slash, read_yaml};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct OpenstackTokenizer {
@@ -34,9 +30,9 @@ impl OpenstackTokenizer {
     }
 
     pub fn from_cache_or_new(config: OpenstackInfoMap) -> Self {
-        match Self::from_cache(&config){
+        match Self::from_cache(&config) {
             Ok(x) => return x,
-            Err(_x) => ()
+            Err(_x) => (),
         };
         Self::new(config)
     }
@@ -54,7 +50,8 @@ impl OpenstackTokenizer {
     }
 
     pub fn from_reader<R>(reader: R) -> Result<Self, Error>
-        where R: Read
+    where
+        R: Read,
     {
         let obj = serde_json::from_reader(reader)?;
         Ok(obj)
@@ -63,7 +60,7 @@ impl OpenstackTokenizer {
     // to_cache
     // - to writer
 
-    pub fn to_cache(&self) -> Result<(), Error>{
+    pub fn to_cache(&self) -> Result<(), Error> {
         let dir = Self::get_tmp_cache_location(&self.config);
         let file = std::fs::File::create(dir)?;
         let writer = std::io::BufWriter::new(file);
@@ -72,7 +69,8 @@ impl OpenstackTokenizer {
     }
 
     pub fn to_writer<W>(&self, writer: W) -> Result<(), Error>
-        where W: Write
+    where
+        W: Write,
     {
         serde_json::to_writer(writer, self)?;
         Ok(())
@@ -88,13 +86,17 @@ impl OpenstackTokenizer {
     pub fn refresh_token(&mut self) -> Result<(), Error> {
         // let body = create_token_body(&self.config.auth);
         let body = self.config.auth.pick_token_body();
+        debug!(
+            "Auth body without password: {}",
+            _filter_password(body.clone())
+        );
 
         let auth_url = match url::Url::parse(&add_slash(&self.config.auth.auth_url)) {
             Ok(x) => x.join("auth/tokens").unwrap(),
             Err(_e) => return Err(Error::new(ErrorKind::InvalidData, "Not a valid auth_url")),
         };
         let mut client = Client::new();
-        let mut response = match client.post(auth_url.as_str(), body) {
+        let response = match client.post(auth_url.as_str(), body) {
             Ok(x) => x,
             Err(e) => return Err(Error::new(ErrorKind::Other, e.to_string())),
         };
@@ -388,12 +390,7 @@ impl OpenstackInfoMap {
         let region_name: String = std::env::var("OS_REGION_NAME").unwrap_or("".to_string());
         let interface: String = std::env::var("OS_INTERFACE").unwrap_or("".to_string());
 
-        OpenstackInfoMap::new(
-            cloud_name,
-            region_name,
-            interface,
-            auth
-        )
+        OpenstackInfoMap::new(cloud_name, region_name, interface, auth)
     }
 
     pub fn add_password(&mut self) -> Result<&mut Self, Error> {
@@ -536,7 +533,6 @@ impl From<HashMap<String, serde_json::Value>> for Auth {
     }
 }
 
-
 impl From<Auth> for HashMap<String, serde_json::Value> {
     fn from(auth: Auth) -> HashMap<String, serde_json::Value> {
         HashMap::from(&auth)
@@ -546,39 +542,40 @@ impl From<Auth> for HashMap<String, serde_json::Value> {
 impl From<&Auth> for HashMap<String, serde_json::Value> {
     fn from(auth: &Auth) -> HashMap<String, serde_json::Value> {
         use std::iter::FromIterator;
-        let auth_value: serde_json::Value = serde_json::to_value(auth).expect("auth is serilizable");
+        let auth_value: serde_json::Value =
+            serde_json::to_value(auth).expect("auth is serilizable");
         HashMap::from_iter(
-            auth_value.as_object()
-                        .expect("this is an object")
-                        .iter()
-                        .map(|x| (x.0.clone(), x.1.clone()))
+            auth_value
+                .as_object()
+                .expect("this is an object")
+                .iter()
+                .map(|x| (x.0.clone(), x.1.clone())),
         )
     }
 }
 
-impl Hash for Auth{
+impl Hash for Auth {
     fn hash<H: Hasher>(&self, state: &mut H) {
-       for x in self.values(){
-           if let Some(y) = x.as_bool(){
+        for x in self.values() {
+            if let Some(y) = x.as_bool() {
                 y.hash(state);
                 continue;
-           }
-           if let Some(y) = x.as_u64(){
+            }
+            if let Some(y) = x.as_u64() {
                 y.hash(state);
                 continue;
-           }
-           if let Some(y) = x.as_i64(){
+            }
+            if let Some(y) = x.as_i64() {
                 y.hash(state);
                 continue;
-           }
-           if let Some(y) = x.as_str(){
+            }
+            if let Some(y) = x.as_str() {
                 y.hash(state);
                 continue;
-           }
-       }
+            }
+        }
     }
 }
-
 
 impl Auth {
     pub fn from_env() -> Self {
@@ -593,13 +590,13 @@ impl Auth {
         let mut self_hm: HashMap<String, serde_json::Value> = self.into();
         let other_hm: HashMap<String, serde_json::Value> = other.into();
         let password;
-        if other.password.unsecure() != Self::default().password.unsecure(){
+        if other.password.unsecure() != Self::default().password.unsecure() {
             password = other.password.clone();
         } else {
             password = self.password.clone();
         }
-        for (key, value) in default.iter(){
-            if other_hm.get(key) != Some(&value){
+        for (key, value) in default.iter() {
+            if other_hm.get(key) != Some(&value) {
                 self_hm.insert(key.clone(), other_hm.get(key).expect("this exists").clone());
             }
         }
@@ -608,65 +605,62 @@ impl Auth {
         new_auth
     }
 
-    pub fn pick_token_body(&self) -> serde_json::Value{
+    pub fn pick_token_body(&self) -> serde_json::Value {
         create_token_body(&self)
     }
 
-    pub fn create_hash(&self) -> String{
+    pub fn create_hash(&self) -> String {
         let mut s = sha2::Sha256::new();
         s.input(bincode::serialize(self).unwrap());
         format!("{:.16X}", s.result())
     }
 }
 
+pub fn create_token_body(auth: &Auth) -> serde_json::Value {
+    // {
+    //     "auth": {
+    //         "identity": {
+    //             "methods": [
+    //                 "password"
+    //             ],
+    //             "password": {
+    //                 "user": {
+    //                     "id": "ee4dfb6e5540447cb3741905149d9b6e",
+    //                     "password": "devstacker"
+    //                 }
+    //             }
+    //         },
+    //         "scope": {
+    //             "system": {
+    //                 "all": true
+    //             }
+    //         }
+    //     }
+    // }
 
-pub fn create_token_body(auth: &Auth) -> serde_json::Value{
-
-// {
-//     "auth": {
-//         "identity": {
-//             "methods": [
-//                 "password"
-//             ],
-//             "password": {
-//                 "user": {
-//                     "id": "ee4dfb6e5540447cb3741905149d9b6e",
-//                     "password": "devstacker"
-//                 }
-//             }
-//         },
-//         "scope": {
-//             "system": {
-//                 "all": true
-//             }
-//         }
-//     }
-// }
-
-
-// {
-//     "auth": {
-//         "identity": {
-//             "methods": [
-//                 "password"
-//             ],
-//             "password": {
-//                 "user": {
-//                     "id": "ee4dfb6e5540447cb3741905149d9b6e",
-//                     "password": "devstacker"
-//                 }
-//             }
-//         },
-//         "scope": {
-//             "project": {
-//                 "domain": {
-//                     "id": "default"
-//                 },
-//                 "name": "admin"
-//             }
-//         }
-//     }
-// }
+    // {
+    //     "auth": {
+    //         "identity": {
+    //             "methods": [
+    //                 "password"
+    //             ],
+    //             "password": {
+    //                 "user": {
+    //                     "id": "ee4dfb6e5540447cb3741905149d9b6e",
+    //                     "password": "devstacker"
+    //                 }
+    //             }
+    //         },
+    //         "scope": {
+    //             "project": {
+    //                 "domain": {
+    //                     "id": "default"
+    //                 },
+    //                 "name": "admin"
+    //             }
+    //         }
+    //     }
+    // }
 
     let default_auth = Auth::default();
     let mut body = json!({});
@@ -700,10 +694,10 @@ pub fn create_token_body(auth: &Auth) -> serde_json::Value{
                 }
             }
         });
-        if auth.username != default_auth.username{
+        if auth.username != default_auth.username {
             body["auth"]["identity"]["password"]["user"]["name"] = json!(auth.username)
         }
-        if auth.user_id != default_auth.user_id{
+        if auth.user_id != default_auth.user_id {
             body["auth"]["identity"]["password"]["user"]["id"] = json!(auth.user_id)
         }
 
@@ -718,7 +712,6 @@ pub fn create_token_body(auth: &Auth) -> serde_json::Value{
                 "id": auth.user_domain_id
             })
         }
-
     }
 
     // set scope or set scope as 'unscoped'
@@ -749,17 +742,42 @@ pub fn create_token_body(auth: &Auth) -> serde_json::Value{
         body["auth"]["scope"]["project"] = json!({"id": auth.project_id});
     }
 
-    if auth.project_domain_id != default_auth.project_domain_id{
+    if auth.project_domain_id != default_auth.project_domain_id {
         body["auth"]["scope"]["project"]["domain"] = json!({
             "id": auth.project_domain_id
         });
     }
 
-    if body["auth"].get("scope").is_none(){
+    if body["auth"].get("scope").is_none() {
         body["auth"]["scope"] = json!("unscoped");
     }
 
     body
+}
+
+fn _filter_password(value: serde_json::Value) -> serde_json::Value {
+    use serde_json::Value::{Array, Bool, Null, Number, Object, String};
+    match value {
+        Number(x) => Number(x),
+        String(x) => String(x),
+        Object(x) => Object(_filter_password_map(x)),
+        Array(x) => Array(x),
+        Bool(x) => Bool(x),
+        Null => Null,
+    }
+}
+
+fn _filter_password_map(
+    map: serde_json::Map<String, serde_json::Value>,
+) -> serde_json::Map<String, serde_json::Value> {
+    let mut filtered_map = serde_json::Map::new();
+    for (k, v) in map.iter() {
+        if k.to_lowercase() != "password" {
+            let new_v = _filter_password(v.clone());
+            filtered_map.insert(k.clone(), new_v);
+        }
+    }
+    filtered_map
 }
 
 // #[test]
@@ -924,7 +942,7 @@ fn test_auth_from_hashmap() {
 }
 
 #[test]
-fn test_auth_apply_works(){
+fn test_auth_apply_works() {
     let first_auth = Auth {
         project_id: "1234".to_string(),
         user_id: "4321".to_string(),
@@ -938,7 +956,7 @@ fn test_auth_apply_works(){
         ..Default::default()
     };
 
-    let expected = Auth{
+    let expected = Auth {
         project_id: "4567".to_string(),
         user_id: "4321".to_string(),
         username: "testing".to_string(),
@@ -953,7 +971,7 @@ fn test_auth_apply_works(){
 }
 
 #[test]
-fn test_auth_apply_works_multiple_times(){
+fn test_auth_apply_works_multiple_times() {
     let first_auth = Auth::default();
 
     let second_auth = Auth {
@@ -977,7 +995,7 @@ fn test_auth_apply_works_multiple_times(){
 
     let fifth_auth = Auth::default();
 
-    let expected = Auth{
+    let expected = Auth {
         project_id: "4567".to_string(),
         auth_url: "https://example.com/auth".to_string(),
         user_id: "4321".to_string(),
@@ -985,18 +1003,18 @@ fn test_auth_apply_works_multiple_times(){
         password: secstr::SecUtf8::from("other_password"),
         ..Default::default()
     };
-    let auth = first_auth.apply(&second_auth)
-                         .apply(&third_auth)
-                         .apply(&fourth_auth)
-                         .apply(&fifth_auth);
+    let auth = first_auth
+        .apply(&second_auth)
+        .apply(&third_auth)
+        .apply(&fourth_auth)
+        .apply(&fifth_auth);
 
-    assert_eq!(fourth_auth.password.unsecure(),  auth.password.unsecure());
+    assert_eq!(fourth_auth.password.unsecure(), auth.password.unsecure());
     assert_eq!(auth, expected);
 }
 
-
 #[test]
-fn test_create_token_body_picks_correct_body_password(){
+fn test_create_token_body_picks_correct_body_password() {
     let auth = Auth {
         username: "test".to_string(),
         project_domain_id: "4321".to_string(),
@@ -1035,7 +1053,7 @@ fn test_create_token_body_picks_correct_body_password(){
 }
 
 #[test]
-fn test_create_token_body_picks_correct_body_token(){
+fn test_create_token_body_picks_correct_body_token() {
     let auth = Auth {
         user_id: "123456".to_string(),
         domain_id: "1234".to_string(),
@@ -1063,7 +1081,7 @@ fn test_create_token_body_picks_correct_body_token(){
 }
 
 #[test]
-fn test_create_token_body_picks_correct_body_and_set_unscoped(){
+fn test_create_token_body_picks_correct_body_and_set_unscoped() {
     let auth = Auth {
         token: "abcdefghijklmnopqrstuvwxyz".to_string(),
         ..Default::default()
@@ -1139,13 +1157,53 @@ fn test_create_token_body_picks_correct_body_and_set_unscoped(){
 //     "trust-id": ""
 // }
 
-
 #[test]
-fn test_auth_create_hash(){
+fn test_auth_create_hash() {
     let auth: Auth = serde_json::from_value(json!({
         "username": "username",
         "password": "password",
         "auth_url": "https://example.com"
-    })).unwrap();
+    }))
+    .unwrap();
     assert_eq!("E78E50ECD12BFBAA", auth.create_hash())
+}
+
+#[test]
+fn test_filter_password_out_of_value() {
+    let value = json!({
+       "key1": {
+           "password": "secret",
+           "user": "test",
+           "something": "else"
+       },
+       "key2": {
+           "PassWord": "another secret",
+           "a user": "test",
+           "some": ["array", "list", "vec"]
+       },
+        "key3": {
+            "stuff": {
+                "password": {
+                    "secret": "1",
+                    "more_secret": "2"
+                }
+            }
+        }
+    });
+
+    let expected = json!({
+       "key1": {
+           "user": "test",
+           "something": "else"
+       },
+       "key2": {
+           "a user": "test",
+           "some": ["array", "list", "vec"]
+       },
+       "key3": {
+            "stuff": {}
+        }
+    });
+
+    assert_eq!(expected, _filter_password(value));
 }
