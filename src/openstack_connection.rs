@@ -249,12 +249,15 @@ impl Openstack {
         let mut post_body;
 
         let mut path = r.endpoint_path.clone();
-        path = match get_first_value_from_hashmap_with_vec(res_args, "id") {
-            Some(id) => format!("{}{}", add_slash(&path), id.as_str().unwrap()),
-            None => path,
+        let id = match get_first_value_from_hashmap_with_vec(res_args, "id") {
+            Some(x) => Some(x.as_str().unwrap().to_string()),
+            None => None
         };
-        // let renderer = handlebars::Handlebars::new();
-        // path = renderer.render_template(&path, &json!({"user_id": self.connection.user_id, "domain_id": self.connection.domain_id}))?;
+
+        if let Some(ref x) = id{
+            path = format!("{}{}", add_slash(&path), x)
+        }
+
         let mut new_res_args = res_args.clone();
 
         let http_method: http::Method;
@@ -324,7 +327,8 @@ impl Openstack {
         // println!("{:?}", maybe_action);
         // println!("{:?}", res_args);
         let mut url_params = HashMap::new();
-        for (k, v) in vec![("user_id", self.connection.user_id.clone()), ("domain_id", self.connection.domain_id.clone())]{
+        // add 'magic' url parameters
+        for (k, v) in vec![("user_id", self.connection.user_id.clone()), ("domain_id", self.connection.domain_id.clone()), ("id", id)]{
             if let Some(the_value) = v{
                 url_params.insert(k.to_string(), the_value);
             }

@@ -9,7 +9,7 @@ start:
       url_parameter: action
       requires_id: true
       body_name: "os-start"
-      params: []
+      post_parameters: []
 stop:
   aliases: []
   help: stop the resource
@@ -19,7 +19,7 @@ stop:
       url_parameter: action
       requires_id: true
       body_name: "os-stop"
-      params: []
+      post_parameters: []
 suspend:
   aliases: []
   help: suspend the resource
@@ -29,7 +29,7 @@ suspend:
       url_parameter: action
       requires_id: true
       body_name: "suspend"
-      params: []
+      post_parameters: []
 output:
   aliases: []
   help: get the console output from the resource
@@ -39,7 +39,7 @@ output:
       url_parameter: action
       requires_id: true
       body_name: "os-getConsoleOutput"
-      params:
+      post_parameters:
         - name: length
           default: null
           help: The number of lines to fetch from the end of console log. All lines will be returned if this is not specified.
@@ -49,16 +49,22 @@ remote_console:
   resources:
     - resource: servers
       help: create a remote console to server
-      url_parameter: remote-consoles
+      url_parameter: "servers/{{ id }}/remote-consoles"
       requires_id: true
       body_name: "remote_console"
-      params:
+      post_parameters:
         - name: protocol
           required: true
           help: The protocol of remote console. The valid values are vnc, spice, rdp, serial and mks. The protocol mks is added since Microversion 2.8.
         - name: type
           required: true
           help: The type of remote console. The valid values are novnc, xvpvnc, rdp-html5, spice-html5, serial, and webmks. The type webmks is added since Microversion 2.8.
+        - name: nova-version
+          path: X-OpenStack-Nova-API-Version
+          required: true
+          help: "the nova version to use"
+          placement: header
+          default: "2.8"
 copy:
   aliases: []
   help: copy instance from location to destination

@@ -2669,6 +2669,12 @@ subcommands:
         about: get the console output from the server
         args:
         - id: *id001
+        - length:
+            help: The number of lines to fetch from the end of console log. All lines
+              will be returned if this is not specified.
+            long: length
+            takes_value: true
+            multiple: false
         visible_aliases:
         - server
     args:
@@ -2687,6 +2693,28 @@ subcommands:
         about: create a remote console to server
         args:
         - id: *id001
+        - protocol:
+            help: The protocol of remote console. The valid values are vnc, spice,
+              rdp, serial and mks. The protocol mks is added since Microversion 2.8.
+            required: true
+            long: protocol
+            takes_value: true
+            multiple: false
+        - type:
+            help: The type of remote console. The valid values are novnc, xvpvnc,
+              rdp-html5, spice-html5, serial, and webmks. The type webmks is added
+              since Microversion 2.8.
+            required: true
+            long: type
+            takes_value: true
+            multiple: false
+        - nova-version:
+            help: the nova version to use
+            required: true
+            long: nova-version
+            takes_value: true
+            multiple: false
+            default_value: '2.8'
         visible_aliases:
         - server
     args:
