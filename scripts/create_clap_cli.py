@@ -82,12 +82,14 @@ with open("data/actions.yaml") as f:
 sub_args = []
 for k, v in resources.items():
     new_k = snake_to_kebabcase(k)
+    aliases = [make_singular(new_k)]
+    aliases.extend(v.get("aliases", []))
     val = od([(new_k, od([
         ("index", 1),
         ("case_insensitive", True),
         ("about", "resource A"),
         ("args", []),
-        ('visible_aliases', [make_singular(new_k)])
+        ('visible_aliases', aliases)
     ]))])
     for l in v.get("post_parameters", []):
         if not l.get('hidden', False):

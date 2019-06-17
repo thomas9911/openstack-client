@@ -226,6 +226,8 @@ subcommands:
         - id: *id001
         visible_aliases:
         - security-groups-rule
+        - security_group_rules
+        - security_group_rule
     - subnets:
         index: 1
         case_insensitive: true
@@ -491,6 +493,8 @@ subcommands:
         args: []
         visible_aliases:
         - security-groups-rule
+        - security_group_rules
+        - security_group_rule
     - subnets:
         index: 1
         case_insensitive: true
@@ -931,6 +935,8 @@ subcommands:
         args: []
         visible_aliases:
         - security-groups-rule
+        - security_group_rules
+        - security_group_rule
     - subnets:
         index: 1
         case_insensitive: true
@@ -1238,6 +1244,8 @@ subcommands:
         - id: *id001
         visible_aliases:
         - security-groups-rule
+        - security_group_rules
+        - security_group_rule
     - subnets:
         index: 1
         case_insensitive: true
@@ -1710,6 +1718,8 @@ subcommands:
         - id: *id001
         visible_aliases:
         - security-groups-rule
+        - security_group_rules
+        - security_group_rule
     - subnets:
         index: 1
         case_insensitive: true
@@ -1997,6 +2007,8 @@ subcommands:
         args: []
         visible_aliases:
         - security-groups-rule
+        - security_group_rules
+        - security_group_rule
     - subnets:
         index: 1
         case_insensitive: true
@@ -2463,6 +2475,8 @@ subcommands:
         - id: *id001
         visible_aliases:
         - security-groups-rule
+        - security_group_rules
+        - security_group_rule
     - subnets:
         index: 1
         case_insensitive: true

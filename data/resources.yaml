@@ -223,6 +223,9 @@ security_groups:
   endpoint_path: v2.0/security-groups
   resource_type: network
 security_groups_rules:
+  aliases:
+    - "security_group_rules"
+    - "security_group_rule"
   endpoint_path: v2.0/security-groups-rules
   resource_type: network
 subnets:
