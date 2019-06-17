@@ -1,4 +1,5 @@
 ## Openstack rust client
+[![Build Status](https://travis-ci.org/thomas9911/openstack-client.svg?branch=develop)](https://travis-ci.org/thomas9911/openstack-client)
 
 A way to communicate to openstack apis using a commandline interface.
 
