@@ -139,3 +139,25 @@ fn call_option() {
         ])
     );
 }
+
+#[test]
+fn list_network_with_multiple_filters(){
+    let expected = Output::new(
+        "GET",
+        "https://example.com/network/v2.0/networks?name=test&name=test2",
+        json!({"x-auth-token": "token"}),
+        json!(null),
+    );
+
+    assert_eq!(
+        expected,
+        exec_command(vec![
+            "list",
+            "network",
+            "--name",
+            "test",
+            "--name",
+            "test2",
+        ])
+    );
+}
