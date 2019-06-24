@@ -87,7 +87,7 @@ for k, v in resources.items():
     val = od([(new_k, od([
         ("index", 1),
         ("case_insensitive", True),
-        ("about", "resource A"),
+        ("about", v.get("help", "resource A")),
         ("args", []),
         ('visible_aliases', aliases)
     ]))])

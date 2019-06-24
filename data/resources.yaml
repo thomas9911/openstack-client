@@ -213,6 +213,13 @@ floating_ips:
 networks:
   endpoint_path: v2.0/networks
   resource_type: network
+  post_parameters:
+    - name: name
+      path: name
+      type: string
+      help: filter on network name
+      placement: query
+      multiple: true
 ports:
   endpoint_path: v2.0/ports
   resource_type: network
@@ -259,6 +266,21 @@ snapshots:
     path: snapshots.force
     type: string
     help: Indicates whether to backup, even if the volume is attached. Default is false (Optional).
+simple_usage:
+  help: "Shows usage statistics for a project."
+  endpoint_path: os-simple-tenant-usage
+  resource_type: compute
+  post_parameters:
+    - name: start
+      path: start
+      type: string
+      help: The beginning time to calculate usage statistics on compute and storage resources, in the format YYYY-MM-DDThh:mm:ss
+      placement: query
+    - name: end
+      path: end
+      type: string
+      help: The ending time to calculate usage statistics on compute and storage resources, in the format YYYY-MM-DDThh:mm:ss
+      placement: query
 volumes:
   endpoint_path: volumes
   resource_type: volumev3

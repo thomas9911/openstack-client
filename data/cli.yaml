@@ -191,6 +191,11 @@ subcommands:
         case_insensitive: true
         about: resource A
         args:
+        - name:
+            help: filter on network name
+            long: name
+            takes_value: true
+            multiple: true
         - id: *id001
         visible_aliases:
         - network
@@ -260,6 +265,26 @@ subcommands:
         - id: *id001
         visible_aliases:
         - snapshot
+    - simple-usage:
+        index: 1
+        case_insensitive: true
+        about: Shows usage statistics for a project.
+        args:
+        - start:
+            help: The beginning time to calculate usage statistics on compute and
+              storage resources, in the format YYYY-MM-DDThh:mm:ss
+            long: start
+            takes_value: true
+            multiple: false
+        - end:
+            help: The ending time to calculate usage statistics on compute and storage
+              resources, in the format YYYY-MM-DDThh:mm:ss
+            long: end
+            takes_value: true
+            multiple: false
+        - id: *id001
+        visible_aliases:
+        - simple-usage
     - volumes:
         index: 1
         case_insensitive: true
@@ -462,7 +487,12 @@ subcommands:
         index: 1
         case_insensitive: true
         about: resource A
-        args: []
+        args:
+        - name:
+            help: filter on network name
+            long: name
+            takes_value: true
+            multiple: true
         visible_aliases:
         - network
     - ports:
@@ -523,6 +553,25 @@ subcommands:
         args: []
         visible_aliases:
         - snapshot
+    - simple-usage:
+        index: 1
+        case_insensitive: true
+        about: Shows usage statistics for a project.
+        args:
+        - start:
+            help: The beginning time to calculate usage statistics on compute and
+              storage resources, in the format YYYY-MM-DDThh:mm:ss
+            long: start
+            takes_value: true
+            multiple: false
+        - end:
+            help: The ending time to calculate usage statistics on compute and storage
+              resources, in the format YYYY-MM-DDThh:mm:ss
+            long: end
+            takes_value: true
+            multiple: false
+        visible_aliases:
+        - simple-usage
     - volumes:
         index: 1
         case_insensitive: true
@@ -904,7 +953,12 @@ subcommands:
         index: 1
         case_insensitive: true
         about: resource A
-        args: []
+        args:
+        - name:
+            help: filter on network name
+            long: name
+            takes_value: true
+            multiple: true
         visible_aliases:
         - network
     - ports:
@@ -988,6 +1042,25 @@ subcommands:
             multiple: false
         visible_aliases:
         - snapshot
+    - simple-usage:
+        index: 1
+        case_insensitive: true
+        about: Shows usage statistics for a project.
+        args:
+        - start:
+            help: The beginning time to calculate usage statistics on compute and
+              storage resources, in the format YYYY-MM-DDThh:mm:ss
+            long: start
+            takes_value: true
+            multiple: false
+        - end:
+            help: The ending time to calculate usage statistics on compute and storage
+              resources, in the format YYYY-MM-DDThh:mm:ss
+            long: end
+            takes_value: true
+            multiple: false
+        visible_aliases:
+        - simple-usage
     - volumes:
         index: 1
         case_insensitive: true
@@ -1209,6 +1282,11 @@ subcommands:
         case_insensitive: true
         about: resource A
         args:
+        - name:
+            help: filter on network name
+            long: name
+            takes_value: true
+            multiple: true
         - id: *id001
         visible_aliases:
         - network
@@ -1278,6 +1356,26 @@ subcommands:
         - id: *id001
         visible_aliases:
         - snapshot
+    - simple-usage:
+        index: 1
+        case_insensitive: true
+        about: Shows usage statistics for a project.
+        args:
+        - start:
+            help: The beginning time to calculate usage statistics on compute and
+              storage resources, in the format YYYY-MM-DDThh:mm:ss
+            long: start
+            takes_value: true
+            multiple: false
+        - end:
+            help: The ending time to calculate usage statistics on compute and storage
+              resources, in the format YYYY-MM-DDThh:mm:ss
+            long: end
+            takes_value: true
+            multiple: false
+        - id: *id001
+        visible_aliases:
+        - simple-usage
     - volumes:
         index: 1
         case_insensitive: true
@@ -1683,6 +1781,11 @@ subcommands:
         case_insensitive: true
         about: resource A
         args:
+        - name:
+            help: filter on network name
+            long: name
+            takes_value: true
+            multiple: true
         - id: *id001
         visible_aliases:
         - network
@@ -1775,6 +1878,26 @@ subcommands:
         - id: *id001
         visible_aliases:
         - snapshot
+    - simple-usage:
+        index: 1
+        case_insensitive: true
+        about: Shows usage statistics for a project.
+        args:
+        - start:
+            help: The beginning time to calculate usage statistics on compute and
+              storage resources, in the format YYYY-MM-DDThh:mm:ss
+            long: start
+            takes_value: true
+            multiple: false
+        - end:
+            help: The ending time to calculate usage statistics on compute and storage
+              resources, in the format YYYY-MM-DDThh:mm:ss
+            long: end
+            takes_value: true
+            multiple: false
+        - id: *id001
+        visible_aliases:
+        - simple-usage
     - volumes:
         index: 1
         case_insensitive: true
@@ -1976,7 +2099,12 @@ subcommands:
         index: 1
         case_insensitive: true
         about: resource A
-        args: []
+        args:
+        - name:
+            help: filter on network name
+            long: name
+            takes_value: true
+            multiple: true
         visible_aliases:
         - network
     - ports:
@@ -2037,6 +2165,25 @@ subcommands:
         args: []
         visible_aliases:
         - snapshot
+    - simple-usage:
+        index: 1
+        case_insensitive: true
+        about: Shows usage statistics for a project.
+        args:
+        - start:
+            help: The beginning time to calculate usage statistics on compute and
+              storage resources, in the format YYYY-MM-DDThh:mm:ss
+            long: start
+            takes_value: true
+            multiple: false
+        - end:
+            help: The ending time to calculate usage statistics on compute and storage
+              resources, in the format YYYY-MM-DDThh:mm:ss
+            long: end
+            takes_value: true
+            multiple: false
+        visible_aliases:
+        - simple-usage
     - volumes:
         index: 1
         case_insensitive: true
@@ -2440,6 +2587,11 @@ subcommands:
         case_insensitive: true
         about: resource A
         args:
+        - name:
+            help: filter on network name
+            long: name
+            takes_value: true
+            multiple: true
         - id: *id001
         visible_aliases:
         - network
@@ -2532,6 +2684,26 @@ subcommands:
         - id: *id001
         visible_aliases:
         - snapshot
+    - simple-usage:
+        index: 1
+        case_insensitive: true
+        about: Shows usage statistics for a project.
+        args:
+        - start:
+            help: The beginning time to calculate usage statistics on compute and
+              storage resources, in the format YYYY-MM-DDThh:mm:ss
+            long: start
+            takes_value: true
+            multiple: false
+        - end:
+            help: The ending time to calculate usage statistics on compute and storage
+              resources, in the format YYYY-MM-DDThh:mm:ss
+            long: end
+            takes_value: true
+            multiple: false
+        - id: *id001
+        visible_aliases:
+        - simple-usage
     - volumes:
         index: 1
         case_insensitive: true

@@ -1,23 +1,19 @@
 use std::collections::HashMap;
 
-
 use std::str::FromStr;
-
-
-
 
 use enums::OSOperation;
 use structs::{Action, ActionMap, Command, CommandMap, Resource, ResourceMap, ResourceTypeEnum};
 use utils::{
-    add_slash, remove_slash, get_first_value_from_hashmap_with_vec, hashmap_with_vec_to_json,
-    make_hashmaps_from_dot_notation, read_yaml, remove_slash_start,
+    add_slash, get_first_value_from_hashmap_with_vec, hashmap_with_vec_to_json,
+    make_hashmaps_from_dot_notation, read_yaml, remove_slash, remove_slash_start,
 };
 use uuid::Uuid;
 
-use config::{OpenstackInfoMap, OpenstackTokenizer};
 use client::{Client, Response};
+use config::{OpenstackInfoMap, OpenstackTokenizer};
 use error::OpenstackError;
-
+use multimap::MultiMap;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct OpenstackConnection {
@@ -75,15 +71,17 @@ impl OpenstackConnection {
     pub fn from_cache_or_new(config: OpenstackInfoMap) -> OpenstackConnection {
         match OpenstackConnection::from_cache(&config) {
             Ok(x) => return x,
-            Err(_e) => ()
+            Err(_e) => (),
         };
         OpenstackConnection::new(config)
     }
 
-    pub fn from_cache_or_new_refreshed(config: OpenstackInfoMap) -> Result<OpenstackConnection, OpenstackError> {
+    pub fn from_cache_or_new_refreshed(
+        config: OpenstackInfoMap,
+    ) -> Result<OpenstackConnection, OpenstackError> {
         match OpenstackConnection::from_cache(&config) {
             Ok(x) => return Ok(x),
-            Err(e) => debug!("cache failed because {}", e)
+            Err(e) => debug!("cache failed because {}", e),
         };
 
         debug!("refresh cache");
@@ -136,9 +134,13 @@ impl OpenstackConnection {
 
     pub fn copy_from_tokenizer(&mut self) -> Result<(), OpenstackError> {
         self.token = self.config.token.clone();
-        match self.token.as_ref(){
+        match self.token.as_ref() {
             Some(x) => self.client.set_token(x),
-            None => return Err(OpenstackError::new("something went wrong setting the token"))
+            None => {
+                return Err(OpenstackError::new(
+                    "something went wrong setting the token",
+                ))
+            }
         }
         self.token_expiry = self.config.token_expiry.clone();
         self.endpoints = self.config.endpoints.clone();
@@ -184,7 +186,7 @@ impl Openstack {
         }
     }
 
-    pub fn from_cache(config: OpenstackInfoMap) -> Result<Self, OpenstackError>  {
+    pub fn from_cache(config: OpenstackInfoMap) -> Result<Self, OpenstackError> {
         // create Openstack only from cache.
         let connection = OpenstackConnection::from_cache(&config)?;
         Ok(Self::add_static_data(connection))
@@ -227,7 +229,6 @@ impl Openstack {
         op_args: &HashMap<String, Vec<serde_json::Value>>,
         res_args: &HashMap<String, Vec<serde_json::Value>>,
     ) -> Result<serde_json::Value, OpenstackError> {
-
         if self.connection.endpoints.is_none() {
             self.refresh_token().expect("error while refreshing token");
         }
@@ -251,10 +252,10 @@ impl Openstack {
         let mut path = r.endpoint_path.clone();
         let id = match get_first_value_from_hashmap_with_vec(res_args, "id") {
             Some(x) => Some(x.as_str().unwrap().to_string()),
-            None => None
+            None => None,
         };
 
-        if let Some(ref x) = id{
+        if let Some(ref x) = id {
             path = format!("{}{}", add_slash(&path), x)
         }
 
@@ -299,7 +300,10 @@ impl Openstack {
                 .clone();
             post_body = Openstack::handle_post_parameters(&r, &matched_op, &new_res_args);
         } else {
-            return Err(OpenstackError::new(&format!("'{}' is not a valid operation", &op)))
+            return Err(OpenstackError::new(&format!(
+                "'{}' is not a valid operation",
+                &op
+            )));
         }
 
         // let op_parsed = match OSOperation::from_str(&op){
@@ -308,8 +312,9 @@ impl Openstack {
         // };
         self._handle_special_body_parameters(&r, &matched_op, &mut post_body);
 
-        let additional_headers = Openstack::handle_header_parameters(&r, &matched_op, &new_res_args, &maybe_action);
-        for (k, v) in &additional_headers{
+        let additional_headers =
+            Openstack::handle_header_parameters(&r, &matched_op, &new_res_args, &maybe_action);
+        for (k, v) in &additional_headers {
             self.connection.client.set_header(k, v);
         }
 
@@ -328,11 +333,15 @@ impl Openstack {
         // println!("{:?}", res_args);
         let mut url_params = HashMap::new();
         // add 'magic' url parameters
-        for (k, v) in vec![("user_id", self.connection.user_id.clone()), ("domain_id", self.connection.domain_id.clone()), ("id", id)]{
-            if let Some(the_value) = v{
+        for (k, v) in vec![
+            ("user_id", self.connection.user_id.clone()),
+            ("domain_id", self.connection.domain_id.clone()),
+            ("id", id),
+        ] {
+            if let Some(the_value) = v {
                 url_params.insert(k.to_string(), the_value);
             }
-        };
+        }
         self.make_url(
             matched_op,
             &r,
@@ -344,7 +353,12 @@ impl Openstack {
 
         if is_dry_run {
             // let t = prepared_url.build().expect("Request cannot be build");
-            println!("{:?} {:?}\nHeaders: {:?}", self.connection.client.method, self.connection.client.url, self.connection.client.headers);
+            println!(
+                "{:?} {:?}\nHeaders: {:?}",
+                self.connection.client.method,
+                self.connection.client.url,
+                self.connection.client.headers
+            );
             // return match t.body() {
             //     Some(x) => Ok(format!("{:?}", x).into()),
             //     None => Ok(post_body),
@@ -366,53 +380,59 @@ impl Openstack {
         let mut response = Response::default();
         let mut matched_action = false;
 
-        if let Some(act) = maybe_action{
-            if (act.action == "upload") && (act.resource == "objects"){
+        if let Some(act) = maybe_action {
+            if (act.action == "upload") && (act.resource == "objects") {
                 matched_action = true;
-                let url = match self.connection.client.url.clone(){
+                let url = match self.connection.client.url.clone() {
                     Some(x) => format!("{}", x),
-                    None => return Err(OpenstackError::new("url argument is required"))
+                    None => return Err(OpenstackError::new("url argument is required")),
                 };
                 let file = get_value(res_args, "file")?;
 
-                match get_value(res_args, "parts"){
+                match get_value(res_args, "parts") {
                     Ok(parts_string) => {
                         let container = get_value(res_args, "container")?;
                         let name = get_value(res_args, "name")?;
                         let skip_parts_string = get_value(res_args, "skip-parts")?;
-                        let skip_first: usize = match skip_parts_string.parse(){
+                        let skip_first: usize = match skip_parts_string.parse() {
                             Ok(z) => z,
-                            Err(e) => return Err(OpenstackError::new(&format!("{}", e)))
+                            Err(e) => return Err(OpenstackError::new(&format!("{}", e))),
                         };
-                        let parts: usize = match parts_string.parse(){
+                        let parts: usize = match parts_string.parse() {
                             Ok(z) => z,
-                            Err(e) => return Err(OpenstackError::new(&format!("{}", e)))
+                            Err(e) => return Err(OpenstackError::new(&format!("{}", e))),
                         };
-                        response = self.connection.client.upload_to_object_store_large_skip_parts(&file, &url, &container, &name, parts, skip_first)?;
-                    },
+                        response = self
+                            .connection
+                            .client
+                            .upload_to_object_store_large_skip_parts(
+                                &file, &url, &container, &name, parts, skip_first,
+                            )?;
+                    }
                     _ => {
                         response = self.connection.client.upload_to_object_store(&file, &url)?;
                     }
                 };
             }
-            if (act.action == "download") && (act.resource == "objects"){
+            if (act.action == "download") && (act.resource == "objects") {
                 matched_action = true;
-                let url = match self.connection.client.url.clone(){
+                let url = match self.connection.client.url.clone() {
                     Some(x) => format!("{}", x),
-                    None => return Err(OpenstackError::new("url argument is required"))
+                    None => return Err(OpenstackError::new("url argument is required")),
                 };
                 let file = get_value(res_args, "file")?;
-                response = self.connection.client.download_from_object_store(&file, &url)?;
+                response = self
+                    .connection
+                    .client
+                    .download_from_object_store(&file, &url)?;
             }
         }
-        if !matched_action{
+        if !matched_action {
             self.connection.client.set_json(post_body);
             response = self.connection.client.perform()?;
         }
         Openstack::handle_response(&mut response)
     }
-
-
 
     pub fn make_url(
         &mut self,
@@ -424,26 +444,25 @@ impl Openstack {
         res_args: Option<&HashMap<String, Vec<serde_json::Value>>>,
     ) {
         let mut hm: HashMap<String, String> = HashMap::new();
-        let mut query: HashMap<String, String> = HashMap::new();
-        hm.extend(url_params);
-        // println!("{:?}", hm);
+        let mut query: MultiMap<String, String> = MultiMap::new();
 
+        hm.extend(url_params);
         let mut new_path = path;
-        if let Some(resource_arguments) = res_args{
+        if let Some(resource_arguments) = res_args {
             let parameter_option = match action {
                 Some(actual_action) => actual_action.post_parameters.clone(),
-                None => res.post_parameters.clone()
+                None => res.post_parameters.clone(),
             };
 
             if let Some(ref post_param) = parameter_option {
                 for item in post_param {
                     // println!("{:?}", item);
-                    if item.placement.to_lowercase() == String::from("path"){
+                    if item.placement.to_lowercase() == String::from("path") {
                         let the_value: String;
                         if let Some(x) = resource_arguments.get(&item.name) {
-                            the_value = match x[0].clone(){
+                            the_value = match x[0].clone() {
                                 serde_json::Value::String(y) => y,
-                                _ => continue
+                                _ => continue,
                             };
                         } else {
                             if let Some(x) = &item.default {
@@ -452,32 +471,41 @@ impl Openstack {
                                 continue;
                             }
                         }
-                        let key = match &item.path{
+                        let key = match &item.path {
                             Some(x) => x.clone(),
-                            None => item.name.clone()
+                            None => item.name.clone(),
                         };
                         hm.insert(key, the_value);
                     }
-                    if item.placement.to_lowercase() == String::from("query"){
-                        let the_value: String;
-                        if let Some(x) = resource_arguments.get(&item.name) {
-                            the_value = match x[0].clone(){
-                                serde_json::Value::String(y) => y,
-                                _ => continue
-                            };
-                        } else {
-                            if let Some(x) = &item.default {
-                                the_value = x.clone();
-                            } else {
-                                continue;
+                    if item.placement.to_lowercase() == String::from("query") {
+                        let length;
+                        let query_parameters = match resource_arguments.get(&item.name) {
+                            Some(x) => x.clone(),
+                            None => {
+                                if let Some(x) = &item.default {
+                                    vec![x.clone().into()]
+                                } else {
+                                    continue;
+                                }
                             }
+                        };
+                        if item.multiple {
+                            length = query_parameters.len();
+                        } else {
+                            length = 1;
                         }
-                        if the_value != ""{
-                            let key = match &item.path{
-                                Some(x) => x.clone(),
-                                None => item.name.clone()
+                        debug!("query parameter length: {}", length);
+                        for i in 0..length {
+                            // let the_value: String;
+                            if let serde_json::Value::String(ref the_value) = query_parameters[i] {
+                                if the_value != "" {
+                                    let key = match &item.path {
+                                        Some(x) => x.clone(),
+                                        None => item.name.clone(),
+                                    };
+                                    query.insert(key, the_value.to_string());
+                                }
                             };
-                            query.insert(key, the_value);
                         }
                     }
                 }
@@ -491,14 +519,22 @@ impl Openstack {
             ResourceTypeEnum::String(x) => x,
         };
         // let endpoint = "https://httpbin.org/anything";
-        new_path = remove_slash(&format!("{}{}", add_slash(&endpoint), remove_slash_start(&new_path)));
+        new_path = remove_slash(&format!(
+            "{}{}",
+            add_slash(&endpoint),
+            remove_slash_start(&new_path)
+        ));
 
-        let method = http::Method::from_str(&com.http_method)
-            .expect("command has not a valid http method");
+        let method =
+            http::Method::from_str(&com.http_method).expect("command has not a valid http method");
 
         let mut parsed_url = url::Url::parse(&new_path).expect("this is not a url");
-        parsed_url.query_pairs_mut()
-                  .extend_pairs(query);
+        let multi_query_iter = query.iter_all().flat_map(|(x, y)| {
+            std::iter::repeat(x)
+                .zip(y.iter())
+                .collect::<Vec<(&String, &String)>>()
+        });
+        parsed_url.query_pairs_mut().extend_pairs(multi_query_iter);
 
         // if let Some(act) = action{
         //     if act.is_multipart{
@@ -515,7 +551,9 @@ impl Openstack {
 
         // Ok(self.connection.request(method, &new_path))
         // Ok(new_path)
-        self.connection.client.set_method(&method.as_str().to_uppercase());
+        self.connection
+            .client
+            .set_method(&method.as_str().to_uppercase());
         self.connection.client.set_url(parsed_url.as_str());
     }
 
@@ -545,7 +583,9 @@ impl Openstack {
             let error = json!({
                 "error": response.response()
             });
-            return Err(OpenstackError::new(&serde_json::to_string_pretty(&error).unwrap()));
+            return Err(OpenstackError::new(
+                &serde_json::to_string_pretty(&error).unwrap(),
+            ));
         }
         Ok(response.response().clone())
     }
@@ -559,13 +599,12 @@ impl Openstack {
             return serde_json::Value::Null;
         }
 
-
         if let Some(ref post_param) = res.post_parameters {
             let mut data: Vec<(String, serde_json::Value)> = vec![];
             for item in post_param {
-                let path = match &item.path{
+                let path = match &item.path {
                     Some(x) => x.clone(),
-                    None => item.name.clone()
+                    None => item.name.clone(),
                 };
                 if item.hidden {
                     data.push((path.clone(), Vec::<serde_json::Value>::new().into()))
@@ -584,11 +623,12 @@ impl Openstack {
                         continue;
                     }
                 }
-                if item.placement.to_lowercase() == String::from("body"){
+                if item.placement.to_lowercase() == String::from("body") {
                     match item.the_type.as_ref() {
                         "string" => data.push((path.clone(), the_value)),
                         "number" => {
-                            let v = match serde_json::Number::from_str(&the_value.as_str().unwrap()) {
+                            let v = match serde_json::Number::from_str(&the_value.as_str().unwrap())
+                            {
                                 Ok(x) => serde_json::Value::Number(x),
                                 Err(_e) => the_value.clone(),
                             };
@@ -603,43 +643,43 @@ impl Openstack {
         serde_json::Value::Null
     }
 
-    fn handle_header_parameters(res: &Resource,
+    fn handle_header_parameters(
+        res: &Resource,
         _op: &Command,
         res_args: &HashMap<String, Vec<serde_json::Value>>,
         action: &Option<Action>,
-        ) -> HashMap<String, String>{
-            let mut hm = HashMap::new();
-            let parameter_option = match action {
-                Some(actual_action) => actual_action.post_parameters.clone(),
-                None => res.post_parameters.clone()
-            };
-            if let Some(ref post_param) = parameter_option {
-                for item in post_param {
-                    // println!("{:?}", item);
-                    if item.placement.to_lowercase() == String::from("header"){
-                        let the_value: String;
-                        if let Some(x) = res_args.get(&item.name) {
-                            the_value = match x[0].clone(){
-                                serde_json::Value::String(y) => y,
-                                _ => continue
-                            };
-                        } else {
-                            if let Some(x) = &item.default {
-                                the_value = x.clone();
-                            } else {
-                                continue;
-                            }
-                        }
-                        let key = match &item.path{
-                            Some(x) => x.clone(),
-                            None => item.name.clone()
+    ) -> HashMap<String, String> {
+        let mut hm = HashMap::new();
+        let parameter_option = match action {
+            Some(actual_action) => actual_action.post_parameters.clone(),
+            None => res.post_parameters.clone(),
+        };
+        if let Some(ref post_param) = parameter_option {
+            for item in post_param {
+                if item.placement.to_lowercase() == String::from("header") {
+                    let the_value: String;
+                    if let Some(x) = res_args.get(&item.name) {
+                        the_value = match x[0].clone() {
+                            serde_json::Value::String(y) => y,
+                            _ => continue,
                         };
-                        hm.insert(key, the_value);
+                    } else {
+                        if let Some(x) = &item.default {
+                            the_value = x.clone();
+                        } else {
+                            continue;
+                        }
                     }
+                    let key = match &item.path {
+                        Some(x) => x.clone(),
+                        None => item.name.clone(),
+                    };
+                    hm.insert(key, the_value);
                 }
             }
-            hm
         }
+        hm
+    }
 
     fn _handle_special_body_parameters(
         &self,
@@ -682,13 +722,26 @@ impl Openstack {
     }
 }
 
-fn get_value(hashmap: &HashMap<String, Vec<serde_json::Value>>, key: &str) -> Result<String, OpenstackError>{
-    let string = match get_first_value_from_hashmap_with_vec(hashmap, key){
-        Some(x) => match x{
+fn get_value(
+    hashmap: &HashMap<String, Vec<serde_json::Value>>,
+    key: &str,
+) -> Result<String, OpenstackError> {
+    let string = match get_first_value_from_hashmap_with_vec(hashmap, key) {
+        Some(x) => match x {
             serde_json::Value::String(y) => y,
-            _ => return Err(OpenstackError::new(&format!("{} argument is required", key)))
+            _ => {
+                return Err(OpenstackError::new(&format!(
+                    "{} argument is required",
+                    key
+                )))
+            }
         },
-        None => return Err(OpenstackError::new(&format!("{} argument is required", key)))
+        None => {
+            return Err(OpenstackError::new(&format!(
+                "{} argument is required",
+                key
+            )))
+        }
     };
     Ok(string)
 }

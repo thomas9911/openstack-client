@@ -31,6 +31,7 @@ extern crate yaml_rust;
 extern crate uuid;
 extern crate memmap;
 extern crate sha2;
+extern crate multimap;
 
 #[macro_use]
 mod macros;
